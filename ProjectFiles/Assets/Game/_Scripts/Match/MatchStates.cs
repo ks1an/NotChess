@@ -1,15 +1,15 @@
 using System;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public sealed class MatchStates : MonoBehaviour
+public class MatchStates : MonoBehaviour
 {
     public bool isNetMatch;
     public bool isMoveOfZero;
     [HideInInspector] public Board board;
 
     #region Events
+    public event Action OnGamePreStart;
     public event Action OnGameStarted;
     public event Action<int, int, Team> OnTeamMoved;
     public event Action<int, int, Team> OnGameWin;
@@ -23,26 +23,10 @@ public sealed class MatchStates : MonoBehaviour
     public void CreateGame(bool isNetMatch)
     {
         board = MatchController.Instance.board;
-
         this.isNetMatch = isNetMatch;
-        if (isNetMatch)
-            net = MatchController.Instance.netMatch;
 
-        if (!isNetMatch)
-        {
-            SceneManager.sceneLoaded += OnBoardSceneLoad;
-            Board.onBoardGenerated += GameStart;
-        }
-        else
-        {
-            Board.onBoardGenerated += GameStart;
-            if (net.IsServer)
-                PreStart();
-            else
-                NetMatchSync.OnNetSpawned += PreStart;
-
-            SceneManager.LoadSceneAsync("BoardScene");
-        }
+        SceneManager.sceneLoaded += OnBoardSceneLoad;
+        SceneManager.LoadSceneAsync("BoardScene");
     }
 
     void OnBoardSceneLoad(Scene scene, LoadSceneMode mode)
@@ -50,13 +34,23 @@ public sealed class MatchStates : MonoBehaviour
         if (scene.name != "BoardScene")
             return;
 
-        PreStart();
+        if (!isNetMatch)
+        {
+            Board.onBoardGenerated += GameStart;
+            PreStart();
+        }
+        else
+        {
+            MatchController.Instance.CreateNetSync();
+        }
     }
 
     public void PreStart()
     {
+        net = MatchController.Instance.netMatch;
         SetSettings();
         board.GenerateBoard();
+        OnGamePreStart?.Invoke();
     }
 
     void SetSettings()
@@ -78,8 +72,9 @@ public sealed class MatchStates : MonoBehaviour
         GameStart();
     }
 
-    void GameStart()
+    public void GameStart()
     {
+        WaitingWindowController.Instance.Hide();
         OnGameStarted?.Invoke();
     }
     #endregion
@@ -142,7 +137,7 @@ public sealed class MatchStates : MonoBehaviour
     {
         if (board.CheckWin(x, y))
         {
-            GameEnd(MatchController.Instance.player.GetLocalPlayerTeam(), x, y);
+            GameEnd(team, x, y);
             return;
         }
 
@@ -164,51 +159,39 @@ public sealed class MatchStates : MonoBehaviour
     {
         if (!isNetMatch)
         {
-            ModalViewWindowController.Instance.ShowHorizontal($"Winner: {winTeam}", "Victory. Nothing to add or take away.", "Restart", "Exit", GameRestart, LeaveFromMatch);
+            ModalViewWindowController.Instance.ShowHorizontal(false, $"Winner: <color=#FFD700>{winTeam}</color>", "Victory. Nothing to add or take away.",
+                "Restart", GameRestart, "Exit", LeaveFromMatch);
             OnGameWin?.Invoke(x, y, winTeam);
         }
         else
         {
-            OnNetGameEndTrigger((int)winTeam, x, y);
+            if (MatchController.Instance.player.GetLocalPlayerTeam() == winTeam)
+            {
+                ModalViewWindowController.Instance.ShowHorizontal(true, $"You have won!", "My applause to you. Want to fight your opponent again? Offer a rematch!",
+    "Revenge!", net.OfferRevengeRpc, "Exit to menu", LeaveFromMatch);
+                OnGameWin?.Invoke(x, y, winTeam);
+            }
+            else
+            {
+                ModalViewWindowController.Instance.ShowHorizontal(true, $"You lost", "I feel sorry for you. Have you tried? Try your luck again. Challenge your opponent to a rematch!",
+"Revenge! I'll win.", net.OfferRevengeRpc, "Exit.", LeaveFromMatch);
+                OnGameTied?.Invoke(x, y, winTeam);
+            }
         }
     }
 
-    public void OnNetGameEndTrigger(int winTeamNum, int x, int y)
-    {
-        var winTeam = (Team)winTeamNum;
-
-        if (MatchController.Instance.player.GetLocalPlayerTeam() == winTeam)
-            OnGameWin?.Invoke(x, y, winTeam);
-        else
-            OnGameTied?.Invoke(x, y, winTeam);
-
-        Debug.Log("Testing restart...");
-        GameRestart();
-    }
-
-    public void LeaveFromMatch()
-    {
-        if (isNetMatch)
-        {
-            net.LeaveNetMatch();
-            return;
-        }
-        else
-            OnLeaveFromMatchTrigger();
-    }
+    public void LeaveFromMatch() => OnLeaveFromMatchTrigger();
 
     public void OnLeaveFromMatchTrigger()
     {
-        OnLeaveMatch?.Invoke();
-
         if (!isNetMatch)
-        {
-            SceneManager.sceneLoaded -= OnBoardSceneLoad;
             Board.onBoardGenerated -= GameStart;
-        }
         else
-            Board.onBoardGenerated -= GameStart;
+            net.LeaveNetMatch();
 
+        SceneManager.sceneLoaded -= OnBoardSceneLoad;
+
+        OnLeaveMatch?.Invoke();
         SceneManager.LoadSceneAsync("MenuScene");
     }
     #endregion

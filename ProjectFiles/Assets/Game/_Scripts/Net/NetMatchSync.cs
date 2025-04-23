@@ -1,33 +1,55 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public sealed class NetMatchSync : NetworkBehaviour
+public class NetMatchSync : NetworkBehaviour
 {
-    public static Action OnNetSpawned;
+    bool preStartCalled;
+    bool isConnected;
+    int readyPlayers;
+    int wantRevengePlayers;
     MatchStates states;
     Board board;
 
     #region BeforePlay
-    public void Preset()
-    {
-        DontDestroyOnLoad(this);
-        states = MatchController.Instance.states;
-        board = MatchController.Instance.board;
-        NetworkManager.OnClientStopped += OnPlayerLeavedGame;
-    }
 
     public override void OnNetworkSpawn()
     {
+        base.OnNetworkSpawn();
+        isConnected = true;
+        states = MatchController.Instance.states;
+        board = MatchController.Instance.board;
+
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientDisconnectCallback += DisconnectedRpc;
+        }
+        states.OnGamePreStart += OnPreStart;
+
+        GetNetMatchSyncRpc(NetworkObject.NetworkObjectId);
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    void GetNetMatchSyncRpc(ulong id)
+    {
+        MatchController.Instance.netMatch = GetNetworkObject(id).gameObject.GetComponent<NetMatchSync>();
+        if (!preStartCalled)
+        {
+            states.PreStart();
+            preStartCalled = true;
+        }
+    }
+
+    void OnPreStart()
+    {
         #region SetTeam
-        if (NetworkManager.Singleton.LocalClientId == 0) //HostTeam
+        if (NetworkManager.ConnectedClientsIds[0] == NetworkManager.LocalClientId) //HostTeam
         {
             if (states.isMoveOfZero)
                 MatchController.Instance.player.SetPlayerTeam(Team.Zero);
             else
                 MatchController.Instance.player.SetPlayerTeam(Team.Cross);
         }
-        else if (NetworkManager.Singleton.LocalClientId == 1)
+        else if (NetworkManager.ConnectedClientsIds[1] == NetworkManager.LocalClientId)
         {
             if (states.isMoveOfZero)
                 MatchController.Instance.player.SetPlayerTeam(Team.Cross);
@@ -38,8 +60,19 @@ public sealed class NetMatchSync : NetworkBehaviour
             MatchController.Instance.player.SetPlayerTeam(Team.None);
         #endregion
 
-        OnNetSpawned?.Invoke();
+        ReadyToStartRpc();
     }
+
+    [Rpc(SendTo.Server)]
+    void ReadyToStartRpc()
+    {
+        readyPlayers++;
+        if (readyPlayers >= 2)
+            AllPlayersReadyRpc();
+    }
+
+    [Rpc(SendTo.ClientsAndHost)]
+    void AllPlayersReadyRpc() => states.GameStart();
 
     #endregion
 
@@ -113,38 +146,60 @@ public sealed class NetMatchSync : NetworkBehaviour
     #region EndPlay
 
     #region OnLeaved
-    void OnPlayerLeavedGame(bool leavePlayerIsHost)
+    public void LeaveNetMatch()
     {
-        if (leavePlayerIsHost)
+        isConnected = false;
+
+        if (IsServer)
         {
-            OnServerLeaveGameRpc();
+            DisconnectedRpc(NetworkManager.ServerClientId);
+            NetworkManager.Singleton.OnClientDisconnectCallback -= DisconnectedRpc;
         }
-        else
-        {
-            OnPlayerLeaveGameRpc();
-        }
+
+        states.OnGamePreStart -= OnPreStart;
+        preStartCalled = false;
+        readyPlayers = 0;
+        wantRevengePlayers = 0;
+
+        NetworkManager.Singleton.Shutdown();
     }
 
-    [Rpc(SendTo.NotServer)]
-    void OnServerLeaveGameRpc()
+    void OnHostLeaved() => ModalViewWindowController.Instance.ShowHorizontal(false, "Host left!", "You will have to go to the menu too, bye-bye! <3", 
+            "Exit", states.OnLeaveFromMatchTrigger, "Ok(", states.OnLeaveFromMatchTrigger);
+    void OnPlayerLeavedGame() => ModalViewWindowController.Instance.ShowHorizontal(false, "Player left!", "You broke him and he ran away! Now go back to the menu, strategist",
+            "Exit", states.OnLeaveFromMatchTrigger, "Boo-ha-ha-ha!", states.OnLeaveFromMatchTrigger);
+    #endregion
+
+    #region Revenge
+
+    [Rpc(SendTo.Server)]
+    public void OfferRevengeRpc()
     {
-        ModalViewWindowController.Instance.ShowHorizontal("Host left!", "You will have to go to the menu too, bye-bye :)",
-            "Exit", "Ok(", LeaveNetMatch, LeaveNetMatch);
+        wantRevengePlayers++;
+        if (wantRevengePlayers == 2) //== maxPlayers
+            RevengeRpc();
     }
 
     [Rpc(SendTo.ClientsAndHost)]
-    void OnPlayerLeaveGameRpc()
+    void RevengeRpc()
     {
-        ModalViewWindowController.Instance.ShowHorizontal("Player left!", "You broke him and he ran away! Now go back to the menu",
-    "Exit", "Boo-ha-ha-ha!", LeaveNetMatch, LeaveNetMatch);
-    }
-
-    public void LeaveNetMatch()
-    {
-        NetworkManager.Singleton.Shutdown();
-        states.OnLeaveFromMatchTrigger();
+        wantRevengePlayers = 0;
+        states.GameRestart();
+        ModalViewWindowController.Instance.CloseModalWindow(true);
     }
     #endregion
+
+    [Rpc(SendTo.ClientsAndHost)]
+    void DisconnectedRpc(ulong IdOfDisconnectedClient)
+    {
+        if (!isConnected)
+            return;
+
+        if (IdOfDisconnectedClient == NetworkManager.ServerClientId)
+            OnHostLeaved();
+        else
+            OnPlayerLeavedGame();
+    }
 
     #endregion
 }

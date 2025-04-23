@@ -21,10 +21,6 @@ public sealed class Board : MonoBehaviour
     void Awake()
     {
         DontDestroyOnLoad(this);
-    }
-
-    void Start()
-    {
         match = MatchController.Instance;
     }
 
@@ -41,6 +37,7 @@ public sealed class Board : MonoBehaviour
 
         tilesController.SetSettings();  //FirstSetSettings is tiles!
         tilesController.GenerateTiles();
+
         piecesController.SetSettings(); //Second
 
         isBoardReady = true;
@@ -51,6 +48,7 @@ public sealed class Board : MonoBehaviour
     {
         if (!isGameStart || !isBoardReady)
             return;
+
         if (curCamera == null)
         {
             curCamera = Camera.main;
@@ -127,7 +125,6 @@ public sealed class Board : MonoBehaviour
                 tilesController.RemoveHighlighTiles(piecesController.availableMoves);
             }
         }
-
     }
 
     public bool CheckWin(int movedX, int movedY)
@@ -261,10 +258,6 @@ public sealed class Board : MonoBehaviour
                     piecesController.pieces[x, y] = null;
                 }
             }
-
-        GC.Collect();
-        ModalViewWindowController.Instance.isInImportantChoice = false;
-        ModalViewWindowController.Instance.CloseModalWindow();
     }
 
     void DestroyBoard()
@@ -272,13 +265,13 @@ public sealed class Board : MonoBehaviour
         isGameStart = false;
         isBoardReady = false;
 
-        SetDefaultBoardSettings();
-        tilesController.DestroyTiles();
-
         match.states.OnGameStarted -= OnGameStart;
         match.states.OnGameTied -= OnGameEnd;
         match.states.OnGameWin -= OnGameEnd;
         match.states.OnLeaveMatch -= DestroyBoard;
+
+        SetDefaultBoardSettings();
+        tilesController.DestroyTiles();
 
         GC.Collect();
     }

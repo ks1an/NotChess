@@ -964,6 +964,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   teamMoveIndicator: {fileID: 1718720008}
+  restartButton: {fileID: 464634023}
 --- !u!1 &1718720006
 GameObject:
   m_ObjectHideFlags: 0

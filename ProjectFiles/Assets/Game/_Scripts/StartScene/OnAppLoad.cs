@@ -13,4 +13,13 @@ public sealed class OnAppLoad : MonoBehaviour
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
         SceneManager.LoadSceneAsync("MenuScene");
     }
+    void Start()
+    {
+        WaitingWindowController.Instance.Show();
+    }
+
+    void OnDisable()
+    {
+        WaitingWindowController.Instance.Hide();
+    }
 }

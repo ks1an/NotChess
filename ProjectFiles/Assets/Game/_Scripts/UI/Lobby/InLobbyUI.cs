@@ -76,14 +76,21 @@ public class InLobbyUI : MonoBehaviour
         lobbyNameText.text = lobby.Name;
         playerCountText.text = lobby.Players.Count + "/" + lobby.MaxPlayers;
 
+        if (lobby.Players.Count >= 2)
+            startGameButton.interactable = true;
+        else
+            startGameButton.interactable = false;
+
         Show();
     }
 
-    private void ClearLobby()
+    void ClearLobby()
     {
         foreach (Transform child in container)
         {
-            if (child == playerSingleTemplate) continue;
+            if (child == playerSingleTemplate)
+                continue;
+
             Destroy(child.gameObject);
         }
     }

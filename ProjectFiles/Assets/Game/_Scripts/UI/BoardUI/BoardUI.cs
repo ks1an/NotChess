@@ -1,9 +1,11 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class BoardUI : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI teamMoveIndicator;
+    [SerializeField] Button restartButton;
     bool isNetMatch;
 
     void Awake()
@@ -12,6 +14,11 @@ public sealed class BoardUI : MonoBehaviour
 
         MatchController.Instance.states.OnGameStarted += StartSettings;
         MatchController.Instance.states.OnTeamMoved += ChangeTeamMoveIndicator;
+        MatchController.Instance.states.OnGameTied += OnGameEnded;
+        MatchController.Instance.states.OnGameWin += OnGameEnded;
+
+        if (isNetMatch)
+            restartButton.gameObject.SetActive(false);
     }
 
     void StartSettings()
@@ -22,17 +29,19 @@ public sealed class BoardUI : MonoBehaviour
             ChangeTeamMoveIndicator(-1, -1, Team.Zero);
     }
 
+    #region TryTo
     public void TryExitToMenu()
     {
-        ModalViewWindowController.Instance.ShowHorizontal("Leave?", "Are you sure you want to quit? Progress for the round will be lost!",
-    "Cancel", "Leave", greenAction: ModalViewWindowController.Instance.CloseModalWindow, redAction: ExitToMenu);
+        ModalViewWindowController.Instance.ShowHorizontal(false, "Leave?", "Are you sure you want to quit? Progress for the round will be lost!",
+    "Cancel", () => {}, "Leave", ExitToMenu);
     }
 
     public void TryRestartGame()
     {
-        ModalViewWindowController.Instance.ShowHorizontal("Restart?", "Are you sure you want to restart?",
-"Cancel", "Restart", greenAction: ModalViewWindowController.Instance.CloseModalWindow, redAction: RestartGame);
+        ModalViewWindowController.Instance.ShowHorizontal(false, "Restart?", "Are you sure you want to restart?",
+"Cancel", () => {}, "Restart", RestartGame);
     }
+    #endregion
 
     void ChangeTeamMoveIndicator(int x, int y, Team teamMoved)
     {
@@ -58,6 +67,12 @@ public sealed class BoardUI : MonoBehaviour
         }
     }
 
+    void OnGameEnded(int x, int y, Team teamWin)
+    {
+        teamMoveIndicator.text = teamWin.ToString() + " won";
+        teamMoveIndicator.fontStyle = FontStyles.Bold;
+    }
+
     void ExitToMenu()
     {
         MatchController.Instance.states.LeaveFromMatch();
@@ -66,5 +81,13 @@ public sealed class BoardUI : MonoBehaviour
     void RestartGame()
     {
         MatchController.Instance.states.GameRestart();
+    }
+
+    private void OnDisable()
+    {
+        MatchController.Instance.states.OnGameTied -= OnGameEnded;
+        MatchController.Instance.states.OnGameWin -= OnGameEnded;
+        MatchController.Instance.states.OnGameStarted -= StartSettings;
+        MatchController.Instance.states.OnTeamMoved -= ChangeTeamMoveIndicator;
     }
 }

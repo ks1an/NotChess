@@ -32,5 +32,6 @@ public class LobbyPlayerSingleUI : MonoBehaviour
         {
             LobbyManager.Instance.KickPlayer(player.Id);
         }
+        //Destroy(this);
     }
 }

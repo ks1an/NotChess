@@ -919,7 +919,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ModalWindowController, Assembly-CSharp
+        m_TargetAssemblyTypeName: ModalViewWindowController, Assembly-CSharp
         m_MethodName: CloseModalWindow
         m_Mode: 1
         m_Arguments:

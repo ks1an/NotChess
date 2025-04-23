@@ -24,10 +24,10 @@ public sealed class ModalViewWindow : MonoBehaviour
     [SerializeField] Button _confirmBttn, _declineBttn, _altBttn;
     [SerializeField] TextMeshProUGUI _confirmTxt, _declineTxt, _altTxt;
 
-    Action onAlternateAction, onDeclineAction, onConfirmAction;
+    Action onAlternateAction, onDeclineAction, onConfirmAction, doItAnyway;
 
-    public void ShowHorizontal(string title, string message, string confirmTxt, string declineTxt, Action greenAction, 
-        Action redAction, Sprite icon = null, string altTxt = null, Action altAction = null)
+    public void ShowHorizontal(string title, string message, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
+        Action redAction = null, string altTxt = null, Action altAction = null, Sprite icon = null, Action doItAnyway = null)
     {
         _horizontalLayoutArea.gameObject.SetActive(true);
 
@@ -66,8 +66,15 @@ public sealed class ModalViewWindow : MonoBehaviour
 
         #region Footer
 
-        onConfirmAction = greenAction;
-        _confirmTxt.text = confirmTxt;
+        this.doItAnyway = doItAnyway;
+        if (greenAction != null)
+        {
+            _confirmBttn.gameObject.SetActive(true);
+            onConfirmAction = greenAction;
+            _confirmTxt.text = confirmTxt;
+        }
+        else
+            _confirmBttn.gameObject.SetActive(false);
 
         if (redAction != null)
         {
@@ -90,13 +97,31 @@ public sealed class ModalViewWindow : MonoBehaviour
         #endregion
     }
 
-    public void ShowHorizontallNoChoice(string title, string message, Action confirmAction, Sprite imageToShow = null)
+    #region ActionsInvoke
+    public void Confirm()
     {
-        ShowHorizontal(title, message, "Ok", null, confirmAction, null, imageToShow);
+        onConfirmAction?.Invoke();
+        DoItAnyway();
+        CloseModalWindow();
     }
+    public void Alternate()
+    {
+        onAlternateAction?.Invoke();
+        DoItAnyway();
+        CloseModalWindow();
+    }
+    public void Decline()
+    {
+        onDeclineAction?.Invoke();
+        DoItAnyway();
+        CloseModalWindow();
+    }
+    void DoItAnyway()
+    {
+        doItAnyway?.Invoke();
+        CloseModalWindow();
+    }
+    #endregion
 
-    public void Confirm() => onConfirmAction?.Invoke();
-    public void Alternate() => onAlternateAction?.Invoke();
-    public void Decline() => onDeclineAction?.Invoke();
     public void CloseModalWindow() => gameObject.SetActive(false);
 }

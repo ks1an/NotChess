@@ -5,45 +5,33 @@ public sealed class ModalViewWindowController : MonoBehaviour
 {
     public static ModalViewWindowController Instance;
     public ModalViewWindow modalWindow;
-    public bool isInImportantChoice;
+    bool dontCloseUntilChoose;
 
     void Awake()
     {
         Instance = this;
-        DontDestroyOnLoad(this);
+        DontDestroyOnLoad(this); 
     }
 
-    public void ShowHorizontal(string title, string message, string confirmTxt, string declineTxt, Action greenAction,
-        Action redAction, Sprite icon = null, string altTxt = null, Action altAction = null)
+    public void ShowHorizontal(bool dontCloseUntilChoose, string title, string message, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
+        Action redAction = null, string altTxt = null, Action altAction = null, Sprite icon = null, Action doItAnyway = null)
     {
         modalWindow.gameObject.SetActive(true);
-        modalWindow.ShowHorizontal(title, message, confirmTxt, declineTxt, greenAction, redAction, icon, altTxt, altAction);
+        CloseUntilChooseOrNot(dontCloseUntilChoose);
+
+        modalWindow.ShowHorizontal(title, message, confirmTxt, greenAction, declineTxt, redAction, altTxt, altAction, icon, 
+            () => 
+            {
+                CloseUntilChooseOrNot(false);
+                doItAnyway?.Invoke();
+            });
     }
 
-   /* public void ShowWarningRestart()
-    {
-        modalWindow.gameObject.SetActive(true);
-        modalWindow.ShowHorizontal("Переиграть?", "Вы уверены, что хотите переиграть раунд? \n Прогресс за этот раунд будет утрачен!",
-            "Отмена", "Переиграть", greenAction: CloseModalWindow, redAction: gameBoard.StartGameWithCurrentBoard);
-    }*/
+    void CloseUntilChooseOrNot(bool b) => dontCloseUntilChoose = b;
 
-    public void ShowCrossWin()
+    public void CloseModalWindow(bool isForceClosure = false)
     {
-        /*isInImportantChoice = true;
-        modalWindow.gameObject.SetActive(true);
-        modalWindow.ShowHorizontallNoChoice("<color=#FFD700>Крестики</color> победили!", null, gameBoard.StartGameWithCurrentBoard);*/
-    }
-
-    public void ShowZeroWin()
-    {
-        /*isInImportantChoice = true;
-        modalWindow.gameObject.SetActive(true);
-        modalWindow.ShowHorizontallNoChoice("<color=#FFD700>Нолики</color> победили!", null, gameBoard.StartGameWithCurrentBoard);*/
-    }
-
-    public void CloseModalWindow()
-    {
-        if (!isInImportantChoice)
+        if(!dontCloseUntilChoose || isForceClosure)
             modalWindow.CloseModalWindow();
     }
 }

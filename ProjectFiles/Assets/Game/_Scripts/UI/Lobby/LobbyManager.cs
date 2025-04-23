@@ -220,7 +220,7 @@ public sealed class LobbyManager : MonoBehaviour
     {
         try
         {
-            QueryLobbiesOptions options = new QueryLobbiesOptions();
+            QueryLobbiesOptions options = new();
             options.Count = 25;
 
             // Filter for open lobbies only
@@ -233,7 +233,7 @@ public sealed class LobbyManager : MonoBehaviour
 
             // Order by newest lobbies first
             options.Order = new List<QueryOrder> {
-                new QueryOrder(
+                new(
                     asc: false,
                     field: QueryOrder.FieldOptions.Created)
             };
@@ -256,7 +256,7 @@ public sealed class LobbyManager : MonoBehaviour
         {
             try
             {
-                UpdatePlayerOptions options = new UpdatePlayerOptions();
+                UpdatePlayerOptions options = new();
 
                 options.Data = new Dictionary<string, PlayerDataObject>() {
                     {
