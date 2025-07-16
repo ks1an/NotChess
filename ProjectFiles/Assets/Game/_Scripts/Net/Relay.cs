@@ -21,7 +21,7 @@ public sealed class Relay : MonoBehaviour
     {
         try
         {
-            WaitingWindowController.Instance.Show();
+            WaitingWindowController.Instance.ShowWithRandomTxt();
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(LobbyManager.Instance.GetJoinedLobby().MaxPlayers - 1);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             this.joinCode = joinCode;
@@ -29,7 +29,7 @@ public sealed class Relay : MonoBehaviour
             RelayServerData relayServerData = new(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            MatchController.Instance.CreateGame(true, 8, 8, 1, 5, true);
+            MatchController.Instance.CreateGame(true);
             NetworkManager.Singleton.StartHost();
 
             return joinCode;
@@ -41,12 +41,12 @@ public sealed class Relay : MonoBehaviour
     {
         try
         {
-            WaitingWindowController.Instance.Show();
+            WaitingWindowController.Instance.ShowWithRandomTxt();
             JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(code);
             RelayServerData relayServerData = new(allocation, "dtls");
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            MatchController.Instance.CreateGame(true, 8, 8, 1, 5, true);
+            MatchController.Instance.CreateGame(true);
             NetworkManager.Singleton.StartClient();
         }
         catch (RelayServiceException e) { Debug.Log(e); }

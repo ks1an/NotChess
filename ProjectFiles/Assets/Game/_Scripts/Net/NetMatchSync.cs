@@ -1,14 +1,16 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class NetMatchSync : NetworkBehaviour
 {
+    MatchStates states;
+    Board board;
+
     bool preStartCalled;
     bool isConnected;
     int readyPlayers;
     int wantRevengePlayers;
-    MatchStates states;
-    Board board;
 
     #region BeforePlay
 
@@ -45,19 +47,19 @@ public class NetMatchSync : NetworkBehaviour
         if (NetworkManager.ConnectedClientsIds[0] == NetworkManager.LocalClientId) //HostTeam
         {
             if (states.isMoveOfZero)
-                MatchController.Instance.player.SetPlayerTeam(Team.Zero);
+                MatchController.Instance.player.SetSettings(Team.Zero, true);
             else
-                MatchController.Instance.player.SetPlayerTeam(Team.Cross);
+                MatchController.Instance.player.SetSettings(Team.Cross, true);
         }
         else if (NetworkManager.ConnectedClientsIds[1] == NetworkManager.LocalClientId)
         {
             if (states.isMoveOfZero)
-                MatchController.Instance.player.SetPlayerTeam(Team.Cross);
+                MatchController.Instance.player.SetSettings(Team.Cross, true);
             else
-                MatchController.Instance.player.SetPlayerTeam(Team.Zero);
+                MatchController.Instance.player.SetSettings(Team.Zero, true);
         }
         else
-            MatchController.Instance.player.SetPlayerTeam(Team.None);
+            MatchController.Instance.player.SetSettings(Team.None, true);
         #endregion
 
         ReadyToStartRpc();
@@ -104,14 +106,49 @@ public class NetMatchSync : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void DestroyUnitRpc(int x, int y)
+    public void DestroyUnitRpc(int x, int y, bool destroyedByUnit)
     {
+        if (destroyedByUnit)
+        {
+            if (board.piecesController.pieces[x, y].team == Team.Zero)
+                IncreaseManaForDestroyRpc((int)Team.Cross);
+            else
+                IncreaseManaForDestroyRpc((int)Team.Zero);
+        }
+
         Destroy(board.piecesController.pieces[x, y].gameObject);
         UpdateUnitArrayOnClientsRpc(x, y, 0, Team.None);
+    }
+
+    [Rpc(SendTo.NotMe)]
+    public void UseCardRpc(int cardId, int[] movesX, int[] movesY)
+    {
+        MatchController.Instance.globalCardCollection.GlobalCardsDictionary.TryGetValue(cardId, out Card card);
+        if (card != null)
+        {
+            Card cardInScene = Instantiate(card.gameObject).GetComponent<Card>();
+
+            List<Vector2Int> moves = new();
+            for(int i = 0; i < movesX.Length; i++)
+                moves.Add(new Vector2Int(movesX[i], movesY[i]));
+
+            cardInScene.UseCard(moves, true);
+        }
+        else
+            Debug.LogError($"Card with ID:({cardId}) in not find! Error sync.");
     }
     #endregion
 
     #region AfterMove
+
+    [Rpc(SendTo.ClientsAndHost)]
+    void IncreaseManaForDestroyRpc(int playerWhoDestroy)
+    {
+        if ((int)MatchController.Instance.player.GetLocalPlayerTeam() == playerWhoDestroy)
+        {
+            MatchController.Instance.player.IncreaseMana(MatchController.Instance.settings.manaForDestroyEnemy);
+        }
+    }
 
     [Rpc(SendTo.NotServer)]
     public void UpdateUnitArrayOnClientsRpc(int x, int y, ulong idObj, Team team)
@@ -164,10 +201,10 @@ public class NetMatchSync : NetworkBehaviour
         NetworkManager.Singleton.Shutdown();
     }
 
-    void OnHostLeaved() => ModalViewWindowController.Instance.ShowHorizontal(false, "Host left!", "You will have to go to the menu too, bye-bye! <3", 
+    void OnHostLeaved() => ModalViewWindowController.Instance.ShowHorizontal(false, "Host left!", "You will have to go to the menu too, bye-bye! <3",false,
             "Exit", states.OnLeaveFromMatchTrigger, "Ok(", states.OnLeaveFromMatchTrigger);
     void OnPlayerLeavedGame() => ModalViewWindowController.Instance.ShowHorizontal(false, "Player left!", "You broke him and he ran away! Now go back to the menu, strategist",
-            "Exit", states.OnLeaveFromMatchTrigger, "Boo-ha-ha-ha!", states.OnLeaveFromMatchTrigger);
+            false, "Exit", states.OnLeaveFromMatchTrigger, "Boo-ha-ha-ha!", states.OnLeaveFromMatchTrigger);
     #endregion
 
     #region Revenge
@@ -185,7 +222,7 @@ public class NetMatchSync : NetworkBehaviour
     {
         wantRevengePlayers = 0;
         states.GameRestart();
-        ModalViewWindowController.Instance.CloseModalWindow(true);
+        ModalViewWindowController.Instance.TryCloseModalViewWindow(true);
     }
     #endregion
 

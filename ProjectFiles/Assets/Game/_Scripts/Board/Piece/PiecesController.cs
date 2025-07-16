@@ -55,7 +55,7 @@ public sealed class PiecesController : MonoBehaviour
         {
             if (curPiece.team == pieces[x, y].team)
                 return;
-            match.states.DestroyUnit(x, y);
+            match.states.TryDestroyUnit(x, y, true);
         }
         pieces[x, y] = curPiece;
         pieces[originalX, originalY] = null;
@@ -83,7 +83,7 @@ public sealed class PiecesController : MonoBehaviour
             return;
 
         currentlySelectingPiece = pieces[hitPos.x, hitPos.y];
-        availableMoves = currentlySelectingPiece.GetAbailableMoves(ref pieces, match.settings.tileCountX, match.settings.tileCountY);
+        availableMoves = currentlySelectingPiece.GetAvailableMoves(ref pieces, match.settings.tileCountX, match.settings.tileCountY);
 
         Vector3 tileCenter = tilesController.GetTileCenter(hitPos.x, hitPos.y);
         match.states.SetUnitPos(hitPos.x, hitPos.y, new Vector3(tileCenter.x, upValueWhileSelectingPiece, tileCenter.z));
@@ -103,7 +103,7 @@ public sealed class PiecesController : MonoBehaviour
             match.states.SetUnitPos(previousPos.x, previousPos.y, tilesController.GetTileCenter(previousPos.x, previousPos.y));
 
         currentlySelectingPiece = null;
-        tilesController.RemoveHighlighTiles(availableMoves);
+        tilesController.RemoveHighlightTiles(availableMoves);
     }
     #endregion
 

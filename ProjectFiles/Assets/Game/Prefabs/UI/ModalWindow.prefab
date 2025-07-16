@@ -412,6 +412,9 @@ MonoBehaviour:
   _confirmTxt: {fileID: 1262074909506503702}
   _declineTxt: {fileID: 4674280729553025278}
   _altTxt: {fileID: 7467867036779184161}
+  backgroundImage: {fileID: 3788876125288421554}
+  basicColor: {r: 0, g: 0, b: 0, a: 0.5019608}
+  inFocusColor: {r: 0, g: 0, b: 0, a: 0.9882353}
 --- !u!1 &2077102650287597463
 GameObject:
   m_ObjectHideFlags: 0

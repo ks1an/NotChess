@@ -10,28 +10,28 @@ public sealed class ModalViewWindowController : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        DontDestroyOnLoad(this); 
+        DontDestroyOnLoad(this);
     }
 
-    public void ShowHorizontal(bool dontCloseUntilChoose, string title, string message, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
+    public void ShowHorizontal(bool dontCloseUntilChoose, string title, string message, bool backInFocus, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
         Action redAction = null, string altTxt = null, Action altAction = null, Sprite icon = null, Action doItAnyway = null)
     {
         modalWindow.gameObject.SetActive(true);
         CloseUntilChooseOrNot(dontCloseUntilChoose);
 
-        modalWindow.ShowHorizontal(title, message, confirmTxt, greenAction, declineTxt, redAction, altTxt, altAction, icon, 
-            () => 
+        modalWindow.ShowHorizontal(title, message, backInFocus, confirmTxt, greenAction, declineTxt, redAction, altTxt, altAction, icon,
+            () =>
             {
                 CloseUntilChooseOrNot(false);
                 doItAnyway?.Invoke();
             });
     }
 
-    void CloseUntilChooseOrNot(bool b) => dontCloseUntilChoose = b;
-
-    public void CloseModalWindow(bool isForceClosure = false)
+    public void TryCloseModalViewWindow(bool isForceClosure = false)
     {
-        if(!dontCloseUntilChoose || isForceClosure)
+        if (!dontCloseUntilChoose || isForceClosure)
             modalWindow.CloseModalWindow();
     }
+
+    void CloseUntilChooseOrNot(bool b) => dontCloseUntilChoose = b;
 }

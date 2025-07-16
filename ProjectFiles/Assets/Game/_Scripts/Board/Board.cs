@@ -5,30 +5,35 @@ using UnityEngine;
 [RequireComponent(typeof(TilesController), typeof(PiecesController))]
 public sealed class Board : MonoBehaviour
 {
+    public static Board Instance;
     public static Action onBoardGenerated;
 
     public TilesController tilesController;
     public PiecesController piecesController;
 
     MatchController match;
-    Camera curCamera;
+    MatchSettings settings;
     GameObject modalWindow;
 
+    Camera curCamera;
     Vector2Int curHoverTile;
     bool isBoardReady;
     bool isGameStart;
 
     void Awake()
     {
+        if (Instance == null)
+            Instance = this;
+
         DontDestroyOnLoad(this);
         match = MatchController.Instance;
     }
 
     public void GenerateBoard()
     {
+        settings = MatchController.Instance.settings;
         modalWindow = ModalViewWindowController.Instance.modalWindow.gameObject;
         curHoverTile = -Vector2Int.one;
-        curCamera = Camera.main;
 
         match.states.OnGameStarted += OnGameStart;
         match.states.OnGameTied += OnGameEnd;
@@ -48,12 +53,8 @@ public sealed class Board : MonoBehaviour
     {
         if (!isGameStart || !isBoardReady)
             return;
-
-        if (curCamera == null)
-        {
+        if(curCamera == null)
             curCamera = Camera.main;
-            return;
-        }
 
         Ray ray = curCamera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit info, 20, LayerMask.GetMask("Tile", "Hover", "Highlight")))
@@ -67,22 +68,34 @@ public sealed class Board : MonoBehaviour
             if (curHoverTile == -Vector2Int.one)
             {
                 curHoverTile = hitPos;
-                tilesController.tiles[hitPos.x, hitPos.y].layer = LayerMask.NameToLayer("Hover");
+                tilesController.tiles[hitPos.x, hitPos.y].gameObject.layer = LayerMask.NameToLayer("Hover");
             }
 
             if (curHoverTile != hitPos)
             {
-                tilesController.tiles[curHoverTile.x, curHoverTile.y].layer = piecesController.ContainsValidMove(ref piecesController.availableMoves, curHoverTile) ?
+                tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = piecesController.ContainsValidMove(ref piecesController.availableMoves, curHoverTile) ?
                     LayerMask.NameToLayer("Highlight") : LayerMask.NameToLayer("Tile");
 
                 curHoverTile = hitPos;
-                tilesController.tiles[hitPos.x, hitPos.y].layer = LayerMask.NameToLayer("Hover");
+                tilesController.tiles[hitPos.x, hitPos.y].gameObject.layer = LayerMask.NameToLayer("Hover");
             }
+            #endregion
+
+            #region CardMove
+            if (Deck.Instance.playerHand.CurrentSelectCard != null)
+            {
+                List<Vector2Int> availabe = Deck.Instance.playerHand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
+                tilesController.HighlighTiles(availabe);
+                tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
+                return;
+            }
+
             #endregion
 
             #region PutPiece
 
-            if (Input.GetMouseButtonDown(0) && piecesController.currentlySelectingPiece == null && piecesController.pieces[hitPos.x, hitPos.y] == null)
+            if (Input.GetMouseButtonDown(0) && piecesController.currentlySelectingPiece == null && piecesController.pieces[hitPos.x, hitPos.y] == null
+                && !tilesController.tiles[hitPos.x, hitPos.y].banPutUnitsOnTile)
             {
                 if (match.states.isMoveOfZero && match.player.GetLocalPlayerTeam() == Team.Zero)
                 {
@@ -111,10 +124,16 @@ public sealed class Board : MonoBehaviour
         {
             if (curHoverTile != -Vector2Int.one)
             {
-                tilesController.tiles[curHoverTile.x, curHoverTile.y].layer = piecesController.ContainsValidMove(ref piecesController.availableMoves, curHoverTile) ?
+                tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = piecesController.ContainsValidMove(ref piecesController.availableMoves, curHoverTile) ?
                     LayerMask.NameToLayer("Highlight") : LayerMask.NameToLayer("Tile");
 
                 curHoverTile = -Vector2Int.one;
+            }
+
+            if(Deck.Instance.playerHand.CurrentSelectCard != null)
+            {
+                List<Vector2Int> availabe = Deck.Instance.playerHand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, -1, -1);
+                tilesController.RemoveAllHighlight();
             }
 
             if (Input.GetMouseButtonUp(0) && piecesController.currentlySelectingPiece)
@@ -122,11 +141,12 @@ public sealed class Board : MonoBehaviour
                 piecesController.currentlySelectingPiece.SetPos(tilesController.GetTileCenter(piecesController.currentlySelectingPiece.currentX,
                     piecesController.currentlySelectingPiece.currentY));
                 piecesController.currentlySelectingPiece = null;
-                tilesController.RemoveHighlighTiles(piecesController.availableMoves);
+                tilesController.RemoveHighlightTiles(piecesController.availableMoves);
             }
         }
     }
 
+    #region OnGameStates
     public bool CheckWin(int movedX, int movedY)
     {
         #region CheckCol
@@ -242,11 +262,10 @@ public sealed class Board : MonoBehaviour
 
         return false;
     }
-
     public void SetDefaultBoardSettings()
     {
         piecesController.currentlySelectingPiece = null;
-        tilesController.RemoveHighlighTiles(piecesController.availableMoves);
+        tilesController.RemoveHighlightTiles(piecesController.availableMoves);
         piecesController.availableMoves = new List<Vector2Int>();
 
         for (int x = 0; x < match.settings.tileCountX; x++)
@@ -286,4 +305,5 @@ public sealed class Board : MonoBehaviour
     {
         isGameStart = false;
     }
+    #endregion
 }

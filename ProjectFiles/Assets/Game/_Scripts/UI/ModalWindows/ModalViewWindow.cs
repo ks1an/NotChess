@@ -24,9 +24,13 @@ public sealed class ModalViewWindow : MonoBehaviour
     [SerializeField] Button _confirmBttn, _declineBttn, _altBttn;
     [SerializeField] TextMeshProUGUI _confirmTxt, _declineTxt, _altTxt;
 
+    [Header("Background")]
+    [SerializeField] Image backgroundImage;
+    [SerializeField] Color basicColor, inFocusColor;
+
     Action onAlternateAction, onDeclineAction, onConfirmAction, doItAnyway;
 
-    public void ShowHorizontal(string title, string message, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
+    public void ShowHorizontal(string title, string message,bool backInFocus = false, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
         Action redAction = null, string altTxt = null, Action altAction = null, Sprite icon = null, Action doItAnyway = null)
     {
         _horizontalLayoutArea.gameObject.SetActive(true);
@@ -95,6 +99,8 @@ public sealed class ModalViewWindow : MonoBehaviour
             _altBttn.gameObject.SetActive(false);
 
         #endregion
+
+        backgroundImage.color = backInFocus ? inFocusColor : basicColor;
     }
 
     #region ActionsInvoke

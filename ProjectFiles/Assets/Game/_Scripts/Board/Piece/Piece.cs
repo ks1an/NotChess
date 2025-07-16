@@ -15,7 +15,7 @@ public class Piece : MonoBehaviour
 
     Vector3 targetPos;
 
-    private void Update()
+    void Update()
     {
         //TODO: Use DoTween?
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 10);
@@ -28,11 +28,11 @@ public class Piece : MonoBehaviour
             transform.position = targetPos;
     }
 
-    public List<Vector2Int> GetAbailableMoves(ref Piece[,] board, int countX, int countY)
+    public List<Vector2Int> GetAvailableMoves(ref Piece[,] board, int countX, int countY)
     {
         List<Vector2Int> r = new();
 
-        #region KillMove
+        #region AttackMove
 
         if (countX - 1 >= currentX + 1)
         {

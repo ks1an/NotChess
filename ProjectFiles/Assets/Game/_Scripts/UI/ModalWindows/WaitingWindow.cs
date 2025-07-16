@@ -1,3 +1,4 @@
+using System.Drawing;
 using TMPro;
 using UnityEngine;
 
@@ -21,5 +22,10 @@ public sealed class WaitingWindow : MonoBehaviour
         int index;
         index = Random.Range(0, loadingPhrases.Length);
         text.text = loadingPhrases[index];
+    }
+
+    public void SetTxtOnNetServicesNotInit()
+    {
+        text.text = "Network <color=#ÑÑ0000>services not loaded!</color> Launching single player game";
     }
 }

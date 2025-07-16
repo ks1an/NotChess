@@ -4,16 +4,26 @@ using UnityEngine.UI;
 
 public sealed class BoardUI : MonoBehaviour
 {
+    public static BoardUI Singleton;
+
+    public ManaBar manaBar;
+
     [SerializeField] TextMeshProUGUI teamMoveIndicator;
     [SerializeField] Button restartButton;
+
     bool isNetMatch;
 
     void Awake()
     {
+        if (Singleton == null)
+            Singleton = this;
+        else
+            Destroy(this);
+
         isNetMatch = MatchController.Instance.states.isNetMatch;
 
         MatchController.Instance.states.OnGameStarted += StartSettings;
-        MatchController.Instance.states.OnTeamMoved += ChangeTeamMoveIndicator;
+        MatchController.Instance.states.OnTurnEnded += ChangeTeamMoveIndicator;
         MatchController.Instance.states.OnGameTied += OnGameEnded;
         MatchController.Instance.states.OnGameWin += OnGameEnded;
 
@@ -23,6 +33,8 @@ public sealed class BoardUI : MonoBehaviour
 
     void StartSettings()
     {
+        manaBar.SetSettings();
+
         if (MatchController.Instance.states.isMoveOfZero)
             ChangeTeamMoveIndicator(-1, -1, Team.Cross);
         else
@@ -33,16 +45,17 @@ public sealed class BoardUI : MonoBehaviour
     public void TryExitToMenu()
     {
         ModalViewWindowController.Instance.ShowHorizontal(false, "Leave?", "Are you sure you want to quit? Progress for the round will be lost!",
-    "Cancel", () => {}, "Leave", ExitToMenu);
+    false, "Cancel", () => { }, "Leave", ExitToMenu);
     }
 
     public void TryRestartGame()
     {
         ModalViewWindowController.Instance.ShowHorizontal(false, "Restart?", "Are you sure you want to restart?",
-"Cancel", () => {}, "Restart", RestartGame);
+false, "Cancel", () => { }, "Restart", RestartGame);
     }
     #endregion
 
+    #region OnGameState
     void ChangeTeamMoveIndicator(int x, int y, Team teamMoved)
     {
         if (isNetMatch)
@@ -72,6 +85,7 @@ public sealed class BoardUI : MonoBehaviour
         teamMoveIndicator.text = teamWin.ToString() + " won";
         teamMoveIndicator.fontStyle = FontStyles.Bold;
     }
+    #endregion
 
     void ExitToMenu()
     {
@@ -88,6 +102,6 @@ public sealed class BoardUI : MonoBehaviour
         MatchController.Instance.states.OnGameTied -= OnGameEnded;
         MatchController.Instance.states.OnGameWin -= OnGameEnded;
         MatchController.Instance.states.OnGameStarted -= StartSettings;
-        MatchController.Instance.states.OnTeamMoved -= ChangeTeamMoveIndicator;
+        MatchController.Instance.states.OnTurnEnded -= ChangeTeamMoveIndicator;
     }
 }
