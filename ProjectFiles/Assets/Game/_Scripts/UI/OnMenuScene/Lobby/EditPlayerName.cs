@@ -24,7 +24,7 @@ public sealed class EditPlayerName : MonoBehaviour
 
         GetComponent<Button>().onClick.AddListener(() =>
         {
-            ModalInputWindow.Instance.Show("Player Name", "New name...", () => { },
+            ModalInputWindow.Instance.Show("Set player name", "0<Name<=0", () => { },
             (string newName) =>
             {
                 playerName = newName;
@@ -37,10 +37,6 @@ public sealed class EditPlayerName : MonoBehaviour
         });
 
         playerNameText.text = playerName;
-    }
-
-    void Start()
-    {
         OnNameChanged += EditPlayerName_OnNameChanged;
     }
 
@@ -53,5 +49,10 @@ public sealed class EditPlayerName : MonoBehaviour
     public string GetPlayerName()
     {
         return playerName;
+    }
+
+    void OnDisable()
+    {
+        OnNameChanged -= EditPlayerName_OnNameChanged;
     }
 }

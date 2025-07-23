@@ -2,24 +2,29 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+[RequireComponent(typeof(SortingGroup))]
 public class CardUI : MonoBehaviour
 {
     [Header("Elements")]
     [SerializeField] TextMeshPro cardName;
     [SerializeField] TextMeshPro manaCostTxt;
     [SerializeField] TextMeshPro cardDescription;
+    [SerializeField] SpriteRenderer picture, border, cardRender;
+    [SerializeField] SortingGroup sorting;
 
-    [SerializeField] SpriteRenderer picture;
-    [SerializeField] SpriteRenderer border;
+    [Header("Settings")]
+    [SerializeField] Color passiveColor;
+    [SerializeField] Color hoverColor, selectColor;
 
-    SortingGroup sorting;
     Card card;
     int orientation, effectType, rarity;
 
     public void SetCardUI()
     {
-        sorting = GetComponent<SortingGroup>();
         card = GetComponent<Card>();
+        if(sorting == null)
+            sorting = GetComponent<SortingGroup>();
+
         SetCardSettings();
     }
 
@@ -39,16 +44,30 @@ public class CardUI : MonoBehaviour
         rarity = (int)card.Rarity;
     }
 
+    void Awake()
+    {
+        cardRender.color = passiveColor;
+    }
+
     void OnMouseEnter()
     {
         if (Deck.Instance.playerHand.CurrentSelectCard != card)
+        {
             sorting.sortingOrder = 1;
+            cardRender.color = hoverColor;
+        }
     }
     void OnMouseExit()
     {
         if (Deck.Instance.playerHand.CurrentSelectCard != card)
+        {
             sorting.sortingOrder = 0;
+            cardRender.color = passiveColor;
+        }
         else
+        {
             sorting.sortingOrder = 2;
+            cardRender.color = selectColor;
+        }
     }
 }

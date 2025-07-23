@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public sealed class MeteorRainCard : Card
 {
+    //The dinosaurs won't like this. Oh, I mean the enemies.
     [SerializeField] int countShells;
     [SerializeField] int radiousWidthRangeAttack;
     [SerializeField] int radiousHeightRangeAttack;
+
+    [SerializeField] GameObject myPrefabVFX;
     [field: SerializeField] ScriptableEffector effectOfTile;
 
     List<Vector2Int> alreadyAttacked;
@@ -20,9 +24,22 @@ public sealed class MeteorRainCard : Card
     {
         if (MatchController.Instance.player.GetCurrentMana() >= ManaCost)
         {
-            Deck.Instance.playerHand.SetCurrentSelectCard(this);
-            CardUI.SetBorderColor(BoarderColorOnDrag);
+            if (IsUseOnlyMyTurn)
+            {
+                if (MatchController.Instance.player.IsMyTurnOrNot())
+                {
+                    Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                    CardUI.SetBorderColor(BoarderColorOnDrag);
+                }
+            }
+            else
+            {
+                Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                CardUI.SetBorderColor(BoarderColorOnDrag);
+            }
+
         }
+
     }
 
     void OnMouseUp()
@@ -64,8 +81,11 @@ public sealed class MeteorRainCard : Card
             moves = alreadyAttacked;
         }
 
-        for(int i = 0; i < moves.Count; i++)
+        for (int i = 0; i < moves.Count; i++)
         {
+            Instantiate(myPrefabVFX, Board.Instance.tilesController.GetTileCenter(moves[i].x, moves[i].y), Quaternion.identity)
+                .GetComponent<VisualEffect>();
+
             Board.Instance.tilesController.tiles[moves[i].x, moves[i].y].
                 AddEffect(effectOfTile.InitializeEffect(null, moves[i].x, moves[i].y));
         }
@@ -92,10 +112,10 @@ public sealed class MeteorRainCard : Card
         #region GetFlawTiles
         int leftXFlaw = 0, rightXFlaw = 0;
         if (hoverX - radiousWidthRangeAttack < 0)
-            leftXFlaw = (hoverX - radiousWidthRangeAttack)*-1;
+            leftXFlaw = (hoverX - radiousWidthRangeAttack) * -1;
 
-        if(hoverX + radiousWidthRangeAttack > maxX)
-            rightXFlaw = (maxX - hoverX + radiousWidthRangeAttack)*-1;
+        if (hoverX + radiousWidthRangeAttack > maxX)
+            rightXFlaw = (maxX - hoverX + radiousWidthRangeAttack) * -1;
 
         int upYFlaw = 0, downYFlaw = 0;
         if (hoverY - radiousHeightRangeAttack < 0)
@@ -105,7 +125,7 @@ public sealed class MeteorRainCard : Card
             upYFlaw = (maxY - hoverY + radiousHeightRangeAttack) * -1;
         #endregion
 
-        if(hoverX - radiousWidthRangeAttack - rightXFlaw >= 0 && hoverX + radiousWidthRangeAttack + leftXFlaw <= maxX
+        if (hoverX - radiousWidthRangeAttack - rightXFlaw >= 0 && hoverX + radiousWidthRangeAttack + leftXFlaw <= maxX
             && hoverY - radiousHeightRangeAttack - upYFlaw >= 0 && hoverY + radiousHeightRangeAttack + downYFlaw <= maxY)
         {
             for (int x = hoverX - radiousWidthRangeAttack - rightXFlaw; x < hoverX + radiousWidthRangeAttack + leftXFlaw; x++)

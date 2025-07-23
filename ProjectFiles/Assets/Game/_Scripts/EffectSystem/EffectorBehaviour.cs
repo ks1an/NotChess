@@ -32,8 +32,8 @@ public abstract class EffectorBehaviour
 
     public void Activate(Vector3 posForVFX)
     {
-        //VFX
-        if (effectStacks == 0 && Effect.vfxPrefab != null)
+        //VFX only 1
+        if (vfxParticle == null && Effect.vfxPrefab != null)
         {
             vfxParticle = GameObject.Instantiate(Effect.vfxPrefab, posForVFX, Quaternion.identity).GetComponent<ParticleSystem>();
             if (Effect.pauseVfxAfterInstantiate)

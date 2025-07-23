@@ -97,14 +97,8 @@ public sealed class Board : MonoBehaviour
             if (Input.GetMouseButtonDown(0) && piecesController.currentlySelectingPiece == null && piecesController.pieces[hitPos.x, hitPos.y] == null
                 && !tilesController.tiles[hitPos.x, hitPos.y].banPutUnitsOnTile)
             {
-                if (match.states.isMoveOfZero && match.player.GetLocalPlayerTeam() == Team.Zero)
-                {
-                    match.states.CreateUnitOnBoard(hitPos.x, hitPos.y, Team.Zero);
-                }
-                else if (!match.states.isMoveOfZero && match.player.GetLocalPlayerTeam() == Team.Cross)
-                {
-                    match.states.CreateUnitOnBoard(hitPos.x, hitPos.y, Team.Cross);
-                }
+                if (match.player.IsMyTurnOrNot())
+                    match.states.CreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam());
 
                 return;
             }

@@ -11,6 +11,7 @@ public class Card : MonoBehaviour
     [field: SerializeField] public Sprite Image { get; private set; }
     [field: SerializeField] public Color ColorBorder { get; private set; }
 
+    [field: SerializeField] public bool IsUseOnlyMyTurn { get; private set; }
     [field: SerializeField] public CardOrientation Orientation { get; private set; }
     [field: SerializeField] public Category Category { get; private set; }
     [field: SerializeField] public CardRarity Rarity { get; private set; }

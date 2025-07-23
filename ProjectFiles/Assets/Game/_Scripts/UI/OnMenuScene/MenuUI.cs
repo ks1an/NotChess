@@ -1,7 +1,5 @@
-using System;
 using Unity.Services.Core;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public sealed class MenuUI : MonoBehaviour
@@ -15,7 +13,7 @@ public sealed class MenuUI : MonoBehaviour
             matchmakingBttn.onClick.AddListener(LobbyManager.Instance.QuickJoinLobby);
             exitFromAppBttn.onClick.AddListener(() =>
                 ModalViewWindowController.Instance.ShowHorizontal(false, "See you?", "Do you want to go out \n but promise to come back?",
-                true, "I'm staying!",() => ModalViewWindowController.Instance.TryCloseModalViewWindow(), "I'll be back..\nAhem-hem-hem", Application.Quit)
+                true, "I'm staying!", () => ModalViewWindowController.Instance.TryCloseModalViewWindow(), "I'll be back..\nAhem-hem-hem", Application.Quit)
                 );
 
             lobbyListBttn.interactable = true;

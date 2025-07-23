@@ -142,6 +142,11 @@ MonoBehaviour:
   cardDescription: {fileID: 8406475786057666188}
   picture: {fileID: 1228094655716039347}
   border: {fileID: 8079367734730809489}
+  cardRender: {fileID: 0}
+  sorting: {fileID: 5706207859521289980}
+  passiveColor: {r: 0, g: 0, b: 0, a: 0.34901962}
+  hoverColor: {r: 0, g: 0, b: 0, a: 0.14901961}
+  selectColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &5573046365338199542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +164,7 @@ MonoBehaviour:
   <ManaCost>k__BackingField: 10
   <Image>k__BackingField: {fileID: 825961959, guid: c580f67bda390b24480cfb482b081a1b, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+  <IsUseOnlyMyTurn>k__BackingField: 0
   <Orientation>k__BackingField: 0
   <Category>k__BackingField: 0
   <Rarity>k__BackingField: 0

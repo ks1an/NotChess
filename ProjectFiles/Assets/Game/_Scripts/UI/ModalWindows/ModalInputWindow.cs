@@ -42,18 +42,22 @@ public sealed class ModalInputWindow : MonoBehaviour
 
         okBttn.onClick.AddListener(() =>
         {
+            if(inputField.text.Length != 0)
+                onOk(inputField.text);
             Hide();
-            onOk(inputField.text);
         });
 
         cancelBttn.onClick.AddListener(() =>
         {
-            Hide();
             onCancel();
+            Hide();
         });
     }
 
-    public void Hide() => inputWindow.SetActive(false);
+    public void Hide()
+    {
+        inputWindow.SetActive(false);
+    }
 
     void Default()
     {

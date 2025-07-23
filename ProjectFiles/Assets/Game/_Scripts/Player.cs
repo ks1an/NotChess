@@ -65,6 +65,14 @@ public sealed class Player : MonoBehaviour
 
     #region Get
     public Team GetLocalPlayerTeam() { return localPlayerTeam; }
+    public bool IsMyTurnOrNot() 
+    {
+        if ((MatchController.Instance.states.isMoveOfZero && localPlayerTeam == Team.Zero)
+            || (!MatchController.Instance.states.isMoveOfZero && localPlayerTeam == Team.Cross))
+            return true;
+        else
+            return false;
+    }
     public int GetCurrentMana() { return currentMana; }
     #endregion
 

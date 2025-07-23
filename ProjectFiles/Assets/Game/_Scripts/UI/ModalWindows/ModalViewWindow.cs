@@ -129,5 +129,15 @@ public sealed class ModalViewWindow : MonoBehaviour
     }
     #endregion
 
-    public void CloseModalWindow() => gameObject.SetActive(false);
+    public void CloseModalWindow()
+    {
+        #region ResetActions
+        onAlternateAction = null;
+        onDeclineAction = null;
+        onConfirmAction = null;
+        this.doItAnyway = null;
+        #endregion
+
+        gameObject.SetActive(false);
+    }
 }

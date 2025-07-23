@@ -3,6 +3,7 @@ using UnityEngine;
 
 public sealed class LightingBoltCard : Card
 {
+    //Zeus and Perun cast their hatred on the enemy
     [SerializeField] GameObject OnUsedVFX;
     [field: SerializeField] ScriptableEffector effectOfTile;
 
@@ -16,8 +17,20 @@ public sealed class LightingBoltCard : Card
     {
         if (MatchController.Instance.player.GetCurrentMana() >= ManaCost)
         {
-            Deck.Instance.playerHand.SetCurrentSelectCard(this);
-            CardUI.SetBorderColor(BoarderColorOnDrag);
+            if (IsUseOnlyMyTurn)
+            {
+                if (MatchController.Instance.player.IsMyTurnOrNot())
+                {
+                    Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                    CardUI.SetBorderColor(BoarderColorOnDrag);
+                }
+            }
+            else
+            {
+                Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                CardUI.SetBorderColor(BoarderColorOnDrag);
+            }
+
         }
     }
 
