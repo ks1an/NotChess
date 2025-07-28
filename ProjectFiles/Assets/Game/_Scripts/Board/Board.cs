@@ -98,7 +98,7 @@ public sealed class Board : MonoBehaviour
                 && !tilesController.tiles[hitPos.x, hitPos.y].banPutUnitsOnTile)
             {
                 if (match.player.IsMyTurnOrNot())
-                    match.states.CreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam());
+                    match.states.TryCreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam());
 
                 return;
             }

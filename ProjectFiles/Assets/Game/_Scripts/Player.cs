@@ -21,14 +21,11 @@ public sealed class Player : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public void SetSettings(Team type, bool isStartGame = false)
+    public void SetSettings(Team type)
     {
-        if (isStartGame)
-        {
-            maxMana = MatchController.Instance.settings.maxMana;
-            currentMana = MatchController.Instance.settings.startMana;
-            BoardUI.Singleton.manaBar.IncreaseMana(currentMana);
-        }
+        maxMana = MatchController.Instance.settings.maxMana;
+        currentMana = MatchController.Instance.settings.startMana;
+        BoardUI.Singleton.manaBar.IncreaseMana(currentMana);
 
         localPlayerTeam = type;
     }
@@ -65,7 +62,7 @@ public sealed class Player : MonoBehaviour
 
     #region Get
     public Team GetLocalPlayerTeam() { return localPlayerTeam; }
-    public bool IsMyTurnOrNot() 
+    public bool IsMyTurnOrNot()
     {
         if ((MatchController.Instance.states.isMoveOfZero && localPlayerTeam == Team.Zero)
             || (!MatchController.Instance.states.isMoveOfZero && localPlayerTeam == Team.Cross))

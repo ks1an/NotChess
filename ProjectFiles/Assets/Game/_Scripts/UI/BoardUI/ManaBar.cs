@@ -29,16 +29,12 @@ public sealed class ManaBar : MonoBehaviour
     public void SetSettings()
     {
         maxMana = MatchController.Instance.settings.maxMana;
-        curMana = 0;
 
         manaSlider.maxValue = maxMana;
         deacreaseEffectSlider.maxValue = maxMana;
         increaseEffectSlider.maxValue = maxMana;
-
-        manaSlider.value = 0;
-        deacreaseEffectSlider.value = 0;
-        increaseEffectSlider.value = 0;
-        manaTxt.text = "0";
+        DeacreaseMana(maxMana);
+        IncreaseMana(0);
     }
 
     void Update()

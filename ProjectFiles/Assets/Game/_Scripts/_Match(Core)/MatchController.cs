@@ -11,6 +11,7 @@ public sealed class MatchController : MonoBehaviour
 
     [Space(10)]
     public Player player;
+    public GameObject botPrefab;
     public Board board;
 
     [HideInInspector] public MatchSettings settings;

@@ -8,6 +8,7 @@ public class MatchStates : MonoBehaviour
     [HideInInspector] public bool isNetMatch;
     [HideInInspector] public bool isMoveOfZero;
     [HideInInspector] public Board board;
+    public bool isMatchAiVsAi;
 
     #region Events
     public event Action OnGamePreStart;
@@ -21,6 +22,7 @@ public class MatchStates : MonoBehaviour
 
     NetMatchSync net;
     Player localPlayer;
+    EnemyAI enemyBot;
 
     #region BeforePlay
     public void CreateGame(bool isNetMatch)
@@ -40,6 +42,7 @@ public class MatchStates : MonoBehaviour
 
         if (!isNetMatch)
         {
+            enemyBot = Instantiate(MatchController.Instance.botPrefab).GetComponent<EnemyAI>();
             Board.onBoardGenerated += GameStart;
             PreStart();
         }
@@ -54,6 +57,7 @@ public class MatchStates : MonoBehaviour
         net = MatchController.Instance.netMatch;
         SetSettings();
         board.GenerateBoard();
+
         OnGamePreStart?.Invoke();
     }
 
@@ -61,18 +65,30 @@ public class MatchStates : MonoBehaviour
     {
         isMoveOfZero = MatchController.Instance.settings.firtsMoveZero;
 
-        if (!isNetMatch)
+        if (isMatchAiVsAi)
         {
-            if (isMoveOfZero)
-                MatchController.Instance.player.SetSettings(Team.Zero, true);
-            else
-                MatchController.Instance.player.SetSettings(Team.Cross, true);
+            enemyBot.LoadEnemy(isMoveOfZero ? Team.Zero : Team.Cross);
+            MatchController.Instance.player.SetSettings(Team.None);
         }
+        else
+        {
+            if (!isNetMatch)
+            {
+                MatchController.Instance.player.SetSettings(isMoveOfZero ? Team.Zero : Team.Cross);
+                enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
+            }
+        }
+
         Deck.Instance.DestroyAllCard();
     }
 
     public void GameRestart()
     {
+        if (!isNetMatch)
+        {
+            enemyBot.EndEnemyTurn(() => { });
+        }
+
         SetSettings();
         GameStart();
         OnGameRestarted?.Invoke();
@@ -86,8 +102,10 @@ public class MatchStates : MonoBehaviour
     }
     #endregion
 
+    #region Play
+
     #region DoMove
-    public void CreateUnitOnBoard(int x, int y, Team team)
+    public void TryCreateUnitOnBoard(int x, int y, Team team)
     {
         if (board.piecesController.pieces[x, y] != null)
             return;
@@ -150,7 +168,7 @@ public class MatchStates : MonoBehaviour
         {
             int[] movesX = new int[moves.Count],
                 movesY = new int[moves.Count];
-            for(int i = 0; i < moves.Count; i++)
+            for (int i = 0; i < moves.Count; i++)
             {
                 movesX[i] = moves[i][0];
                 movesY[i] = moves[i][1];
@@ -161,7 +179,6 @@ public class MatchStates : MonoBehaviour
     }
     #endregion
 
-    #region Play
     public void TeamMoved(int x, int y, Team team)
     {
         if (board.CheckWin(x, y))
@@ -170,17 +187,8 @@ public class MatchStates : MonoBehaviour
             return;
         }
 
-        if (!isNetMatch)
-        {
-            if (isMoveOfZero)
-                MatchController.Instance.player.SetSettings(Team.Cross);
-            else
-                MatchController.Instance.player.SetSettings(Team.Zero);
-        }
-
         if (Deck.Instance.playerHand.CardsInHand.Count < MatchController.Instance.settings.maxCardsInHand)
             Deck.Instance.DrawHand(MatchController.Instance.settings.maxCardsInHand - Deck.Instance.playerHand.CardsInHand.Count);
-
 
         isMoveOfZero = !isMoveOfZero;
         OnTurnEnded?.Invoke(x, y, team);
@@ -192,6 +200,8 @@ public class MatchStates : MonoBehaviour
     {
         if (!isNetMatch)
         {
+            enemyBot.EndEnemyTurn(() => { });
+
             ModalViewWindowController.Instance.ShowHorizontal(false, $"Winner: <color=#FFD700>{winTeam}</color>", "Victory. Nothing to add or take away.",
                 false, "Restart", GameRestart, "Exit", LeaveFromMatch);
             OnGameWin?.Invoke(x, y, winTeam);
@@ -201,7 +211,7 @@ public class MatchStates : MonoBehaviour
             if (MatchController.Instance.player.GetLocalPlayerTeam() == winTeam)
             {
                 ModalViewWindowController.Instance.ShowHorizontal(true, $"You have won!", "My applause to you. Want to fight your opponent again? Offer a rematch!",
-    false,"Revenge!", net.OfferRevengeRpc, "Exit to menu", LeaveFromMatch);
+    false, "Revenge!", net.OfferRevengeRpc, "Exit to menu", LeaveFromMatch);
                 OnGameWin?.Invoke(x, y, winTeam);
             }
             else

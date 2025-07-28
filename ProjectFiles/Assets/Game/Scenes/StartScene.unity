@@ -1041,6 +1041,7 @@ MonoBehaviour:
   isNetMatch: 0
   isMoveOfZero: 1
   board: {fileID: 0}
+  isMatchAiVsAi: 0
 --- !u!114 &1558030907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1056,6 +1057,7 @@ MonoBehaviour:
   netSyncPrefab: {fileID: 2619302719329956073, guid: f693ed27c7c9d78459bb4f2228131ae9, type: 3}
   netMatch: {fileID: 0}
   player: {fileID: 514276695}
+  botPrefab: {fileID: 2824330033714672817, guid: f4c6fbc049a7ef348832b2ea61c3f9c8, type: 3}
   board: {fileID: 118879387617261696}
   states: {fileID: 0}
   globalCardCollection: {fileID: 0}

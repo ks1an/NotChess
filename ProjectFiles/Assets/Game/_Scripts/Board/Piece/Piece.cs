@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,20 +13,15 @@ public class Piece : MonoBehaviour
 {
     public int currentX, currentY;
     public Team team;
+    [SerializeField] float durationSetPos = 0.5f;
 
-    Vector3 targetPos;
-
-    void Update()
+    public virtual void SetPos(Vector3 targetPos, bool force = false)
     {
-        //TODO: Use DoTween?
-        transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 10);
-    }
-
-    public virtual void SetPos(Vector3 pos, bool force = false)
-    {
-        targetPos = pos;
+        transform.DOKill();
         if (force)
             transform.position = targetPos;
+        else
+            transform.DOMove(targetPos, durationSetPos);
     }
 
     public List<Vector2Int> GetAvailableMoves(ref Piece[,] board, int countX, int countY)
