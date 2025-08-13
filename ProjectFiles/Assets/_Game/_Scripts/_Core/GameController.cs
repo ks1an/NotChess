@@ -14,9 +14,12 @@ public sealed class GameController : MonoBehaviour
     public GameObject botPrefab;
     public Board board;
 
+
     [HideInInspector] public MatchSettings settings;
     [HideInInspector] public MatchStates states;
     [HideInInspector] public GlobalCardCollection globalCardCollection;
+    [HideInInspector] bool isDemonstration;
+
 
     void Awake()
     {
@@ -30,12 +33,25 @@ public sealed class GameController : MonoBehaviour
         }
     }
 
-    public void CreateGame(bool isNetMatch, int tileCountX = 8, int tileCountY = 8, float tileSize = 1.0f, int winSequence = 5, bool firstMoveZero = true,
-        int startMana = 0, int maxMana = 10, int manaForDestoryEnemy = 1, int startCards = 5, int maxCardInHand = 5)
+
+    public void CreateDemostrationGame() 
     {
-        settings = new MatchSettings(tileCountX, tileCountY, tileSize, winSequence, firstMoveZero,startMana, maxMana,
-            manaForDestoryEnemy,startCards, maxCardInHand);
-        states.CreateGame(isNetMatch);
+        CreateGame(false, true);
+        isDemonstration = true;
+    }
+
+    public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false, int tileCountX = 8, int tileCountY = 8, float tileSize = 1.0f, int winSequence = 5, bool firstMoveZero = true,
+        int startMana = 0, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1, int startCards = 5, int maxCardInHand = 5)
+    {
+        if (isDemonstration && !isMatchAiVsAi)
+            states.EndDemonstationGame();
+
+        settings = new MatchSettings(tileCountX, tileCountY, tileSize, 
+            winSequence, firstMoveZero, 
+            startMana, startManaForEvenPlayer, maxMana, manaForDestoryEnemy, 
+            startCards, maxCardInHand);
+
+        states.CreateGame(isNetMatch, isMatchAiVsAi);
     }
 
     public void CreateNetSync()

@@ -26,15 +26,17 @@ public sealed class ManaBar : MonoBehaviour
     float curMana;
     int maxMana;
 
-    public void SetSettings()
+    public void SetSettings(int curMana, int maxMana)
     {
-        maxMana = GameController.Instance.settings.maxMana;
+        this.maxMana = maxMana;
+        this.curMana = curMana;
 
         manaSlider.maxValue = maxMana;
         deacreaseEffectSlider.maxValue = maxMana;
         increaseEffectSlider.maxValue = maxMana;
+
         DeacreaseMana(maxMana);
-        IncreaseMana(0);
+        IncreaseMana(curMana);
     }
 
     void Update()

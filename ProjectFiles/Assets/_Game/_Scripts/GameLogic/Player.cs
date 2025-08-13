@@ -12,7 +12,7 @@ public sealed class Player : MonoBehaviour
 
     [Header("Stats")]
     Team localPlayerTeam = Team.None;
-    int currentMana = 0;
+    int currentMana;
     int maxMana;
 
 
@@ -23,11 +23,18 @@ public sealed class Player : MonoBehaviour
 
     public void SetSettings(Team type)
     {
-        maxMana = GameController.Instance.settings.maxMana;
-        currentMana = GameController.Instance.settings.startMana;
-        BoardUI.Singleton.manaBar.IncreaseMana(currentMana);
-
+        var settings = GameController.Instance.settings;
         localPlayerTeam = type;
+
+        if(type != Team.None)
+        {
+            maxMana = settings.maxMana;
+            currentMana = settings.startMana;
+            currentMana += ((settings.firtsMoveZero == (localPlayerTeam == Team.Cross)) && localPlayerTeam != Team.None) ?
+                settings.startManaForEvenPlayer : 0;
+
+            BoardUI.Singleton.manaBar.SetSettings(currentMana, maxMana);
+        }
     }
 
     #region +-Mana
@@ -42,6 +49,7 @@ public sealed class Player : MonoBehaviour
         currentMana += value;
         if (currentMana > maxMana)
             currentMana = maxMana;
+
         BoardUI.Singleton.manaBar.IncreaseMana(value);
     }
 
@@ -56,6 +64,7 @@ public sealed class Player : MonoBehaviour
         currentMana -= value;
         if (currentMana < 0)
             currentMana = 0;
+
         BoardUI.Singleton.manaBar.DeacreaseMana(value);
     }
     #endregion
@@ -72,5 +81,4 @@ public sealed class Player : MonoBehaviour
     }
     public int GetCurrentMana() { return currentMana; }
     #endregion
-
 }

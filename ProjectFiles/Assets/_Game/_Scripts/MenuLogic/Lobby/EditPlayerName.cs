@@ -24,7 +24,7 @@ public sealed class EditPlayerName : MonoBehaviour
 
         GetComponent<Button>().onClick.AddListener(() =>
         {
-            ModalInputWindow.Instance.Show("Set player name", "0<Name<=0", () => { },
+            ModalInputWindow.Instance.Show("Set player name", "0<Name<=20", () => { },
             (string newName) =>
             {
                 playerName = newName;

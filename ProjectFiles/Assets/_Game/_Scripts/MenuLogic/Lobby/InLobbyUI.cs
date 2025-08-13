@@ -86,13 +86,14 @@ public class InLobbyUI : MonoBehaviour
 
     void ClearLobby()
     {
-        foreach (Transform child in container)
-        {
-            if (child == playerSingleTemplate)
-                continue;
+        if(container != null)
+            foreach (Transform child in container)
+            {
+                if (child == playerSingleTemplate)
+                    continue;
 
-            Destroy(child.gameObject);
-        }
+                Destroy(child.gameObject);
+            }
     }
 
     private void Hide()

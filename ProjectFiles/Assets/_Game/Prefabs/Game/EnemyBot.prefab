@@ -45,10 +45,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minDelayBeforeDoMove: 0.5
+  chanceOfSkipTheMostValuableMove: 10
   complexity: 0
-  valueIfEnemyVertOrHoriz: 1
-  valueIfFriendVertOrHoriz: 1
-  valueIfEnemyDiagonal: -1
-  valueIfFriendDiagonal: 1
+  valueIf_Enemy_VertOrHoriz: 1
+  valueIf_Friend_VertOrHoriz: 1
+  valueIf_Enemy_Diagonal: -2
+  valueIf_Friend_Diagonal: 2
   valueIfBoardBorder: -2
-  valueForEachEnemyInTheLine: 1
+  valueForEach_Enemy_InTheLine: 1
+  valueIf_Enemy_lineCompleted_80_procent: 50
+  valueIf_Enemy_lineCompleted_60_procent: 12
+  valueIf_Enemy_lineCompleted_40_procent: 3
+  valueIf_Enemy_lineCompleted_20_procent: 1
+  valueForEach_Friend_InTheLine: 1
+  valueIf_Friend_lineCompleted_80_procent: 100
+  valueIf_Friend_lineCompleted_60_procent: 10
+  valueIf_Friend_lineCompleted_40_procent: 4
+  valueIf_Friend_lineCompleted_20_procent: 2

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class MatchStates : MonoBehaviour
 {
+    [HideInInspector] public Board board;
     [HideInInspector] public bool isNetMatch;
     [HideInInspector] public bool isMoveOfZero;
-    [HideInInspector] public Board board;
-    public bool isMatchAiVsAi;
+    [HideInInspector] public bool isDemonstrationMatchAiVsAi;
 
     #region Events
     public event Action OnGamePreStart;
@@ -25,21 +24,24 @@ public class MatchStates : MonoBehaviour
     EnemyAI enemyBot;
 
     #region BeforePlay
-    public void CreateGame(bool isNetMatch)
+    public void CreateGame(bool isNetMatch, bool isDemontrationMatchAiVsAi)
     {
         board = GameController.Instance.board;
         this.isNetMatch = isNetMatch;
         localPlayer = GameController.Instance.player;
+        this.isDemonstrationMatchAiVsAi = isDemontrationMatchAiVsAi;
 
-        SceneManager.sceneLoaded += OnBoardSceneLoad;
-        SceneManager.LoadSceneAsync("BoardScene");
+        if (!isDemontrationMatchAiVsAi)
+        {
+            SceneLoader.Instance.OnBoardSceneLoaded += OnSceneLoaded;
+            SceneLoader.Instance.LoadBoardScene(true);
+        }
+        else
+            OnSceneLoaded();
     }
 
-    void OnBoardSceneLoad(Scene scene, LoadSceneMode mode)
+    void OnSceneLoaded()
     {
-        if (scene.name != "BoardScene")
-            return;
-
         if (!isNetMatch)
         {
             enemyBot = Instantiate(GameController.Instance.botPrefab).GetComponent<EnemyAI>();
@@ -65,18 +67,15 @@ public class MatchStates : MonoBehaviour
     {
         isMoveOfZero = GameController.Instance.settings.firtsMoveZero;
 
-        if (isMatchAiVsAi)
+        if (isDemonstrationMatchAiVsAi)
         {
             enemyBot.LoadEnemy(isMoveOfZero ? Team.Zero : Team.Cross);
             GameController.Instance.player.SetSettings(Team.None);
         }
-        else
+        else if (!isNetMatch)
         {
-            if (!isNetMatch)
-            {
-                GameController.Instance.player.SetSettings(isMoveOfZero ? Team.Zero : Team.Cross);
-                enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
-            }
+            GameController.Instance.player.SetSettings(isMoveOfZero ? Team.Zero : Team.Cross);
+            enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
         }
 
         Deck.Instance.DestroyAllCard();
@@ -90,14 +89,16 @@ public class MatchStates : MonoBehaviour
         }
 
         SetSettings();
-        GameStart();
         OnGameRestarted?.Invoke();
+        GameStart();
     }
 
     public void GameStart()
     {
         WaitingWindowController.Instance.Hide();
-        Deck.Instance.DrawHand(GameController.Instance.settings.startCards);
+        if (GameController.Instance.player.GetLocalPlayerTeam() != Team.None)
+            Deck.Instance.DrawHand(GameController.Instance.settings.startCards);
+
         OnGameStarted?.Invoke();
     }
     #endregion
@@ -131,7 +132,7 @@ public class MatchStates : MonoBehaviour
             }
             else
             {
-                if (destroyedByUnit && board.piecesController.pieces[x, y].team != localPlayer.GetLocalPlayerTeam())
+                if (destroyedByUnit && localPlayer.GetLocalPlayerTeam() != Team.None && board.piecesController.pieces[x, y].team != localPlayer.GetLocalPlayerTeam())
                     localPlayer.IncreaseMana(GameController.Instance.settings.manaForDestroyEnemy);
 
                 Destroy(board.piecesController.pieces[x, y].gameObject);
@@ -187,8 +188,11 @@ public class MatchStates : MonoBehaviour
             return;
         }
 
-        if (Deck.Instance.playerHand.CardsInHand.Count < GameController.Instance.settings.maxCardsInHand)
+        if (GameController.Instance.player.GetLocalPlayerTeam() != Team.None &&
+            Deck.Instance.playerHand.CardsInHand.Count < GameController.Instance.settings.maxCardsInHand)
+        {
             Deck.Instance.DrawHand(GameController.Instance.settings.maxCardsInHand - Deck.Instance.playerHand.CardsInHand.Count);
+        }
 
         isMoveOfZero = !isMoveOfZero;
         OnTurnEnded?.Invoke(x, y, team);
@@ -200,7 +204,13 @@ public class MatchStates : MonoBehaviour
     {
         if (!isNetMatch)
         {
-            enemyBot.EndEnemyTurn(() => { });
+            if (isDemonstrationMatchAiVsAi)
+            {
+                GameRestart();
+                return;
+            }
+
+            enemyBot.StopEnemy();
 
             ModalViewWindowController.Instance.ShowHorizontal(false, $"Winner: <color=#FFD700>{winTeam}</color>", "Victory. Nothing to add or take away.",
                 false, "Restart", GameRestart, "Exit", LeaveFromMatch);
@@ -228,15 +238,27 @@ false, "Revenge! I'll win.", net.OfferRevengeRpc, "Exit.", LeaveFromMatch);
     public void OnLeaveFromMatchTrigger()
     {
         if (!isNetMatch)
+        {
             Board.onBoardGenerated -= GameStart;
+            enemyBot.StopEnemy();
+        }
         else
             net.LeaveNetMatch();
 
-        SceneManager.sceneLoaded -= OnBoardSceneLoad;
+        SceneLoader.Instance.OnBoardSceneLoaded -= OnSceneLoaded;
 
         OnLeaveMatch?.Invoke();
         Deck.Instance.DestroyAllCard();
-        SceneManager.LoadSceneAsync("MenuScene");
+
+        SceneLoader.Instance.LoadMenuScene(true);
+    }
+
+    public void EndDemonstationGame()
+    {
+        enemyBot.StopEnemy();
+
+        Board.onBoardGenerated -= GameStart;
+        board.DestroyBoard();
     }
     #endregion
 }

@@ -144,7 +144,8 @@ public class NetMatchSync : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     void IncreaseManaForDestroyRpc(int playerWhoDestroy)
     {
-        if ((int)GameController.Instance.player.GetLocalPlayerTeam() == playerWhoDestroy)
+        int playerTeam = (int)GameController.Instance.player.GetLocalPlayerTeam();
+        if (playerTeam == playerWhoDestroy && playerTeam != (int)Team.None)
         {
             GameController.Instance.player.IncreaseMana(GameController.Instance.settings.manaForDestroyEnemy);
         }

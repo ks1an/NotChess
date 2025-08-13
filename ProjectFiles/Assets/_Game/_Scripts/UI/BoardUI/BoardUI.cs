@@ -33,8 +33,6 @@ public sealed class BoardUI : MonoBehaviour
 
     void StartSettings()
     {
-        manaBar.SetSettings();
-
         if (GameController.Instance.states.isMoveOfZero)
             ChangeTeamMoveIndicator(-1, -1, Team.Cross);
         else

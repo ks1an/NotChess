@@ -10,12 +10,6 @@ public sealed class WaitingWindowController : MonoBehaviour
         Instance = this;
     }
 
-    public void ShowOnNetServicesNotInit()
-    {
-        window.gameObject.SetActive(true);
-        window.SetTxtOnNetServicesNotInit();
-    }
-
     public void ShowWithRandomTxt()
     {
         window.gameObject.SetActive(true);

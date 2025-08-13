@@ -1,13 +1,16 @@
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-//Hangs on an object in the EntryPoint scene
 public sealed class EntryPoint : MonoBehaviour
 {
+    [SerializeField] float delayForLoadServices;
+    float time;
     async void Awake()
     {
+        WaitingWindowController.Instance.ShowWithRandomTxt();
+        time = 0;
+
         try
         {
             InitializationOptions initializationOptions = new();
@@ -15,15 +18,19 @@ public sealed class EntryPoint : MonoBehaviour
             await UnityServices.InitializeAsync(initializationOptions);
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
-        catch (ServicesInitializationException) 
+        catch (System.Exception e)
         {
-            WaitingWindowController.Instance.ShowOnNetServicesNotInit();
+            Debug.LogError("SERVICES NOT INIT. Error: " + e);
         }
     }
-    void Start()
+
+    private void Update()
     {
-        WaitingWindowController.Instance.ShowWithRandomTxt();
-        SceneManager.LoadSceneAsync("MenuScene");
+        time += Time.deltaTime;
+        if(time >= delayForLoadServices)
+        {
+            SceneLoader.Instance.LoadMenuScene(true);
+        }
     }
 
     void OnDisable()

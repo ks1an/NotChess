@@ -4,12 +4,12 @@ using UnityEngine;
 public sealed class TilesController : MonoBehaviour
 {
     public Tile[,] tiles;
-    [SerializeField] Transform tileContainer;
 
     GameController match;
     int tileCountX;
     int tileCountY;
     float tileSize;
+    Transform tileContainer;
     List<Vector2Int> highlightTiles = new();
 
     public void SetSettings()
@@ -27,10 +27,12 @@ public sealed class TilesController : MonoBehaviour
         for (int x = 0; x < tileCountX; x++)
             for (int y = 0; y < tileCountY; y++)
                 Destroy(tiles[x, y].gameObject);
+        Destroy(tileContainer.gameObject);
     }
 
     public void GenerateTiles()
     {
+        tileContainer = new GameObject(string.Format($"Tiles container")).transform;
         tiles = new Tile[tileCountX, tileCountY];
         for (int x = 0; x < tileCountX; x++)
             for (int y = 0; y < tileCountY; y++)
@@ -76,8 +78,10 @@ public sealed class TilesController : MonoBehaviour
     {
         for (int x = 0; x < tileCountX; x++)
             for (int y = 0; y < tileCountY; y++)
+            {
                 if (tiles[x, y].gameObject == hitInfo)
                     return new Vector2Int(x, y);
+            }
 
         return -Vector2Int.one;
     }
