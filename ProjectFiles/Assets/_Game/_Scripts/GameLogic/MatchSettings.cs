@@ -13,6 +13,7 @@ public sealed class MatchSettings
     //Mana
     public int startMana;
     public int startManaForEvenPlayer;
+    public int manaPerTurn;
     public int maxMana;
     public int manaForDestroyEnemy;
 
@@ -22,7 +23,7 @@ public sealed class MatchSettings
 
     public MatchSettings(int tileCountX, int tileCountY, float tileSize, 
         int piecesWinSequence, bool firtsMoveZero, 
-        int startMana, int startManaForEvenPlayer, int maxMana, int manaForDestroyEnemy, 
+        int startMana, int startManaForEvenPlayer, int manaPerTurn, int maxMana, int manaForDestroyEnemy, 
         int startCards, int maxCardsInHand)
     {
         this.tileCountX = tileCountX;
@@ -35,6 +36,7 @@ public sealed class MatchSettings
         this.startMana = startMana;
         this.maxMana = maxMana;
         this.startManaForEvenPlayer = startManaForEvenPlayer;
+        this.manaPerTurn = manaPerTurn;
         this.manaForDestroyEnemy = manaForDestroyEnemy;
 
         this.startCards = startCards;

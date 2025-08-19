@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8761387480957847908}
   - component: {fileID: 478803863256521177}
   - component: {fileID: 510541827946207621}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Lighting_Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ MonoBehaviour:
   <Name>k__BackingField: Lighting Bolt
   <Description>k__BackingField: Hits the cell. <b>Destroyes</b> the unit on that
     cell.
-  <ManaCost>k__BackingField: 4
+  <ManaCost>k__BackingField: 5
   <Image>k__BackingField: {fileID: 825961959, guid: c580f67bda390b24480cfb482b081a1b, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
@@ -127,7 +127,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2556796243837826097}
   - component: {fileID: 5486327963824515983}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Blackout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

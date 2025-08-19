@@ -7,8 +7,8 @@ using UnityEngine.Splines;
 public class CardHand : MonoBehaviour
 {
     [SerializeField] SplineContainer splineContainer;
-    [SerializeField] float cardSpacing = 0.1f;  
-    [SerializeField] float cardSelectUp = 0.25f;
+    [SerializeField] float cardSpacing = 0.1f;
+    [SerializeField] float cardSelectUpDistance = 0.25f;
 
     public Card CurrentSelectCard { get; private set; }
     public List<Card> CardsInHand { get; private set; } = new();
@@ -20,16 +20,24 @@ public class CardHand : MonoBehaviour
         else if (CardsInHand.Contains(card))
         {
             CurrentSelectCard = card;
-            card.transform.DOMoveY(cardSelectUp + card.transform.position.y, 0.1f);
+            CardUpDownMove(card, true, false);
         }
         else
             ResetCurrentSelectCard(card);
     }
     public void ResetCurrentSelectCard(Card card)
     {
-        if (card != null)
-            card.transform.DOMoveY(card.transform.position.y-cardSelectUp, 0.15f);
+        if(card != null)
+            CardUpDownMove(card, false, false);
         CurrentSelectCard = null;
+    }
+
+    public void CardUpDownMove(Card card, bool toUp, bool liftSlightly)
+    {
+        float multipleDirect = toUp ? 1 : -1;
+        multipleDirect /= liftSlightly ? 2 : 1;
+        card.transform.DOComplete();
+        card.transform.DOMoveY(card.transform.position.y + cardSelectUpDistance*multipleDirect, 0.1f);
     }
 
     #region +-CardInHand
@@ -55,7 +63,7 @@ public class CardHand : MonoBehaviour
         float firtsCardPos = 0.5f - (CardsInHand.Count - 1) * cardSpacing / 2;
         Spline spline = splineContainer.Spline;
 
-        for (int i=0; i < CardsInHand.Count; i++)
+        for (int i = 0; i < CardsInHand.Count; i++)
         {
             float pos = firtsCardPos + i * cardSpacing;
             Vector3 splinePos = spline.EvaluatePosition(pos);

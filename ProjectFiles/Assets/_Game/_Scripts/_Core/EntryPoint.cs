@@ -6,10 +6,12 @@ public sealed class EntryPoint : MonoBehaviour
 {
     [SerializeField] float delayForLoadServices;
     float time;
+    bool menuSceneStartedLoading;
     async void Awake()
     {
         WaitingWindowController.Instance.ShowWithRandomTxt();
         time = 0;
+        menuSceneStartedLoading = false;
 
         try
         {
@@ -27,8 +29,10 @@ public sealed class EntryPoint : MonoBehaviour
     private void Update()
     {
         time += Time.deltaTime;
-        if(time >= delayForLoadServices)
+        if(time >= delayForLoadServices && !menuSceneStartedLoading)
         {
+            menuSceneStartedLoading = true;
+            time = 0;
             SceneLoader.Instance.LoadMenuScene(true);
         }
     }

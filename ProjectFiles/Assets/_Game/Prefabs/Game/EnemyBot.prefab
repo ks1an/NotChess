@@ -54,11 +54,13 @@ MonoBehaviour:
   valueIfBoardBorder: -2
   valueForEach_Enemy_InTheLine: 1
   valueIf_Enemy_lineCompleted_80_procent: 50
-  valueIf_Enemy_lineCompleted_60_procent: 12
+  valueIf_Enemy_lineCompleted_60_procent: 20
   valueIf_Enemy_lineCompleted_40_procent: 3
   valueIf_Enemy_lineCompleted_20_procent: 1
+  ContinuationCells_EnemyLine_ValueCoeffic: 0.95
   valueForEach_Friend_InTheLine: 1
   valueIf_Friend_lineCompleted_80_procent: 100
-  valueIf_Friend_lineCompleted_60_procent: 10
+  valueIf_Friend_lineCompleted_60_procent: 15
   valueIf_Friend_lineCompleted_40_procent: 4
   valueIf_Friend_lineCompleted_20_procent: 2
+  ContinuationCells_FriendLine_ValueCoeffic: 1.2

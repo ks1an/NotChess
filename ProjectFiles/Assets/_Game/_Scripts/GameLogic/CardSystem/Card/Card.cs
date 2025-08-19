@@ -19,7 +19,7 @@ public class Card : MonoBehaviour
     [field: SerializeField] public Color BoarderColorOnDrag { get; private set; }
 
     public CardUI CardUI { get; private set; }
-
+    public CardHand Hand { get; private set; }
 
     protected List<Vector2Int> availableMoves = new();
 
@@ -34,6 +34,7 @@ public class Card : MonoBehaviour
         CardUI = GetComponent<CardUI>();
         CardUI.SetCardUI();
         ID = CreateID();
+        Hand = Deck.Instance.playerHand;
     }
 
     public virtual void UseCard(List<Vector2Int> moves, bool isSynced) { }
@@ -44,10 +45,7 @@ public class Card : MonoBehaviour
         return available;
     }
 
-    public virtual bool IsAvailableMove(int targetX, int targetY)
-    {
-        return false;
-    }
+    public virtual bool IsAvailableMove(int targetX, int targetY) { return false; }
 
     public int CreateID()
     {

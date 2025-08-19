@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public sealed class TilesController : MonoBehaviour
 {
+    [SerializeField] Mesh tileMesh;
+
     public Tile[,] tiles;
 
     GameController match;
@@ -11,6 +14,7 @@ public sealed class TilesController : MonoBehaviour
     float tileSize;
     Transform tileContainer;
     List<Vector2Int> highlightTiles = new();
+    Vector3 offset;
 
     public void SetSettings()
     {
@@ -19,6 +23,7 @@ public sealed class TilesController : MonoBehaviour
         tileCountX = match.settings.tileCountX;
         tileCountY = match.settings.tileCountY;
         tileSize = match.settings.tileSize;
+        offset = new();
     }
 
     #region GenerateAndDestroy
@@ -46,29 +51,26 @@ public sealed class TilesController : MonoBehaviour
     {
         GameObject tileObject = new(string.Format($"X: {x}, Y: {y}"));
         tileObject.transform.parent = tileContainer;
-
-        #region Mesh
-
-        Mesh mesh = new();
-        tileObject.AddComponent<MeshFilter>().mesh = mesh;
-        tileObject.AddComponent<MeshRenderer>().material = material;
-
-        Vector3[] vertices = new Vector3[4];
-        vertices[0] = new Vector3(x * size, 0, y * size);
-        vertices[1] = new Vector3(x * size, 0, (y + 1) * size);
-        vertices[2] = new Vector3((x + 1) * size, 0, y * size);
-        vertices[3] = new Vector3((x + 1) * size, 0, (y + 1) * size);
-
-        int[] tris = new int[] { 0, 1, 2, 1, 3, 2 };
-        mesh.vertices = vertices;
-        mesh.triangles = tris;
-        mesh.RecalculateNormals();
-        #endregion
-
         tileObject.layer = LayerMask.NameToLayer("Tile");
-        tileObject.AddComponent<BoxCollider>();
         Tile tile = tileObject.AddComponent<Tile>();
-        tile.tileCenter = GetTileCenter(x, y);
+
+        MeshFilter meshFilter = tileObject.AddComponent<MeshFilter>();
+        meshFilter.mesh = tileMesh;
+
+        MeshRenderer renderer = tileObject.AddComponent<MeshRenderer>();
+        renderer.material = material;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+
+        tileObject.AddComponent<BoxCollider>();
+
+        tileObject.transform.localScale *= size;
+        if (x == 0 && y == 0)
+            offset = Vector3.Scale(tileMesh.bounds.size, tileObject.transform.lossyScale);
+        tileObject.transform.position = new Vector3((x + offset.x) * size, -0.75f, (y + offset.z) * size);
+
+        tile.tileCenter = new Vector3(x * size, 0, y * size) + new Vector3(offset.x/2 * math.sqrt(2), -0.15f, offset.z/2 * math.sqrt(2));
+
         return tile;
     }
     #endregion
@@ -88,7 +90,7 @@ public sealed class TilesController : MonoBehaviour
 
     public Vector3 GetTileCenter(int x, int y)
     {
-        return new Vector3(x * tileSize, 0, y * tileSize) + new Vector3(tileSize / 2, 0, tileSize / 2);
+        return tiles[x, y].tileCenter;
     }
     #endregion
 

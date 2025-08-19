@@ -8,6 +8,7 @@ public class MatchStates : MonoBehaviour
     [HideInInspector] public bool isNetMatch;
     [HideInInspector] public bool isMoveOfZero;
     [HideInInspector] public bool isDemonstrationMatchAiVsAi;
+    [HideInInspector] public int turnCount;
 
     #region Events
     public event Action OnGamePreStart;
@@ -26,6 +27,7 @@ public class MatchStates : MonoBehaviour
     #region BeforePlay
     public void CreateGame(bool isNetMatch, bool isDemontrationMatchAiVsAi)
     {
+        ModalInputWindow.Instance.Hide();
         board = GameController.Instance.board;
         this.isNetMatch = isNetMatch;
         localPlayer = GameController.Instance.player;
@@ -95,6 +97,7 @@ public class MatchStates : MonoBehaviour
 
     public void GameStart()
     {
+        turnCount = 0;
         WaitingWindowController.Instance.Hide();
         if (GameController.Instance.player.GetLocalPlayerTeam() != Team.None)
             Deck.Instance.DrawHand(GameController.Instance.settings.startCards);
@@ -182,16 +185,21 @@ public class MatchStates : MonoBehaviour
 
     public void TeamMoved(int x, int y, Team team)
     {
+        turnCount += 1;
+
         if (board.CheckWin(x, y))
         {
             GameEnd(team, x, y);
             return;
         }
 
-        if (GameController.Instance.player.GetLocalPlayerTeam() != Team.None &&
-            Deck.Instance.playerHand.CardsInHand.Count < GameController.Instance.settings.maxCardsInHand)
+        if(GameController.Instance.player.GetLocalPlayerTeam() != Team.None)
         {
-            Deck.Instance.DrawHand(GameController.Instance.settings.maxCardsInHand - Deck.Instance.playerHand.CardsInHand.Count);
+            if (Deck.Instance.playerHand.CardsInHand.Count < GameController.Instance.settings.maxCardsInHand)
+                Deck.Instance.DrawHand(GameController.Instance.settings.maxCardsInHand - Deck.Instance.playerHand.CardsInHand.Count);
+
+            if (GameController.Instance.player.GetLocalPlayerTeam() != team && turnCount > GameController.Instance.settings.piecesWinSequence)
+                GameController.Instance.player.IncreaseMana(GameController.Instance.settings.manaPerTurn);
         }
 
         isMoveOfZero = !isMoveOfZero;
@@ -253,7 +261,7 @@ false, "Revenge! I'll win.", net.OfferRevengeRpc, "Exit.", LeaveFromMatch);
         SceneLoader.Instance.LoadMenuScene(true);
     }
 
-    public void EndDemonstationGame()
+    public void EndDemonstrationGame()
     {
         enemyBot.StopEnemy();
 

@@ -12,6 +12,7 @@ public sealed class LobbyManager : MonoBehaviour
 
     public const string KEY_PLAYER_NAME = "PlayerName";
     public const string KEY_START_GAME = "0";
+    public const string KEY_GAME_VERSION = "0.0.0.0";
 
     #region Events
     public event EventHandler OnLeftLobby;
@@ -33,17 +34,20 @@ public sealed class LobbyManager : MonoBehaviour
     #endregion
 
     [SerializeField] GameObject lobbyList;
+    [SerializeField] float refreshLobbyListTimer = 5f;
+
+    Lobby joinedLobby;
 
     float heartbeatTimer;
     float lobbyPollTimer;
-    float refreshLobbyListTimer = 5f;
-    Lobby joinedLobby;
     string playerName;
+    string currentGameVersion;
 
     void Awake()
     {
         Instance = this;
         playerName = EditPlayerName.Instance.GetPlayerName();
+        currentGameVersion = Application.version;
     }
 
     void Update()
@@ -149,10 +153,7 @@ public sealed class LobbyManager : MonoBehaviour
     }
     #endregion
 
-    public void SetActiveLobbyList(bool active)
-    {
-        lobbyList.SetActive(active);
-    }
+    public void SetActiveLobbyList(bool active) => lobbyList.SetActive(active);
 
     #region HostCanDo
     public async void CreateLobby(string lobbyName, int maxPlayers, bool isPrivate)
@@ -165,7 +166,8 @@ public sealed class LobbyManager : MonoBehaviour
             IsPrivate = isPrivate,
             Data = new Dictionary<string, DataObject>
             {
-                {KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, "0") }
+                {KEY_START_GAME, new DataObject(visibility: DataObject.VisibilityOptions.Member, value: "0") },
+                {KEY_GAME_VERSION, new DataObject(DataObject.VisibilityOptions.Public, currentGameVersion, index: DataObject.IndexOptions.S1) }
             }
         };
 
@@ -190,6 +192,7 @@ public sealed class LobbyManager : MonoBehaviour
             }
         }
     }
+
     public async void StartGame()
     {
         if (IsLobbyHost())
@@ -211,8 +214,6 @@ public sealed class LobbyManager : MonoBehaviour
             catch (LobbyServiceException) { }
         }
     }
-
-
     #endregion
 
     #region EveryoneCanDo
@@ -220,31 +221,35 @@ public sealed class LobbyManager : MonoBehaviour
     {
         try
         {
-            QueryLobbiesOptions options = new();
-            options.Count = 25;
+            QueryLobbiesOptions options = new()
+            {
+                Count = 25,
 
-            // Filter for open lobbies only
-            options.Filters = new List<QueryFilter> {
-                new QueryFilter(
-                    field: QueryFilter.FieldOptions.AvailableSlots,
-                    op: QueryFilter.OpOptions.GT,
-                    value: "0")
+                // Filter for open lobbies only
+                Filters = new List<QueryFilter>
+                {
+                    new(
+                        field: QueryFilter.FieldOptions.AvailableSlots,
+                        op: QueryFilter.OpOptions.GT,
+                        value: "0"),
+                    new(QueryFilter.FieldOptions.S1, currentGameVersion, QueryFilter.OpOptions.EQ)
+                },
+
+                // Order by newest lobbies first
+                Order = new List<QueryOrder> {
+                    new(
+                        asc: false,
+                        field: QueryOrder.FieldOptions.Created)
+                }
             };
 
-            // Order by newest lobbies first
-            options.Order = new List<QueryOrder> {
-                new(
-                    asc: false,
-                    field: QueryOrder.FieldOptions.Created)
-            };
-
-            QueryResponse lobbyListQueryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+            QueryResponse lobbyListQueryResponse = await Lobbies.Instance.QueryLobbiesAsync(options);
 
             OnLobbyListChanged?.Invoke(this, new OnLobbyListChangedEventArgs { lobbyList = lobbyListQueryResponse.Results });
         }
         catch (LobbyServiceException)
         {
-            //Debug.Log(e);     // => most request
+            //Debug.Log(e);
         }
     }
 
@@ -279,6 +284,7 @@ public sealed class LobbyManager : MonoBehaviour
             }
         }
     }
+
     public async void LeaveLobby()
     {
         if (joinedLobby != null)
@@ -309,8 +315,15 @@ public sealed class LobbyManager : MonoBehaviour
             Player = player
         });
 
-        joinedLobby = lobby;
+        if(!lobby.Data.TryGetValue(KEY_GAME_VERSION, out DataObject versionData) || versionData.Value != currentGameVersion)
+        {
+            ModalViewWindowController.Instance.ShowHorizontal(false, "Version does not match",
+                $"Your version:{currentGameVersion}\n" +
+                $"Lobby Version:{versionData.Value}", true, altTxt: "Ok", altAction: () => { });
+            return;
+        }
 
+        joinedLobby = lobby;
         OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
     }
 
@@ -333,8 +346,11 @@ public sealed class LobbyManager : MonoBehaviour
             Unity.Services.Lobbies.Models.Player player = GetPlayer();
             QuickJoinLobbyOptions options = new()
             {
-                Player = player
+                Player = player,
+                Filter = new List<QueryFilter> { }
             };
+            options.Filter.Add(new QueryFilter(QueryFilter.FieldOptions.S1, currentGameVersion,
+                    QueryFilter.OpOptions.EQ));
 
             Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync(options);
             joinedLobby = lobby;
@@ -343,7 +359,9 @@ public sealed class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException)
         {
-            //Debug.Log(e);
+            ModalViewWindowController.Instance.ShowHorizontal(false, "Not found", 
+                "Unfortunately, no free lobbies were found that match your filters.",
+                true, altTxt: "Ok", altAction: () => { });
         }
     }
     #endregion

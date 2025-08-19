@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2465983821476704065}
   - component: {fileID: 1327894524133505600}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Blackout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 156937007237981324}
   - component: {fileID: 8784089165866406751}
   - component: {fileID: 660062721288275999}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: MateorRain_Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,7 +190,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Meteor Rain
   <Description>k__BackingField: Five <b>random</b> meteorites <b>destroy</b> enemies
-  <ManaCost>k__BackingField: 5
+  <ManaCost>k__BackingField: 4
   <Image>k__BackingField: {fileID: 825961959, guid: c580f67bda390b24480cfb482b081a1b, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
@@ -201,7 +201,7 @@ MonoBehaviour:
   countShells: 5
   radiousWidthRangeAttack: 2
   radiousHeightRangeAttack: 2
-  myPrefabVFX: {fileID: 8906116423058164431, guid: 19df3c1a0a9c7d4439230b23d42da72b, type: 3}
+  spawnOnUsed: {fileID: 8906116423058164431, guid: 19df3c1a0a9c7d4439230b23d42da72b, type: 3}
   effectOfTile: {fileID: 11400000, guid: 4c3ac6dbcc56cf243b3b62618842b503, type: 2}
 --- !u!1001 &8002781827172970264
 PrefabInstance:
@@ -229,7 +229,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public abstract class EffectorBehaviour
@@ -8,13 +9,14 @@ public abstract class EffectorBehaviour
 
     public ScriptableEffector Effect { get; }
     ParticleSystem vfxParticle;
-    protected readonly GameObject obj;
+    GameObject visualEffectObject;
+    protected readonly GameObject targetObj;
     public bool isFinished;
 
     public EffectorBehaviour(ScriptableEffector buff, GameObject obj)
     {
         Effect = buff;
-        this.obj = obj;
+        this.targetObj = obj;
     }
 
     public void OnTurnEnded()
@@ -33,9 +35,19 @@ public abstract class EffectorBehaviour
     public void Activate(Vector3 posForVFX)
     {
         //VFX only 1
-        if (vfxParticle == null && Effect.vfxPrefab != null)
+        if (vfxParticle == null && Effect.visualEffect != null && visualEffectObject == null)
         {
-            vfxParticle = GameObject.Instantiate(Effect.vfxPrefab, posForVFX, Quaternion.identity).GetComponent<ParticleSystem>();
+            posForVFX.y += Effect.hightFromWhichItInit;
+            var obj = GameObject.Instantiate(Effect.visualEffect, posForVFX, Quaternion.identity);
+            if (Effect.doRandomYForVfx)
+                obj.transform.DORotate(obj.transform.rotation.eulerAngles + new Vector3(0, Random.Range(0, 360)), Effect.durationForSpawn);
+            if (Effect.hightFromWhichItInit != 0)
+                obj.transform.DOMoveY(posForVFX.y-Effect.hightFromWhichItInit, Effect.durationForSpawn);
+
+            obj.TryGetComponent<ParticleSystem>(out vfxParticle);
+            if (vfxParticle == null)
+                visualEffectObject = obj;
+
             if (Effect.pauseVfxAfterInstantiate)
             {
                 vfxParticle.Simulate(0.1f, true, true);
@@ -64,7 +76,12 @@ public abstract class EffectorBehaviour
                 vfxParticle.Play();
             vfxParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
+        if (visualEffectObject != null)
+            GameObject.Destroy(visualEffectObject);
     }
+    /*  var posForSpawnPrefab = Board.Instance.tilesController.GetTileCenter(moves[0].x, moves[0].y);
+        Instantiate(spawnPrefabAfterUsed, new Vector3(posForSpawnPrefab.x, posForSpawnPrefab.y - posForSpawnPrefab.y * 2, posForSpawnPrefab.z), 
+            Quaternion.identity).transform.DOMoveY(posForSpawnPrefab.y, durationSpawn);*/
 
     protected abstract void DoOnStartEffect();
     protected abstract void DoOnTurnEnded();

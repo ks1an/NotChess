@@ -51,6 +51,7 @@ public class CardUI : MonoBehaviour
 
     void OnMouseEnter()
     {
+        card.Hand.CardUpDownMove(card, true, true);
         if (Deck.Instance.playerHand.CurrentSelectCard != card)
         {
             sorting.sortingOrder = 1;
@@ -59,15 +60,15 @@ public class CardUI : MonoBehaviour
     }
     void OnMouseExit()
     {
-        if (Deck.Instance.playerHand.CurrentSelectCard != card)
-        {
-            sorting.sortingOrder = 0;
-            cardRender.color = passiveColor;
-        }
-        else
+        sorting.sortingOrder = 0;
+        cardRender.color = passiveColor;
+        card.Hand.CardUpDownMove(card, false, true);
+
+        if(Deck.Instance.playerHand.CurrentSelectCard == card)
         {
             sorting.sortingOrder = 2;
             cardRender.color = selectColor;
         }
+
     }
 }

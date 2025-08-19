@@ -40,15 +40,17 @@ public sealed class GameController : MonoBehaviour
         isDemonstration = true;
     }
 
-    public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false, int tileCountX = 8, int tileCountY = 8, float tileSize = 1.0f, int winSequence = 5, bool firstMoveZero = true,
-        int startMana = 0, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1, int startCards = 5, int maxCardInHand = 5)
+    public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false,
+        int winSequence = 5, bool firstMoveZero = true,
+        int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1, 
+        int startCards = 5, int maxCardInHand = 5)
     {
         if (isDemonstration && !isMatchAiVsAi)
-            states.EndDemonstationGame();
+            states.EndDemonstrationGame();
 
-        settings = new MatchSettings(tileCountX, tileCountY, tileSize, 
+        settings = new MatchSettings(8, 8, 1.25f, 
             winSequence, firstMoveZero, 
-            startMana, startManaForEvenPlayer, maxMana, manaForDestoryEnemy, 
+            startMana, startManaForEvenPlayer, manaPerTurn, maxMana, manaForDestoryEnemy, 
             startCards, maxCardInHand);
 
         states.CreateGame(isNetMatch, isMatchAiVsAi);

@@ -9,7 +9,7 @@ public sealed class MeteorRainCard : Card
     [SerializeField] int radiousWidthRangeAttack;
     [SerializeField] int radiousHeightRangeAttack;
 
-    [SerializeField] GameObject myPrefabVFX;
+    [SerializeField] GameObject spawnOnUsed;
     [field: SerializeField] ScriptableEffector effectOfTile;
 
     List<Vector2Int> alreadyAttacked;
@@ -28,13 +28,13 @@ public sealed class MeteorRainCard : Card
             {
                 if (GameController.Instance.player.IsMyTurnOrNot())
                 {
-                    Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                    Hand.SetCurrentSelectCard(this);
                     CardUI.SetBorderColor(BoarderColorOnDrag);
                 }
             }
             else
             {
-                Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                Hand.SetCurrentSelectCard(this);
                 CardUI.SetBorderColor(BoarderColorOnDrag);
             }
 
@@ -48,11 +48,11 @@ public sealed class MeteorRainCard : Card
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
-            Deck.Instance.playerHand.ResetCurrentSelectCard(null);
+            Hand.ResetCurrentSelectCard(null);
         }
         else if (Deck.Instance.playerHand.CurrentSelectCard == this)
         {
-            Deck.Instance.playerHand.ResetCurrentSelectCard(this);
+            Hand.ResetCurrentSelectCard(this);
         }
 
         CardUI.SetBorderColor(ColorBorder);
@@ -83,7 +83,7 @@ public sealed class MeteorRainCard : Card
 
         for (int i = 0; i < moves.Count; i++)
         {
-            Instantiate(myPrefabVFX, Board.Instance.tilesController.GetTileCenter(moves[i].x, moves[i].y), Quaternion.identity)
+            Instantiate(spawnOnUsed, Board.Instance.tilesController.GetTileCenter(moves[i].x, moves[i].y), Quaternion.identity)
                 .GetComponent<VisualEffect>();
 
             Board.Instance.tilesController.tiles[moves[i].x, moves[i].y].

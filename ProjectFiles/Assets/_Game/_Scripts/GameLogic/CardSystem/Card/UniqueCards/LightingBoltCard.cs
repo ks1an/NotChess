@@ -21,13 +21,13 @@ public sealed class LightingBoltCard : Card
             {
                 if (GameController.Instance.player.IsMyTurnOrNot())
                 {
-                    Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                    Hand.SetCurrentSelectCard(this);
                     CardUI.SetBorderColor(BoarderColorOnDrag);
                 }
             }
             else
             {
-                Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                Hand.SetCurrentSelectCard(this);
                 CardUI.SetBorderColor(BoarderColorOnDrag);
             }
 
@@ -40,11 +40,11 @@ public sealed class LightingBoltCard : Card
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
-            Deck.Instance.playerHand.ResetCurrentSelectCard(null);
+            Hand.ResetCurrentSelectCard(null);
         }
         else if (Deck.Instance.playerHand.CurrentSelectCard == this)
         {
-            Deck.Instance.playerHand.ResetCurrentSelectCard(this);
+            Hand.ResetCurrentSelectCard(this);
         }
 
         CardUI.SetBorderColor(ColorBorder);
@@ -59,9 +59,7 @@ public sealed class LightingBoltCard : Card
 
         if (!isSynced)
         {
-            ///TODO: убрать костыль
             GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y, false);
-            ///
             GameController.Instance.states.UseCard(ID, moves);
             Deck.Instance.DestroyCard(this);
         }

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4880474213599927333}
   - component: {fileID: 4627980856894063220}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: cardName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 7979881289621930186}
   - component: {fileID: 5573046365338199542}
   - component: {fileID: 5706207859521289980}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -191,7 +191,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7135350322477409210}
   - component: {fileID: 1085095598990673800}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: manaCost
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -277,7 +277,7 @@ GameObject:
   - component: {fileID: 4771641770335213049}
   - component: {fileID: 8907679441293784488}
   - component: {fileID: 5139351190195597667}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: cardNameTxt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -447,7 +447,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7409057412831830425}
   - component: {fileID: 1228094655716039347}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: picture
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -531,7 +531,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4103184658626810113}
   - component: {fileID: 7928907402384167944}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: backgroundBlack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -616,7 +616,7 @@ GameObject:
   - component: {fileID: 6933616645470929722}
   - component: {fileID: 4957656854143775981}
   - component: {fileID: 8406475786057666188}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: describeTxt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -786,7 +786,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7864283744715512498}
   - component: {fileID: 2053732718833975522}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: bachgroundShadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -871,7 +871,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6840685024917168293}
   - component: {fileID: 230508515667678443}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: describe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -956,7 +956,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2543998806028093901}
   - component: {fileID: 8079367734730809489}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1041,7 +1041,7 @@ GameObject:
   - component: {fileID: 2415407785765749418}
   - component: {fileID: 8670474509859035786}
   - component: {fileID: 7003219123512451758}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: manaTxt
   m_TagString: Untagged
   m_Icon: {fileID: 0}

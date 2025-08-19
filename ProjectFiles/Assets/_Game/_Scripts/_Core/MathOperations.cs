@@ -35,7 +35,7 @@ public sealed class MathOperations
     /// <summary>
     /// min inclusive, max inclusive. Auto swap if max is not greater
     /// </summary>
-    public float GetRandom(float min, float max)
+    public float GetSafeRandom(float min, float max)
     {
         if (min == max)
             return min;

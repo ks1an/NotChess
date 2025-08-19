@@ -19,13 +19,13 @@ public sealed class ForbiddenShieldCard : Card
             {
                 if (GameController.Instance.player.IsMyTurnOrNot())
                 {
-                    Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                   Hand.SetCurrentSelectCard(this);
                     CardUI.SetBorderColor(BoarderColorOnDrag);
                 }
             }
             else
             {
-                Deck.Instance.playerHand.SetCurrentSelectCard(this);
+                Hand.SetCurrentSelectCard(this);
                 CardUI.SetBorderColor(BoarderColorOnDrag);
             }
 
@@ -38,11 +38,11 @@ public sealed class ForbiddenShieldCard : Card
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
-            Deck.Instance.playerHand.ResetCurrentSelectCard(null);
+            Hand.ResetCurrentSelectCard(null);
         }
         else if (Deck.Instance.playerHand.CurrentSelectCard == this)
         {
-            Deck.Instance.playerHand.ResetCurrentSelectCard(this);
+            Hand.ResetCurrentSelectCard(this);
         }
 
         CardUI.SetBorderColor(ColorBorder);

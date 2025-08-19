@@ -41,6 +41,8 @@ public sealed class EnemyAI : MonoBehaviour
         valueIf_Enemy_lineCompleted_60_procent,
         valueIf_Enemy_lineCompleted_40_procent,
         valueIf_Enemy_lineCompleted_20_procent;
+    [SerializeField, Min(0.1f)]
+    float ContinuationCells_EnemyLine_ValueCoeffic;
 
     [Header("Friend_LinesValue")]
     [SerializeField, Range(-10, 100)]
@@ -50,6 +52,8 @@ public sealed class EnemyAI : MonoBehaviour
     valueIf_Friend_lineCompleted_60_procent,
     valueIf_Friend_lineCompleted_40_procent,
     valueIf_Friend_lineCompleted_20_procent;
+    [SerializeField, Min(0.1f)]
+    float ContinuationCells_FriendLine_ValueCoeffic;
 
     MatchStates states;
     Piece[,] pieces;
@@ -59,11 +63,18 @@ public sealed class EnemyAI : MonoBehaviour
     Team myTeam;
     #endregion
 
-    bool iWorking;
+    bool isWorking;
+    float DemonstrateChanceOfSkipMove;
+    bool isDemontrate;
+
+    readonly MathOperations mathOp = MathOperations.GetInstance();
+
     #region BeforeStartMyTurn
     public void LoadEnemy(Team enemyTeam)
     {
-        iWorking = true;
+        isWorking = true;
+        DemonstrateChanceOfSkipMove = chanceOfSkipTheMostValuableMove * 2;
+        isDemontrate = GameController.Instance.states.isDemonstrationMatchAiVsAi;
         tilesCost.Clear();
         states = GameController.Instance.states;
         tileCountX = GameController.Instance.settings.tileCountX;
@@ -85,7 +96,7 @@ public sealed class EnemyAI : MonoBehaviour
         if ((states.isMoveOfZero && myTeam == Team.Zero)
             || (!states.isMoveOfZero && myTeam == Team.Cross) || states.isDemonstrationMatchAiVsAi)
         {
-            if(iWorking)
+            if (isWorking)
                 StartEnemyTurn();
         }
     }
@@ -115,7 +126,7 @@ public sealed class EnemyAI : MonoBehaviour
         int delay = tilesCost.Values.Max();
         if (delay > 10)
             delay = 10;
-        yield return new WaitForSeconds(MathOperations.GetInstance().GetRandom(minDelayBeforeDoMove, delay / 5));
+        yield return new WaitForSeconds(mathOp.GetSafeRandom(minDelayBeforeDoMove, delay / 5));
 
         DoMove();
     }
@@ -350,9 +361,9 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
         }
         #endregion
 
-        #region Diagonals RightToLeft(UP)
+        #region Diagonals LeftToRight(Down)
         //First Half
-        for (int xEdge = 0, yEdge = tileCountY-1; yEdge >= 0; yEdge--)
+        for (int xEdge = 0, yEdge = tileCountY - 1; yEdge >= 0; yEdge--)
         {
             tilesInLine.Clear();
             tiles_Enemy_MaxlineInLine.Clear();
@@ -526,13 +537,14 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
             Vector2Int potentialExtentionLine_1 = maxTiles_Enemy_lineInLine[0] - posShift;
             Vector2Int potentialExtentionLine_2 = maxTiles_Enemy_lineInLine[^1] + posShift;
 
-            if(0 < potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
+            if (0 < potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
                 0 < potentialExtentionLine_1.y && potentialExtentionLine_1.y < tileCountY)
-                tilesCost[potentialExtentionLine_1] += needToAddValue;
+                tilesCost[potentialExtentionLine_1] += (int)(needToAddValue * ContinuationCells_EnemyLine_ValueCoeffic);
 
             if (0 < potentialExtentionLine_2.x && potentialExtentionLine_2.x < tileCountX &&
                  0 < potentialExtentionLine_2.y && potentialExtentionLine_2.y < tileCountY)
-                 tilesCost[potentialExtentionLine_2] += needToAddValue;
+                tilesCost[potentialExtentionLine_2] += (int)(needToAddValue * ContinuationCells_EnemyLine_ValueCoeffic);
+
             foreach (Vector2Int tile in maxTiles_Enemy_lineInLine)
             {
                 tilesCost[tile] += needToAddValue;
@@ -550,11 +562,11 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
 
             if (0 < potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
                 0 < potentialExtentionLine_1.y && potentialExtentionLine_1.y < tileCountY)
-                tilesCost[potentialExtentionLine_1] += needToAddValue;
+                tilesCost[potentialExtentionLine_1] += (int)(needToAddValue * ContinuationCells_FriendLine_ValueCoeffic);
 
             if (0 < potentialExtentionLine_2.x && potentialExtentionLine_2.x < tileCountX &&
                  0 < potentialExtentionLine_2.y && potentialExtentionLine_2.y < tileCountY)
-                tilesCost[potentialExtentionLine_2] += needToAddValue;
+                tilesCost[potentialExtentionLine_2] += (int)(needToAddValue * ContinuationCells_FriendLine_ValueCoeffic);
 
             foreach (Vector2Int tile in maxTiles_Friend_lineInLine)
             {
@@ -571,8 +583,17 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
         bool canSkipMostValuableByRandom = true;
         foreach (var tile in tilesCost.OrderBy(k => k.Value).Reverse())
         {
-            if (canSkipMostValuableByRandom && MathOperations.GetInstance().GetRandom(0, 100) <= chanceOfSkipTheMostValuableMove)
+            if (isDemontrate && GameController.Instance.states.turnCount == 0)
+            {
+                EndEnemyTurn(() => states.TryCreateUnitOnBoard((int)mathOp.GetSafeRandom(0, tileCountX - 1), (int)mathOp.GetSafeRandom(0, tileCountY - 1), myTeam));
+                isMoving = false;
+                break;
+            }
+
+            if ((canSkipMostValuableByRandom && mathOp.GetSafeRandom(0, 100) <= chanceOfSkipTheMostValuableMove) ||
+                (isDemontrate && mathOp.GetSafeRandom(0, 100) <= DemonstrateChanceOfSkipMove))
                 continue;
+
             int x = tile.Key.x;
             int y = tile.Key.y;
             canSkipMostValuableByRandom = false;
@@ -580,20 +601,25 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
             //Tile empty
             if (pieces[x, y] == null)
             {
-                EndEnemyTurn(() => states.TryCreateUnitOnBoard(x, y, myTeam));
-                isMoving = false;
-                break;
+                if (!Board.Instance.tilesController.tiles[x, y].banPutUnitsOnTile)
+                {
+                    EndEnemyTurn(() => states.TryCreateUnitOnBoard(x, y, myTeam));
+                    isMoving = false;
+                    break;
+                }
+                continue;
             }
 
             Dictionary<Vector2Int, Team> myDiagonalNeighbours = GetDiagonalNeighborsTeams(x, y);
             //Enemy on tile
-            if (pieces[x, y].team != myTeam)
+            if (pieces[x, y].team != myTeam && !Board.Instance.tilesController.tiles[x, y].banAttackTileByUnits)
             {
                 #region TryToAttackByDiagonal
                 Vector2Int bestMove = new();
                 int minValue = 1000000000;
                 foreach (var neighbour in myDiagonalNeighbours)
-                    if (neighbour.Value == myTeam && tilesCost[neighbour.Key] < minValue && tilesCost[neighbour.Key] < tile.Value)
+                    if (neighbour.Value == myTeam && tilesCost[neighbour.Key] < minValue && tilesCost[neighbour.Key] < tile.Value
+                        && !Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].banLeaveTile)
                     {
                         minValue = tilesCost[neighbour.Key];
                         bestMove = neighbour.Key;
@@ -616,7 +642,8 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
                 Vector2Int bestMove = new();
                 int maxValue = -1000000000;
                 foreach (var neighbour in myDiagonalNeighbours)
-                    if (neighbour.Value == Team.None && tilesCost[neighbour.Key] > maxValue)
+                    if (neighbour.Value == Team.None && tilesCost[neighbour.Key] > maxValue
+                        && !Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].banPutUnitsOnTile)
                     {
                         maxValue = tilesCost[neighbour.Key];
                         bestMove = neighbour.Key;
@@ -709,7 +736,7 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
 
     public void StopEnemy()
     {
-        iWorking = false;
+        isWorking = false;
         StopAllCoroutines();
     }
 

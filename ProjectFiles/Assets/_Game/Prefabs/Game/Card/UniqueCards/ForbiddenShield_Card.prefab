@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2853115293100631884}
   - component: {fileID: 8852499382935469920}
   - component: {fileID: 3890863732558626456}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: ForbiddenShield_Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,7 +105,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Forbidden Shield
-  <Description>k__BackingField: Prevents placing a unit on a cell and attacking it/him
+  <Description>k__BackingField: Prevents a unit from being placed on a cell for one
+    full turn.
   <ManaCost>k__BackingField: 3
   <Image>k__BackingField: {fileID: 825961959, guid: c580f67bda390b24480cfb482b081a1b, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8000001, b: 0.5686275, a: 1}
@@ -125,7 +126,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3351530861171957621}
   - component: {fileID: 4686324575495961489}
-  m_Layer: 0
+  m_Layer: 31
   m_Name: Blackout
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -245,7 +246,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Prevents placing a unit on a cell and attacking it/him
+      value: Prevents a unit from being placed on a cell for one full turn.
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

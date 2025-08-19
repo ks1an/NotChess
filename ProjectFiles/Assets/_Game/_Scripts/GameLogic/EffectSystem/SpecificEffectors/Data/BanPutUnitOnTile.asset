@@ -15,7 +15,7 @@ MonoBehaviour:
   durationTurns: 2
   isDurationStacked: 1
   isEffectStacked: 0
-  vfxPrefab: {fileID: 4621957043699594376, guid: e18b205ce206c954cbafc3ea6b5e3feb, type: 3}
+  visualEffect: {fileID: 4621957043699594376, guid: e18b205ce206c954cbafc3ea6b5e3feb, type: 3}
   pauseVfxAfterInstantiate: 1
   banPutUnitsOnTile: 1
   banAttackTileByUnits: 0

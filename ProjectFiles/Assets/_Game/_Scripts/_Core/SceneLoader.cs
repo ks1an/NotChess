@@ -19,6 +19,7 @@ public sealed class SceneLoader : MonoBehaviour
         {
             Instance = this;
             SceneManager.sceneLoaded += OnSomeSceneLoaded;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
@@ -26,7 +27,9 @@ public sealed class SceneLoader : MonoBehaviour
     public void LoadMenuScene(bool async) => ChangeScene(menuScene, async);
     public void LoadBoardScene(bool async) => ChangeScene(boardScene, async);
 
-    public void ChangeScene(string sceneName, bool async)
+
+    //Private methods
+    void ChangeScene(string sceneName, bool async)
     {
         OnSomeSceneStartLoading?.Invoke();
 
@@ -36,7 +39,6 @@ public sealed class SceneLoader : MonoBehaviour
             SceneManager.LoadScene(sceneName);
     }
 
-    //Private methods
     private void OnSomeSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == menuScene)
