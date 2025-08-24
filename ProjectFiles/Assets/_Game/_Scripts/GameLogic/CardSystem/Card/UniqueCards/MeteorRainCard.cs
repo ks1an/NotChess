@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
@@ -106,42 +107,28 @@ public sealed class MeteorRainCard : Card
             return availables;
         }
 
+        int leftXFlaw = Math.Max(0, radiousWidthRangeAttack - hoverX);
+        int rightXFlaw = Math.Max(0, hoverX + radiousWidthRangeAttack - maxX);
+        int downYFlaw = Math.Max(0, radiousHeightRangeAttack - hoverY);
+        int upYFlaw = Math.Max(0, hoverY + radiousHeightRangeAttack - maxY);
 
-        #region FindAvailabeRange
+        int adjustedX = hoverX + leftXFlaw - rightXFlaw;
+        int adjustedY = hoverY + downYFlaw - upYFlaw;
 
-        #region GetFlawTiles
-        int leftXFlaw = 0, rightXFlaw = 0;
-        if (hoverX - radiousWidthRangeAttack < 0)
-            leftXFlaw = (hoverX - radiousWidthRangeAttack) * -1;
-
-        if (hoverX + radiousWidthRangeAttack > maxX)
-            rightXFlaw = (maxX - hoverX + radiousWidthRangeAttack) * -1;
-
-        int upYFlaw = 0, downYFlaw = 0;
-        if (hoverY - radiousHeightRangeAttack < 0)
-            downYFlaw = (hoverY - radiousHeightRangeAttack) * -1;
-
-        if (hoverY + radiousHeightRangeAttack > maxY)
-            upYFlaw = (maxY - hoverY + radiousHeightRangeAttack) * -1;
-        #endregion
-
-        if (hoverX - radiousWidthRangeAttack - rightXFlaw >= 0 && hoverX + radiousWidthRangeAttack + leftXFlaw <= maxX
-            && hoverY - radiousHeightRangeAttack - upYFlaw >= 0 && hoverY + radiousHeightRangeAttack + downYFlaw <= maxY)
+        //Do we fit on the board?
+        if (adjustedX - radiousWidthRangeAttack >= 0 &&
+            adjustedX + radiousWidthRangeAttack <= maxX &&
+            adjustedY - radiousHeightRangeAttack >= 0 &&
+            adjustedY + radiousHeightRangeAttack <= maxY)
         {
-            for (int x = hoverX - radiousWidthRangeAttack - rightXFlaw; x < hoverX + radiousWidthRangeAttack + leftXFlaw; x++)
-            {
-                for (int y = hoverY - radiousHeightRangeAttack - upYFlaw; y < hoverY + radiousHeightRangeAttack + downYFlaw; y++)
+            for (int x = adjustedX - radiousWidthRangeAttack; x < adjustedX + radiousWidthRangeAttack; x++)
+                for (int y = adjustedY - radiousHeightRangeAttack; y < adjustedY + radiousHeightRangeAttack; y++)
                 {
-                    if (y < 0)
-                        continue;
-                    if (y >= maxY) break;
-
-                    if (IsAvailableMove(x, y))
-                        availables.Add(new Vector2Int(x, y));
+                    if (x >= 0 && x < maxX && y >= 0 && y < maxY)
+                        if (IsAvailableMove(x, y))
+                            availables.Add(new Vector2Int(x, y));
                 }
-            }
         }
-        #endregion
 
         availableMoves = availables;
         return availables;

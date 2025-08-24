@@ -13,7 +13,7 @@ public sealed class GlobalCardCollection : MonoBehaviour
 
         foreach (Card card in cards)
         {
-            GlobalCardsDictionary.Add(card.CreateID(), card);
+            GlobalCardsDictionary.Add(card.SelfGetID(), card);
         }
     }
 }

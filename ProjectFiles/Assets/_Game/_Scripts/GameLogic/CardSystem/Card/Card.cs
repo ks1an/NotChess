@@ -5,6 +5,7 @@ using UnityEngine;
 public class Card : MonoBehaviour
 {
     public int ID { get; private set; }
+
     [field: SerializeField] public string Name { get; private set; }
     [field: SerializeField, TextArea] public string Description { get; private set; }
     [field: SerializeField] public int ManaCost { get; private set; }
@@ -33,7 +34,7 @@ public class Card : MonoBehaviour
     {
         CardUI = GetComponent<CardUI>();
         CardUI.SetCardUI();
-        ID = CreateID();
+        ID = SelfGetID();
         Hand = Deck.Instance.playerHand;
     }
 
@@ -47,8 +48,11 @@ public class Card : MonoBehaviour
 
     public virtual bool IsAvailableMove(int targetX, int targetY) { return false; }
 
-    public int CreateID()
+    public int SelfGetID()
     {
+        if(ID != 0)
+            return ID;
+
         string id = Name.Length.ToString() + Description.Length.ToString() + ((int)ColorBorder.b).ToString() +
             ((int)Orientation).ToString() + ((int)Category).ToString() + ((int)Rarity).ToString();
 

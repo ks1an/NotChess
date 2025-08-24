@@ -134,19 +134,19 @@ public sealed class EnemyAI : MonoBehaviour
     void EstimateCostLines()
     {
         List<Vector2Int> tilesInLine = new(),
-tiles_Enemy_MaxlineInLine = new(),
-tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
-        int amount_Enemy_inLine,
-            amount_Friend_inLine;
+            enemyLine = new(),
+            friendLine = new(),
+            currentLine = new();
 
-        //TODO: Unify the logic of line evaluation. It is similar everywhere
+        int amount_Enemy_inLine, amount_Friend_inLine;
+
         #region Check Col
         for (int x = 0; x < tileCountX; x++)
         {
             tilesInLine.Clear();
-            tiles_Enemy_MaxlineInLine.Clear();
-            tiles_Friend_MaxlineInLine.Clear();
-            currentTeamLineInLine.Clear();
+            enemyLine.Clear();
+            friendLine.Clear();
+            currentLine.Clear();
             amount_Enemy_inLine = 0;
             amount_Friend_inLine = 0;
 
@@ -158,40 +158,40 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
 
                 if (tileTeam == Team.None)
                 {
-                    currentTeamLineInLine.Clear();
+                    currentLine.Clear();
                     continue;
                 }
 
-                if (currentTeamLineInLine.Count > 0 && tileTeam == GetTeamOnTile(currentTeamLineInLine[^1].x, currentTeamLineInLine[^1].y))
+                if (currentLine.Count > 0 && tileTeam == GetTeamOnTile(currentLine[^1].x, currentLine[^1].y))
                 {
-                    currentTeamLineInLine.Add(tile);
+                    currentLine.Add(tile);
                 }
                 else
                 {
-                    currentTeamLineInLine.Clear();
-                    currentTeamLineInLine.Add(tile);
+                    currentLine.Clear();
+                    currentLine.Add(tile);
                 }
 
                 if (tileTeam == myTeam)
                 {
                     amount_Friend_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Friend_MaxlineInLine.Count)
+                    if (currentLine.Count > friendLine.Count)
                     {
-                        tiles_Friend_MaxlineInLine.Clear();
-                        tiles_Friend_MaxlineInLine.AddRange(currentTeamLineInLine);
+                        friendLine.Clear();
+                        friendLine.AddRange(currentLine);
                     }
                 }
                 else
                 {
                     amount_Enemy_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Enemy_MaxlineInLine.Count)
+                    if (currentLine.Count > enemyLine.Count)
                     {
-                        tiles_Enemy_MaxlineInLine.Clear();
-                        tiles_Enemy_MaxlineInLine.AddRange(currentTeamLineInLine);
+                        enemyLine.Clear();
+                        enemyLine.AddRange(currentLine);
                     }
                 }
             }
-            AddValueForTilesInLine(tilesInLine, tiles_Enemy_MaxlineInLine, tiles_Friend_MaxlineInLine, amount_Friend_inLine, amount_Enemy_inLine);
+            AddValueForTilesInLine(tilesInLine, enemyLine, friendLine, amount_Friend_inLine, amount_Enemy_inLine);
         }
         #endregion
 
@@ -199,9 +199,9 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
         for (int y = 0; y < tileCountX; y++)
         {
             tilesInLine.Clear();
-            tiles_Enemy_MaxlineInLine.Clear();
-            tiles_Friend_MaxlineInLine.Clear();
-            currentTeamLineInLine.Clear();
+            enemyLine.Clear();
+            friendLine.Clear();
+            currentLine.Clear();
             amount_Enemy_inLine = 0;
             amount_Friend_inLine = 0;
 
@@ -213,263 +213,114 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
 
                 if (tileTeam == Team.None)
                 {
-                    currentTeamLineInLine.Clear();
+                    currentLine.Clear();
                     continue;
                 }
 
-                if (currentTeamLineInLine.Count > 0 && tileTeam == GetTeamOnTile(currentTeamLineInLine[^1].x, currentTeamLineInLine[^1].y))
+                if (currentLine.Count > 0 && tileTeam == GetTeamOnTile(currentLine[^1].x, currentLine[^1].y))
                 {
-                    currentTeamLineInLine.Add(tile);
+                    currentLine.Add(tile);
                 }
                 else
                 {
-                    currentTeamLineInLine.Clear();
-                    currentTeamLineInLine.Add(tile);
+                    currentLine.Clear();
+                    currentLine.Add(tile);
                 }
 
                 if (tileTeam == myTeam)
                 {
                     amount_Friend_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Friend_MaxlineInLine.Count)
+                    if (currentLine.Count > friendLine.Count)
                     {
-                        tiles_Friend_MaxlineInLine.Clear();
-                        tiles_Friend_MaxlineInLine.AddRange(currentTeamLineInLine);
+                        friendLine.Clear();
+                        friendLine.AddRange(currentLine);
                     }
                 }
                 else
                 {
                     amount_Enemy_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Enemy_MaxlineInLine.Count)
+                    if (currentLine.Count > enemyLine.Count)
                     {
-                        tiles_Enemy_MaxlineInLine.Clear();
-                        tiles_Enemy_MaxlineInLine.AddRange(currentTeamLineInLine);
+                        enemyLine.Clear();
+                        enemyLine.AddRange(currentLine);
                     }
                 }
             }
 
-            AddValueForTilesInLine(tilesInLine, tiles_Enemy_MaxlineInLine, tiles_Friend_MaxlineInLine, amount_Friend_inLine, amount_Enemy_inLine);
+            AddValueForTilesInLine(tilesInLine, enemyLine, friendLine, amount_Friend_inLine, amount_Enemy_inLine);
         }
         #endregion
 
-        #region Diagonals LeftoToRight(UP)
-        //first half
+        #region Diagonals
+        // Diagonals LeftoToRight(UP)
         for (int xEdge = 0, yEdge = tileCountY - 1; yEdge >= 0; yEdge--)
-        {
-            tilesInLine.Clear();
-            tiles_Enemy_MaxlineInLine.Clear();
-            tiles_Friend_MaxlineInLine.Clear();
-            currentTeamLineInLine.Clear();
-            amount_Enemy_inLine = 0;
-            amount_Friend_inLine = 0;
-
-            for (int x = xEdge, y = yEdge; x < tileCountX && y < tileCountY; x++, y++)
-            {
-                Vector2Int tile = new(x, y);
-                Team tileTeam = GetTeamOnTile(x, y);
-                tilesInLine.Add(tile);
-
-                if (tileTeam == Team.None)
-                {
-                    currentTeamLineInLine.Clear();
-                    continue;
-                }
-
-                if (currentTeamLineInLine.Count > 0 && tileTeam == GetTeamOnTile(currentTeamLineInLine[^1].x, currentTeamLineInLine[^1].y))
-                {
-                    currentTeamLineInLine.Add(tile);
-                }
-                else
-                {
-                    currentTeamLineInLine.Clear();
-                    currentTeamLineInLine.Add(tile);
-                }
-
-                if (tileTeam == myTeam)
-                {
-                    amount_Friend_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Friend_MaxlineInLine.Count)
-                    {
-                        tiles_Friend_MaxlineInLine.Clear();
-                        tiles_Friend_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
-                }
-                else
-                {
-                    amount_Enemy_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Enemy_MaxlineInLine.Count)
-                    {
-                        tiles_Enemy_MaxlineInLine.Clear();
-                        tiles_Enemy_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
-                }
-            }
-            AddValueForTilesInLine(tilesInLine, tiles_Enemy_MaxlineInLine, tiles_Friend_MaxlineInLine, amount_Friend_inLine, amount_Enemy_inLine);
-        }
-
-        //Second half
+            ProcessDiagonal(xEdge, yEdge, 1, 1);
         for (int xEdge = 1, yEdge = 0; xEdge < tileCountX; xEdge++)
-        {
-            tilesInLine.Clear();
-            tiles_Enemy_MaxlineInLine.Clear();
-            tiles_Friend_MaxlineInLine.Clear();
-            currentTeamLineInLine.Clear();
-            amount_Enemy_inLine = 0;
-            amount_Friend_inLine = 0;
+            ProcessDiagonal(xEdge, yEdge, 1, 1);
 
-            for (int x = xEdge, y = yEdge; x < tileCountX && y < tileCountY; x++, y++)
-            {
-                Vector2Int tile = new(x, y);
-                Team tileTeam = GetTeamOnTile(x, y);
-                tilesInLine.Add(tile);
-
-                if (tileTeam == Team.None)
-                {
-                    currentTeamLineInLine.Clear();
-                    continue;
-                }
-
-                if (currentTeamLineInLine.Count > 0 && tileTeam == GetTeamOnTile(currentTeamLineInLine[^1].x, currentTeamLineInLine[^1].y))
-                {
-                    currentTeamLineInLine.Add(tile);
-                }
-                else
-                {
-                    currentTeamLineInLine.Clear();
-                    currentTeamLineInLine.Add(tile);
-                }
-
-                if (tileTeam == myTeam)
-                {
-                    amount_Friend_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Friend_MaxlineInLine.Count)
-                    {
-                        tiles_Friend_MaxlineInLine.Clear();
-                        tiles_Friend_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
-                }
-                else
-                {
-                    amount_Enemy_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Enemy_MaxlineInLine.Count)
-                    {
-                        tiles_Enemy_MaxlineInLine.Clear();
-                        tiles_Enemy_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
-                }
-            }
-            AddValueForTilesInLine(tilesInLine, tiles_Enemy_MaxlineInLine, tiles_Friend_MaxlineInLine, amount_Friend_inLine, amount_Enemy_inLine);
-        }
-        #endregion
-
-        #region Diagonals LeftToRight(Down)
-        //First Half
+        // Diagonals LeftToRight(Down)
         for (int xEdge = 0, yEdge = tileCountY - 1; yEdge >= 0; yEdge--)
-        {
-            tilesInLine.Clear();
-            tiles_Enemy_MaxlineInLine.Clear();
-            tiles_Friend_MaxlineInLine.Clear();
-            currentTeamLineInLine.Clear();
-            amount_Enemy_inLine = 0;
-            amount_Friend_inLine = 0;
-
-            for (int x = xEdge, y = yEdge; x < tileCountX && y >= 0; x++, y--)
-            {
-                Vector2Int tile = new(x, y);
-                Team tileTeam = GetTeamOnTile(x, y);
-                tilesInLine.Add(tile);
-
-                if (tileTeam == Team.None)
-                {
-                    currentTeamLineInLine.Clear();
-                    continue;
-                }
-
-                if (currentTeamLineInLine.Count > 0 && tileTeam == GetTeamOnTile(currentTeamLineInLine[^1].x, currentTeamLineInLine[^1].y))
-                {
-                    currentTeamLineInLine.Add(tile);
-                }
-                else
-                {
-                    currentTeamLineInLine.Clear();
-                    currentTeamLineInLine.Add(tile);
-                }
-
-                if (tileTeam == myTeam)
-                {
-                    amount_Friend_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Friend_MaxlineInLine.Count)
-                    {
-                        tiles_Friend_MaxlineInLine.Clear();
-                        tiles_Friend_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
-                }
-                else
-                {
-                    amount_Enemy_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Enemy_MaxlineInLine.Count)
-                    {
-                        tiles_Enemy_MaxlineInLine.Clear();
-                        tiles_Enemy_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
-                }
-            }
-            AddValueForTilesInLine(tilesInLine, tiles_Enemy_MaxlineInLine, tiles_Friend_MaxlineInLine, amount_Friend_inLine, amount_Enemy_inLine);
-        }
-
-        //Second half
+            ProcessDiagonal(xEdge, yEdge, 1, -1);
         for (int xEdge = 1, yEdge = tileCountY - 1; xEdge < tileCountX; xEdge++)
+            ProcessDiagonal(xEdge, yEdge, 1, -1);
+
+        #endregion
+
+    }
+
+    void ProcessDiagonal(int startX, int startY, int xStep, int yStep)
+    {
+        List<Vector2Int> tilesInLine = new(),
+            enemyLine = new(),
+            friendLine = new(),
+            currentLine = new();
+
+        int friendCount = 0, enemyCount = 0;
+        Team? previousTeam = null;
+
+        for (int x = startX, y = startY; x < tileCountX && x >= 0 && y < tileCountY && y >= 0; x += xStep, y += yStep)
         {
-            tilesInLine.Clear();
-            tiles_Enemy_MaxlineInLine.Clear();
-            tiles_Friend_MaxlineInLine.Clear();
-            currentTeamLineInLine.Clear();
-            amount_Enemy_inLine = 0;
-            amount_Friend_inLine = 0;
+            Vector2Int tile = new(x, y);
+            Team team = GetTeamOnTile(x, y);
+            tilesInLine.Add(tile);
 
-            for (int x = xEdge, y = yEdge; x < tileCountX && y <= 0; x++, y--)
+            if (team == Team.None)
             {
-                Vector2Int tile = new(x, y);
-                Team tileTeam = GetTeamOnTile(x, y);
-                tilesInLine.Add(tile);
+                currentLine.Clear();
+                previousTeam = null;
+                continue;
+            }
 
-                if (tileTeam == Team.None)
-                {
-                    currentTeamLineInLine.Clear();
-                    continue;
-                }
+            if (previousTeam == team)
+            {
+                currentLine.Add(tile);
+            }
+            else
+            {
+                currentLine = new List<Vector2Int> { tile };
+                previousTeam = team;
+            }
 
-                if (currentTeamLineInLine.Count > 0 && tileTeam == GetTeamOnTile(currentTeamLineInLine[^1].x, currentTeamLineInLine[^1].y))
+            if (team == myTeam)
+            {
+                friendCount++;
+                if (currentLine.Count > friendLine.Count)
                 {
-                    currentTeamLineInLine.Add(tile);
-                }
-                else
-                {
-                    currentTeamLineInLine.Clear();
-                    currentTeamLineInLine.Add(tile);
-                }
-
-                if (tileTeam == myTeam)
-                {
-                    amount_Friend_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Friend_MaxlineInLine.Count)
-                    {
-                        tiles_Friend_MaxlineInLine.Clear();
-                        tiles_Friend_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
-                }
-                else
-                {
-                    amount_Enemy_inLine += 1;
-                    if (currentTeamLineInLine.Count > tiles_Enemy_MaxlineInLine.Count)
-                    {
-                        tiles_Enemy_MaxlineInLine.Clear();
-                        tiles_Enemy_MaxlineInLine.AddRange(currentTeamLineInLine);
-                    }
+                    friendLine.Clear();
+                    friendLine.AddRange(currentLine);
                 }
             }
-            AddValueForTilesInLine(tilesInLine, tiles_Enemy_MaxlineInLine, tiles_Friend_MaxlineInLine, amount_Friend_inLine, amount_Enemy_inLine);
+            else
+            {
+                enemyCount++;
+                if (currentLine.Count > enemyLine.Count)
+                {
+                    enemyLine.Clear();
+                    enemyLine.AddRange(currentLine);
+                }
+            }
         }
-        #endregion
+        AddValueForTilesInLine(tilesInLine, enemyLine, friendLine, friendCount, enemyCount);
     }
 
     void EstimateCostIndividualTiles()
@@ -519,23 +370,23 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
             tilesCost[targetTile] += valueIf_Friend_VertOrHoriz;
     }
 
-    void AddValueForTilesInLine(List<Vector2Int> tilesInLine, List<Vector2Int> maxTiles_Enemy_lineInLine,
-        List<Vector2Int> maxTiles_Friend_lineInLine, int amountFriend, int amoutEnemy)
+    void AddValueForTilesInLine(List<Vector2Int> generalLine, List<Vector2Int> enemyLine,
+        List<Vector2Int> friendLine, int friendCount, int enemyCount)
     {
-        foreach (Vector2Int tile in tilesInLine)
+        foreach (Vector2Int tile in generalLine)
         {
-            tilesCost[tile] += (amoutEnemy * valueForEach_Enemy_InTheLine) +
-                (amountFriend * valueForEach_Friend_InTheLine);
+            tilesCost[tile] += (enemyCount * valueForEach_Enemy_InTheLine) +
+                (friendCount * valueForEach_Friend_InTheLine);
         }
 
-        if (maxTiles_Enemy_lineInLine.Count > 1)
+        if (enemyLine.Count > 1)
         {
-            int needToAddValue = GetValueForAddInLineCombination(maxTiles_Enemy_lineInLine.Count, true);
-            Vector2Int posShift = new(Math.Abs(maxTiles_Enemy_lineInLine[0].x - maxTiles_Enemy_lineInLine[1].x),
-                Math.Abs(maxTiles_Enemy_lineInLine[0].y - maxTiles_Enemy_lineInLine[1].y));
+            int needToAddValue = GetValueForAddInLineCombination(enemyLine.Count, true);
+            Vector2Int posShift = new(Math.Abs(enemyLine[0].x - enemyLine[1].x),
+                Math.Abs(enemyLine[0].y - enemyLine[1].y));
 
-            Vector2Int potentialExtentionLine_1 = maxTiles_Enemy_lineInLine[0] - posShift;
-            Vector2Int potentialExtentionLine_2 = maxTiles_Enemy_lineInLine[^1] + posShift;
+            Vector2Int potentialExtentionLine_1 = enemyLine[0] - posShift;
+            Vector2Int potentialExtentionLine_2 = enemyLine[^1] + posShift;
 
             if (0 < potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
                 0 < potentialExtentionLine_1.y && potentialExtentionLine_1.y < tileCountY)
@@ -545,20 +396,20 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
                  0 < potentialExtentionLine_2.y && potentialExtentionLine_2.y < tileCountY)
                 tilesCost[potentialExtentionLine_2] += (int)(needToAddValue * ContinuationCells_EnemyLine_ValueCoeffic);
 
-            foreach (Vector2Int tile in maxTiles_Enemy_lineInLine)
+            foreach (Vector2Int tile in enemyLine)
             {
                 tilesCost[tile] += needToAddValue;
             }
         }
 
-        if (maxTiles_Friend_lineInLine.Count > 1)
+        if (friendLine.Count > 1)
         {
-            int needToAddValue = GetValueForAddInLineCombination(maxTiles_Friend_lineInLine.Count, false);
-            Vector2Int posShift = new(Math.Abs(maxTiles_Friend_lineInLine[0].x - maxTiles_Friend_lineInLine[1].x),
-                Math.Abs(maxTiles_Friend_lineInLine[0].y - maxTiles_Friend_lineInLine[1].y));
+            int needToAddValue = GetValueForAddInLineCombination(friendLine.Count, false);
+            Vector2Int posShift = new(Math.Abs(friendLine[0].x - friendLine[1].x),
+                Math.Abs(friendLine[0].y - friendLine[1].y));
 
-            Vector2Int potentialExtentionLine_1 = maxTiles_Friend_lineInLine[0] - posShift;
-            Vector2Int potentialExtentionLine_2 = maxTiles_Friend_lineInLine[^1] + posShift;
+            Vector2Int potentialExtentionLine_1 = friendLine[0] - posShift;
+            Vector2Int potentialExtentionLine_2 = friendLine[^1] + posShift;
 
             if (0 < potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
                 0 < potentialExtentionLine_1.y && potentialExtentionLine_1.y < tileCountY)
@@ -568,7 +419,7 @@ tiles_Friend_MaxlineInLine = new(), currentTeamLineInLine = new();
                  0 < potentialExtentionLine_2.y && potentialExtentionLine_2.y < tileCountY)
                 tilesCost[potentialExtentionLine_2] += (int)(needToAddValue * ContinuationCells_FriendLine_ValueCoeffic);
 
-            foreach (Vector2Int tile in maxTiles_Friend_lineInLine)
+            foreach (Vector2Int tile in friendLine)
             {
                 tilesCost[tile] += needToAddValue;
             }

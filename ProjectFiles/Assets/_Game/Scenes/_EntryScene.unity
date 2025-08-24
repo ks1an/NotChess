@@ -148,7 +148,7 @@ Transform:
   m_GameObject: {fileID: 77843201}
   serializedVersion: 2
   m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: 5.25, y: 0.75, z: -1.65}
+  m_LocalPosition: {x: 4.5, y: 0.75, z: -2.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -215,6 +215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerHand: {fileID: 77843203}
   playerDeck: {fileID: 11400000, guid: 46272d76579271148aeec0ac32158fc5, type: 2}
+  chanceToSkipRestrictOnGetLastDestroyedCard: 25
 --- !u!1 &394304594
 GameObject:
   m_ObjectHideFlags: 0
@@ -396,8 +397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   upValueWhileSelectingPiece: 0.25
-  tileFirstMaterial: {fileID: 2100000, guid: e478f61ec4496e948bd006e5ae09ba79, type: 2}
-  tileSecondMaterial: {fileID: 2100000, guid: b96bb906cd28c5b4aa5461a51961713c, type: 2}
+  tileFirstMaterial: {fileID: 2100000, guid: 2ae122b477971bb44a80b92678821ab3, type: 2}
+  tileSecondMaterial: {fileID: 2100000, guid: 819f33e97450f7648b451ffed5bc5900, type: 2}
   crossMaterial: {fileID: 2100000, guid: 4cc83d7c11e451a44bf3c14962261c98, type: 2}
   zeroMaterial: {fileID: 2100000, guid: 8d9be944b14dad04ba8a06cd94d8cf4e, type: 2}
   crossPrefab: {fileID: 5302499569041276220, guid: e3310910b73893b42b642f3757750872, type: 3}
@@ -1753,6 +1754,10 @@ PrefabInstance:
     - target: {fileID: 4374035601189534252, guid: 0a7d83759a4d0f2418b63875427844de, type: 3}
       propertyPath: m_Sprite
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5154673641574389954, guid: 0a7d83759a4d0f2418b63875427844de, type: 3}
+      propertyPath: m_Name
+      value: Background
       objectReference: {fileID: 0}
     - target: {fileID: 5933690049760921144, guid: 0a7d83759a4d0f2418b63875427844de, type: 3}
       propertyPath: m_Pivot.x

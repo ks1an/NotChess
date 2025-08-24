@@ -65,11 +65,15 @@ public sealed class TilesController : MonoBehaviour
         tileObject.AddComponent<BoxCollider>();
 
         tileObject.transform.localScale *= size;
+        Vector3 scaledSize = Vector3.Scale(tileMesh.bounds.size, tileObject.transform.lossyScale);
         if (x == 0 && y == 0)
-            offset = Vector3.Scale(tileMesh.bounds.size, tileObject.transform.lossyScale);
-        tileObject.transform.position = new Vector3((x + offset.x) * size, -0.75f, (y + offset.z) * size);
+            offset = scaledSize;
 
-        tile.tileCenter = new Vector3(x * size, 0, y * size) + new Vector3(offset.x/2 * math.sqrt(2), -0.15f, offset.z/2 * math.sqrt(2));
+        tileObject.transform.position = new Vector3((x + offset.x / 2) * size,-0.75f,
+            (y + offset.z / 2) * size);
+
+        tile.tileCenter = tileObject.transform.position +
+            new Vector3(-scaledSize.x/2,scaledSize.y,-scaledSize.z/2);
 
         return tile;
     }
@@ -116,7 +120,7 @@ public sealed class TilesController : MonoBehaviour
 
     public void RemoveAllHighlightExcludeCurrentOnes(List<Vector2Int> currentHighlightTiles)
     {
-        for(int i = 0; i < highlightTiles.Count; i++)
+        for (int i = 0; i < highlightTiles.Count; i++)
         {
             if (!currentHighlightTiles.Contains(highlightTiles[i]))
             {
@@ -128,7 +132,7 @@ public sealed class TilesController : MonoBehaviour
 
     public void RemoveAllHighlight()
     {
-        for(int i = 0; i < highlightTiles.Count; i++)
+        for (int i = 0; i < highlightTiles.Count; i++)
         {
             tiles[highlightTiles[i].x, highlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("Tile");
             highlightTiles.Remove(highlightTiles[i]);

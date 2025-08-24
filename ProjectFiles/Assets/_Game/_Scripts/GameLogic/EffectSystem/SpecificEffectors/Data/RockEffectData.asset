@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9602faaf71447b6419b1e6378c9c0428, type: 3}
-  m_Name: BanPutAndAttackOnTile
+  m_Name: RockEffectData
   m_EditorClassIdentifier: 
-  durationTurns: 2
+  durationTurns: 4
   isDurationStacked: 1
   isEffectStacked: 0
   visualEffect: {fileID: 6530906115176955355, guid: 4944276ff6bc3a44e8a8da53180655a5, type: 3}

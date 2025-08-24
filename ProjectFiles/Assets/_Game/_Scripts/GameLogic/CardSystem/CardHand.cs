@@ -6,12 +6,14 @@ using UnityEngine.Splines;
 
 public class CardHand : MonoBehaviour
 {
+    public Card CurrentSelectCard { get; private set; }
+    public List<Card> CardsInHand { get; private set; } = new();
+
     [SerializeField] SplineContainer splineContainer;
     [SerializeField] float cardSpacing = 0.1f;
     [SerializeField] float cardSelectUpDistance = 0.25f;
 
-    public Card CurrentSelectCard { get; private set; }
-    public List<Card> CardsInHand { get; private set; } = new();
+    bool isDealing;
 
     public void SetCurrentSelectCard(Card card)
     {
@@ -34,8 +36,12 @@ public class CardHand : MonoBehaviour
 
     public void CardUpDownMove(Card card, bool toUp, bool liftSlightly)
     {
+        if (isDealing)
+            return;
+
         float multipleDirect = toUp ? 1 : -1;
         multipleDirect /= liftSlightly ? 2 : 1;
+
         card.transform.DOComplete();
         card.transform.DOMoveY(card.transform.position.y + cardSelectUpDistance*multipleDirect, 0.1f);
     }
@@ -60,6 +66,8 @@ public class CardHand : MonoBehaviour
     IEnumerator UpdateCardPos(float duration)
     {
         if (CardsInHand.Count == 0) yield break;
+
+        isDealing = true;
         float firtsCardPos = 0.5f - (CardsInHand.Count - 1) * cardSpacing / 2;
         Spline spline = splineContainer.Spline;
 
@@ -73,6 +81,8 @@ public class CardHand : MonoBehaviour
             CardsInHand[i].transform.DOMove(splinePos + transform.position, duration);
             CardsInHand[i].transform.DOLocalRotate(rot.eulerAngles, duration);
         }
+
         yield return new WaitForSeconds(duration);
+        isDealing = false;
     }
 }
