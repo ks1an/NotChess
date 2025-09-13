@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 public sealed class MathOperations
@@ -35,17 +36,16 @@ public sealed class MathOperations
     /// <summary>
     /// min inclusive, max inclusive. Auto swap if max is not greater
     /// </summary>
-    public float GetSafeRandom(float min, float max)
+    public float GetSafeRandom(float min, float max, bool needIntRandom = false)
     {
         if (min == max)
             return min;
 
-        float mi = min;
-        if (mi > max)
-        {
-            min = max;
-            max = mi;
-        }
+        if (min > max)
+            (min, max) = (max, min);
+
+        if (needIntRandom)
+            return UnityEngine.Random.Range((int)min,(int)max);
 
         return UnityEngine.Random.Range(min, max);
     }

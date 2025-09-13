@@ -1,6 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CardAttackStrong
+{
+    Zero,
+    Light,
+    Average,
+    Advaced,
+    Strong
+}
+
 [RequireComponent(typeof(CardUI))]
 public class Card : MonoBehaviour
 {
@@ -16,11 +25,12 @@ public class Card : MonoBehaviour
     [field: SerializeField] public CardOrientation Orientation { get; private set; }
     [field: SerializeField] public Category Category { get; private set; }
     [field: SerializeField] public CardRarity Rarity { get; private set; }
+    [field: SerializeField] public CardAttackStrong AttackClass { get; private set; }  
 
     [field: SerializeField] public Color BoarderColorOnDrag { get; private set; }
 
     public CardUI CardUI { get; private set; }
-    public CardHand Hand { get; private set; }
+    public PlayerCardHand Hand { get; private set; }
 
     protected List<Vector2Int> availableMoves = new();
 
@@ -35,7 +45,7 @@ public class Card : MonoBehaviour
         CardUI = GetComponent<CardUI>();
         CardUI.SetCardUI();
         ID = SelfGetID();
-        Hand = Deck.Instance.playerHand;
+        Hand = PlayerDeck.Instance.hand;
     }
 
     public virtual void UseCard(List<Vector2Int> moves, bool isSynced) { }

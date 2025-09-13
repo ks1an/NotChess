@@ -42,7 +42,7 @@ public sealed class GameController : MonoBehaviour
 
     public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false,
         int winSequence = 5, bool firstMoveZero = true,
-        int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1, 
+        int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1,
         int startCards = 5, int maxCardInHand = 5)
     {
         if (isDemonstration && !isMatchAiVsAi)

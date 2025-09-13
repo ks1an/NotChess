@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
 public sealed class TilesController : MonoBehaviour
@@ -69,11 +68,13 @@ public sealed class TilesController : MonoBehaviour
         if (x == 0 && y == 0)
             offset = scaledSize;
 
-        tileObject.transform.position = new Vector3((x + offset.x / 2) * size,-0.75f,
+        tileObject.transform.position = new Vector3((x + offset.x / 2) * size, -0.75f,
             (y + offset.z / 2) * size);
 
         tile.tileCenter = tileObject.transform.position +
-            new Vector3(-scaledSize.x/2,scaledSize.y,-scaledSize.z/2);
+            new Vector3(-scaledSize.x / 2, scaledSize.y, -scaledSize.z / 2);
+        tile.xCord = x;
+        tile.yCord = y;
 
         return tile;
     }

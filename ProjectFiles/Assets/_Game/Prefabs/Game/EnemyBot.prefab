@@ -49,18 +49,18 @@ MonoBehaviour:
   complexity: 0
   valueIf_Enemy_VertOrHoriz: 1
   valueIf_Friend_VertOrHoriz: 1
-  valueIf_Enemy_Diagonal: -2
+  valueIf_Enemy_Diagonal: -3
   valueIf_Friend_Diagonal: 2
-  valueIfBoardBorder: -2
+  valueIfBoardBorder: -1
   valueForEach_Enemy_InTheLine: 1
-  valueIf_Enemy_lineCompleted_80_procent: 50
-  valueIf_Enemy_lineCompleted_60_procent: 20
-  valueIf_Enemy_lineCompleted_40_procent: 3
-  valueIf_Enemy_lineCompleted_20_procent: 1
-  ContinuationCells_EnemyLine_ValueCoeffic: 0.95
+  valueIf_Enemy_lineCompleted_80_procent: 80
+  valueIf_Enemy_lineCompleted_60_procent: 55
+  valueIf_Enemy_lineCompleted_40_procent: 15
+  valueIf_Enemy_lineCompleted_20_procent: 3
+  ShiftCells_EnemyLine_ValueCoeffic: 1.1
   valueForEach_Friend_InTheLine: 1
   valueIf_Friend_lineCompleted_80_procent: 100
-  valueIf_Friend_lineCompleted_60_procent: 15
-  valueIf_Friend_lineCompleted_40_procent: 4
-  valueIf_Friend_lineCompleted_20_procent: 2
-  ContinuationCells_FriendLine_ValueCoeffic: 1.2
+  valueIf_Friend_lineCompleted_60_procent: 50
+  valueIf_Friend_lineCompleted_40_procent: 16
+  valueIf_Friend_lineCompleted_20_procent: 5
+  ShiftCells_FriendLine_ValueCoeffic: 1.5

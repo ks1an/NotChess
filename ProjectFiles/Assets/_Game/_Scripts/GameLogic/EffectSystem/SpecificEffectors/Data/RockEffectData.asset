@@ -17,8 +17,8 @@ MonoBehaviour:
   isEffectStacked: 0
   visualEffect: {fileID: 6530906115176955355, guid: 4944276ff6bc3a44e8a8da53180655a5, type: 3}
   doRandomYForVfx: 1
-  hightFromWhichItInit: -1
-  durationForSpawn: 1
+  hightFromWhichItInit: -0.75
+  durationForSpawn: 6
   pauseVfxAfterInstantiate: 0
   banPutUnitsOnTile: 1
   banAttackTileByUnits: 1

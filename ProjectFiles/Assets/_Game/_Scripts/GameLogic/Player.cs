@@ -45,7 +45,6 @@ public sealed class Player : MonoBehaviour
             Debug.LogError("Negative number received when increasing mana: " + value.ToString());
             return;
         }
-
         currentMana += value;
         if (currentMana > maxMana)
             currentMana = maxMana;

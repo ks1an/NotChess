@@ -16,7 +16,7 @@ public sealed class SceneLoader : MonoBehaviour
     void Awake()
     {
         if (Instance == null)
-        {
+        {         
             Instance = this;
             SceneManager.sceneLoaded += OnSomeSceneLoaded;
             DontDestroyOnLoad(gameObject);
@@ -39,7 +39,7 @@ public sealed class SceneLoader : MonoBehaviour
             SceneManager.LoadScene(sceneName);
     }
 
-    private void OnSomeSceneLoaded(Scene scene, LoadSceneMode mode)
+    void OnSomeSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == menuScene)
             OnMenuSceneLoaded?.Invoke();

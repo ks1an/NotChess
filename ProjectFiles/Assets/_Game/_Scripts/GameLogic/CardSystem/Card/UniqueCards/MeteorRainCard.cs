@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
+//The dinosaurs won't like this. Oh, I mean the enemies.
 public sealed class MeteorRainCard : Card
 {
-    //The dinosaurs won't like this. Oh, I mean the enemies.
     [SerializeField] int countShells;
     [SerializeField] int radiousWidthRangeAttack;
     [SerializeField] int radiousHeightRangeAttack;
@@ -51,7 +51,7 @@ public sealed class MeteorRainCard : Card
             UseCard(availableMoves);
             Hand.ResetCurrentSelectCard(null);
         }
-        else if (Deck.Instance.playerHand.CurrentSelectCard == this)
+        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
         {
             Hand.ResetCurrentSelectCard(this);
         }
@@ -71,12 +71,10 @@ public sealed class MeteorRainCard : Card
                 foreach (Vector2Int target in moves)
                     if (!alreadyAttacked.Contains(target))
                     {
-                        GameController.Instance.states.TryDestroyUnit(target.x, target.y, false);
                         alreadyAttacked.Add(target);
                         break;
                     }
             }
-
             GameController.Instance.states.UseCard(ID, alreadyAttacked);
             Board.Instance.tilesController.RemoveHighlightTiles(moves);
             moves = alreadyAttacked;
@@ -87,14 +85,21 @@ public sealed class MeteorRainCard : Card
             Instantiate(spawnOnUsed, Board.Instance.tilesController.GetTileCenter(moves[i].x, moves[i].y), Quaternion.identity)
                 .GetComponent<VisualEffect>();
 
-            Board.Instance.tilesController.tiles[moves[i].x, moves[i].y].
-                AddEffect(effectOfTile.InitializeEffect(null, moves[i].x, moves[i].y));
+            if (Board.Instance.tilesController.tiles[moves[i].x, moves[i].y].TryGetAroundDefend((int)AttackClass))
+            {
+                if (!isSynced)
+                {
+                    GameController.Instance.states.TryDestroyUnit(moves[i].x, moves[i].y, false);
+                }
+                Board.Instance.tilesController.tiles[moves[i].x, moves[i].y].
+    AddEffect(effectOfTile.InitializeEffect(null, moves[i].x, moves[i].y));
+            }
         }
 
-        if (isSynced)
-            Destroy(gameObject);
+        if (!isSynced)
+            PlayerDeck.Instance.DestroyCardInHand(this);
         else
-            Deck.Instance.DestroyCard(this);
+            Destroy(gameObject);
     }
 
     #region AvailableMoves

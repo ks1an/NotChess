@@ -27,8 +27,11 @@ public sealed class BoardUI : MonoBehaviour
         GameController.Instance.states.OnGameTied += OnGameEnded;
         GameController.Instance.states.OnGameWin += OnGameEnded;
 
-        if (isNetMatch)
-            restartButton.gameObject.SetActive(false);
+        restartButton.onClick.RemoveAllListeners();
+        if (!isNetMatch)
+            restartButton.onClick.AddListener(TryRestartGame);
+        else
+            restartButton.onClick.AddListener(TryToRevange);
     }
 
     void StartSettings()
@@ -39,7 +42,6 @@ public sealed class BoardUI : MonoBehaviour
             ChangeTeamMoveIndicator(-1, -1, Team.Zero);
     }
 
-    #region TryTo
     public void TryExitToMenu()
     {
         ModalViewWindowController.Instance.ShowHorizontal(false, "Leave?", "Are you sure you want to quit? Progress for the round will be lost!",
@@ -51,7 +53,12 @@ public sealed class BoardUI : MonoBehaviour
         ModalViewWindowController.Instance.ShowHorizontal(false, "Restart?", "Are you sure you want to restart?",
 false, "Cancel", () => { }, "Restart", RestartGame);
     }
-    #endregion
+
+    public void TryToRevange()
+    {
+        ModalViewWindowController.Instance.ShowHorizontal(false, "Revange?", "Are you sure you want to revange?",
+false, "Cancel", () => { }, "Revange", RevangeGame);
+    }
 
     #region OnGameState
     void ChangeTeamMoveIndicator(int x, int y, Team teamMoved)
@@ -85,15 +92,9 @@ false, "Cancel", () => { }, "Restart", RestartGame);
     }
     #endregion
 
-    void ExitToMenu()
-    {
-        GameController.Instance.states.LeaveFromMatch();
-    }
-
-    void RestartGame()
-    {
-        GameController.Instance.states.GameRestart();
-    }
+    void ExitToMenu() => GameController.Instance.states.LeaveFromMatch();
+    void RestartGame() => GameController.Instance.states.GameRestart();
+    void RevangeGame() => GameController.Instance.netMatch.OfferRevenge();
 
     private void OnDisable()
     {

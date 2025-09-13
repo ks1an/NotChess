@@ -4,15 +4,54 @@ using UnityEngine;
 
 public sealed class Tile : MonoBehaviour, IEffectable
 {
-    public Dictionary<ScriptableEffector, EffectorBehaviour> Effects { get; set; } = new();
-    public bool banPutUnitsOnTile, banAttackTileByUnits, banLeaveTile;
-    public Vector3 tileCenter;
+    [HideInInspector] public Dictionary<ScriptableEffector, EffectorBehaviour> Effects { get; set; } = new();
+    [HideInInspector] public bool banPutUnitsOnTile, banAttackTileByUnits, banLeaveTile;
+    [HideInInspector] public DefendClass defendClass;
+    [HideInInspector] public int xCord, yCord;
+    [HideInInspector] public Vector3 tileCenter;
+
+    EffectorBehaviour buffGivingDefend;
 
     public void SetBans(bool banPutUnitsOnTile, bool banAttackTileByUnits, bool banLeaveTile)
     {
         this.banPutUnitsOnTile = banPutUnitsOnTile;
         this.banAttackTileByUnits = banAttackTileByUnits;
         this.banLeaveTile = banLeaveTile;
+    }
+
+    public void SetDefendClass(DefendClass defClass, EffectorBehaviour buffGiving)
+    {
+        if ((int)defClass > (int)defendClass)
+        {
+            defendClass = defClass;
+            buffGivingDefend = buffGiving;
+        }
+    }
+    public bool TryGetAroundDefend(int attackClass)
+    {
+        if (attackClass < 0)
+        {
+            Debug.LogError("Trying attack with negative attack class");
+            return false;
+        }
+
+        if (defendClass == 0 || buffGivingDefend == null)
+            return true;
+        else if (attackClass == (int)defendClass)
+        {
+            defendClass = DefendClass.None;
+            buffGivingDefend.EndEffect();
+            buffGivingDefend = null;
+            return false;
+        }
+        else if (attackClass > (int)defendClass)
+        {
+            defendClass = DefendClass.None;
+            buffGivingDefend.EndEffect();
+            buffGivingDefend = null;
+            return true;
+        }
+        return false;
     }
 
     #region Effects
@@ -27,12 +66,12 @@ public sealed class Tile : MonoBehaviour, IEffectable
 
         if (Effects.ContainsKey(buff.Effect))
         {
-            Effects[buff.Effect].Activate(tileCenter);
+            Effects[buff.Effect].Activate(xCord, yCord);
         }
         else
         {
             Effects.Add(buff.Effect, buff);
-            buff.Activate(tileCenter);
+            buff.Activate(xCord, yCord);
         }
     }
 
@@ -67,4 +106,13 @@ public sealed class Tile : MonoBehaviour, IEffectable
         }
     }
     #endregion
+}
+
+public enum DefendClass
+{
+    None,
+    Light,
+    Average,
+    Advanced,
+    Strong
 }

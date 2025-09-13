@@ -114,6 +114,7 @@ MonoBehaviour:
   <Orientation>k__BackingField: 1
   <Category>k__BackingField: 0
   <Rarity>k__BackingField: 0
+  <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
   effectOfTile: {fileID: 11400000, guid: 87c781acfb777674a85fd2ea12b81d76, type: 2}
 --- !u!1 &9098353681655225977

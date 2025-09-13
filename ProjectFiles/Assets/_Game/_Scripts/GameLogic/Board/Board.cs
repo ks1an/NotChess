@@ -89,9 +89,9 @@ public sealed class Board : MonoBehaviour
             #endregion
 
             #region CardMove
-            if (Deck.Instance.playerHand.CurrentSelectCard != null)
+            if (PlayerDeck.Instance.hand.CurrentSelectCard != null)
             {
-                List<Vector2Int> availabe = Deck.Instance.playerHand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
+                List<Vector2Int> availabe = PlayerDeck.Instance.hand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
                 tilesController.HighlighTiles(availabe);
                 tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
                 return;
@@ -131,9 +131,9 @@ public sealed class Board : MonoBehaviour
                 curHoverTile = -Vector2Int.one;
             }
 
-            if (Deck.Instance.playerHand.CurrentSelectCard != null)
+            if (PlayerDeck.Instance.hand.CurrentSelectCard != null)
             {
-                List<Vector2Int> availabe = Deck.Instance.playerHand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, -1, -1);
+                List<Vector2Int> availabe = PlayerDeck.Instance.hand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, -1, -1);
                 tilesController.RemoveAllHighlight();
             }
 

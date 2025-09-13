@@ -1,11 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Zeus and Perun cast their hatred on the enemy
 public sealed class LightingBoltCard : Card
 {
-    //Zeus and Perun cast their hatred on the enemy
+    #region Inspector Variable
+    [Header("On used")]
     [SerializeField] GameObject OnUsedVFX;
     [field: SerializeField] ScriptableEffector effectOfTile;
+
+    [Header("Audio")]
+    [SerializeField] float volume = 1f;
+    [SerializeField] float minPitch = 1f, maxPitch = 1f;
+    [SerializeField] AudioClip[] audioClipsOnUsed;
+    #endregion
 
     public override void Init()
     {
@@ -42,7 +50,7 @@ public sealed class LightingBoltCard : Card
             UseCard(availableMoves);
             Hand.ResetCurrentSelectCard(null);
         }
-        else if (Deck.Instance.playerHand.CurrentSelectCard == this)
+        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
         {
             Hand.ResetCurrentSelectCard(this);
         }
@@ -53,15 +61,27 @@ public sealed class LightingBoltCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
+        EnvironmentManager.Instance.DoMediumBoardFlickeringLight();
         Instantiate(OnUsedVFX, Board.Instance.tilesController.GetTileCenter(moves[0].x, moves[0].y), Quaternion.identity);
-        Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
-    AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
+        bool attackWasSuccessful = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].TryGetAroundDefend((int)AttackClass);
+        if (attackWasSuccessful)
+        {
+            Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
+AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
+        }
+
+        if (audioClipsOnUsed.Length > 0)
+            GameSound.Instance.PlaySound(audioClipsOnUsed, volume, minPitch, maxPitch);
+
 
         if (!isSynced)
         {
-            GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y, false);
+            if (attackWasSuccessful)
+            {
+                GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y, false);
+            }
             GameController.Instance.states.UseCard(ID, moves);
-            Deck.Instance.DestroyCard(this);
+            PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else
         {

@@ -42,7 +42,7 @@ public sealed class EnemyAI : MonoBehaviour
         valueIf_Enemy_lineCompleted_40_procent,
         valueIf_Enemy_lineCompleted_20_procent;
     [SerializeField, Min(0.1f)]
-    float ContinuationCells_EnemyLine_ValueCoeffic;
+    float ShiftCells_EnemyLine_ValueCoeffic;
 
     [Header("Friend_LinesValue")]
     [SerializeField, Range(-10, 100)]
@@ -53,12 +53,12 @@ public sealed class EnemyAI : MonoBehaviour
     valueIf_Friend_lineCompleted_40_procent,
     valueIf_Friend_lineCompleted_20_procent;
     [SerializeField, Min(0.1f)]
-    float ContinuationCells_FriendLine_ValueCoeffic;
+    float ShiftCells_FriendLine_ValueCoeffic;
 
     MatchStates states;
     Piece[,] pieces;
 
-    public Dictionary<Vector2Int, int> tilesCost = new();
+    Dictionary<Vector2Int, int> tilesCost = new();
     int tileCountX, tileCountY;
     Team myTeam;
     #endregion
@@ -251,7 +251,6 @@ public sealed class EnemyAI : MonoBehaviour
         }
         #endregion
 
-        #region Diagonals
         // Diagonals LeftoToRight(UP)
         for (int xEdge = 0, yEdge = tileCountY - 1; yEdge >= 0; yEdge--)
             ProcessDiagonal(xEdge, yEdge, 1, 1);
@@ -263,8 +262,6 @@ public sealed class EnemyAI : MonoBehaviour
             ProcessDiagonal(xEdge, yEdge, 1, -1);
         for (int xEdge = 1, yEdge = tileCountY - 1; xEdge < tileCountX; xEdge++)
             ProcessDiagonal(xEdge, yEdge, 1, -1);
-
-        #endregion
 
     }
 
@@ -374,55 +371,61 @@ public sealed class EnemyAI : MonoBehaviour
         List<Vector2Int> friendLine, int friendCount, int enemyCount)
     {
         foreach (Vector2Int tile in generalLine)
-        {
             tilesCost[tile] += (enemyCount * valueForEach_Enemy_InTheLine) +
                 (friendCount * valueForEach_Friend_InTheLine);
-        }
 
         if (enemyLine.Count > 1)
-        {
-            int needToAddValue = GetValueForAddInLineCombination(enemyLine.Count, true);
-            Vector2Int posShift = new(Math.Abs(enemyLine[0].x - enemyLine[1].x),
-                Math.Abs(enemyLine[0].y - enemyLine[1].y));
-
-            Vector2Int potentialExtentionLine_1 = enemyLine[0] - posShift;
-            Vector2Int potentialExtentionLine_2 = enemyLine[^1] + posShift;
-
-            if (0 < potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
-                0 < potentialExtentionLine_1.y && potentialExtentionLine_1.y < tileCountY)
-                tilesCost[potentialExtentionLine_1] += (int)(needToAddValue * ContinuationCells_EnemyLine_ValueCoeffic);
-
-            if (0 < potentialExtentionLine_2.x && potentialExtentionLine_2.x < tileCountX &&
-                 0 < potentialExtentionLine_2.y && potentialExtentionLine_2.y < tileCountY)
-                tilesCost[potentialExtentionLine_2] += (int)(needToAddValue * ContinuationCells_EnemyLine_ValueCoeffic);
-
-            foreach (Vector2Int tile in enemyLine)
-            {
-                tilesCost[tile] += needToAddValue;
-            }
-        }
+            ProccesLineAddValue(enemyLine, true, true, ShiftCells_EnemyLine_ValueCoeffic);
 
         if (friendLine.Count > 1)
+            ProccesLineAddValue(friendLine, false, true, ShiftCells_FriendLine_ValueCoeffic);
+    }
+
+    void ProccesLineAddValue(List<Vector2Int> line, bool isEnemyLine, bool needAddShiftValue = false, float shiftValueCoeffic = 1.0f)
+    {
+        int needToAddValue = GetValueForAddInLineCombination(line.Count, isEnemyLine);
+        if (needAddShiftValue && line.Count > 1)
         {
-            int needToAddValue = GetValueForAddInLineCombination(friendLine.Count, false);
-            Vector2Int posShift = new(Math.Abs(friendLine[0].x - friendLine[1].x),
-                Math.Abs(friendLine[0].y - friendLine[1].y));
+            Vector2Int posShift = new(line[1].x - line[0].x, line[1].y - line[0].y);
+            Vector2Int potentialExtentionLine_1;
+            Vector2Int potentialExtentionLine_2;
 
-            Vector2Int potentialExtentionLine_1 = friendLine[0] - posShift;
-            Vector2Int potentialExtentionLine_2 = friendLine[^1] + posShift;
-
-            if (0 < potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
-                0 < potentialExtentionLine_1.y && potentialExtentionLine_1.y < tileCountY)
-                tilesCost[potentialExtentionLine_1] += (int)(needToAddValue * ContinuationCells_FriendLine_ValueCoeffic);
-
-            if (0 < potentialExtentionLine_2.x && potentialExtentionLine_2.x < tileCountX &&
-                 0 < potentialExtentionLine_2.y && potentialExtentionLine_2.y < tileCountY)
-                tilesCost[potentialExtentionLine_2] += (int)(needToAddValue * ContinuationCells_FriendLine_ValueCoeffic);
-
-            foreach (Vector2Int tile in friendLine)
+            if (line[0].x < line[^1].x)
             {
-                tilesCost[tile] += needToAddValue;
+                potentialExtentionLine_1 = line[0] - posShift;
+                potentialExtentionLine_2 = line[^1] + posShift;
             }
+            else if (line[0].x > line[^1].x)
+            {
+                potentialExtentionLine_1 = line[0] + posShift;
+                potentialExtentionLine_2 = line[^1] - posShift;
+            }
+            else
+            {
+                if (line[0].y < line[^1].y)
+                {
+                    potentialExtentionLine_1 = line[0] - posShift;
+                    potentialExtentionLine_2 = line[^1] + posShift;
+                }
+                else
+                {
+                    potentialExtentionLine_1 = line[0] + posShift;
+                    potentialExtentionLine_2 = line[^1] - posShift;
+                }
+            }
+
+            if (0 <= potentialExtentionLine_1.x && potentialExtentionLine_1.x < tileCountX &&
+                0 <= potentialExtentionLine_1.y && potentialExtentionLine_1.y < tileCountY)
+                tilesCost[potentialExtentionLine_1] += (int)(needToAddValue * shiftValueCoeffic);
+
+            if (0 <= potentialExtentionLine_2.x && potentialExtentionLine_2.x < tileCountX &&
+                 0 <= potentialExtentionLine_2.y && potentialExtentionLine_2.y < tileCountY)
+                tilesCost[potentialExtentionLine_2] += (int)(needToAddValue * shiftValueCoeffic);
+        }
+
+        foreach (Vector2Int tile in line)
+        {
+            tilesCost[tile] += needToAddValue;
         }
     }
 
@@ -432,6 +435,7 @@ public sealed class EnemyAI : MonoBehaviour
     {
         bool isMoving = true;
         bool canSkipMostValuableByRandom = true;
+
         foreach (var tile in tilesCost.OrderBy(k => k.Value).Reverse())
         {
             if (isDemontrate && GameController.Instance.states.turnCount == 0)

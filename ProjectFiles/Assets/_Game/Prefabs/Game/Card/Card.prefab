@@ -168,6 +168,7 @@ MonoBehaviour:
   <Orientation>k__BackingField: 0
   <Category>k__BackingField: 0
   <Rarity>k__BackingField: 0
+  <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
 --- !u!210 &5706207859521289980
 SortingGroup:

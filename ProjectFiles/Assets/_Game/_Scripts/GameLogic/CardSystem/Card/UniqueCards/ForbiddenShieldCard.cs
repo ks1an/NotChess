@@ -40,7 +40,7 @@ public sealed class ForbiddenShieldCard : Card
             UseCard(availableMoves);
             Hand.ResetCurrentSelectCard(null);
         }
-        else if (Deck.Instance.playerHand.CurrentSelectCard == this)
+        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
         {
             Hand.ResetCurrentSelectCard(this);
         }
@@ -57,12 +57,10 @@ public sealed class ForbiddenShieldCard : Card
         if (!isSynced)
         {
             GameController.Instance.states.UseCard(ID, moves);
-            Deck.Instance.DestroyCard(this);
+            PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else
-        {
             Destroy(gameObject);
-        }
     }
 
     #region AvailableMoves

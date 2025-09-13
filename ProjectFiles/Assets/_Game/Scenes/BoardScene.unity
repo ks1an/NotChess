@@ -373,19 +373,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 464634024}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1055595934}
-        m_TargetAssemblyTypeName: BoardUI, Assembly-CSharp
-        m_MethodName: TryRestartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &464634024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -578,6 +566,7 @@ GameObject:
   - component: {fileID: 621494617}
   - component: {fileID: 621494616}
   - component: {fileID: 621494615}
+  - component: {fileID: 621494618}
   m_Layer: 0
   m_Name: EnemyLightSpot
   m_TagString: Untagged
@@ -685,6 +674,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 130, y: 30, z: 0}
+--- !u!114 &621494618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621494614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6226cc7773f6c6d4bb4bfdd1a118a8aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isRegularFlicker: 0
+  minIntensity: 50
+  maxIntensity: 110
+  timeBetweenIntensity: 0.1
 --- !u!1 &759300834
 GameObject:
   m_ObjectHideFlags: 0
@@ -771,6 +776,7 @@ GameObject:
   - component: {fileID: 784011603}
   - component: {fileID: 784011602}
   - component: {fileID: 784011601}
+  - component: {fileID: 784011604}
   m_Layer: 0
   m_Name: PlayerLightSpot
   m_TagString: Untagged
@@ -815,7 +821,7 @@ Light:
   m_Color: {r: 0.42666668, g: 0.4382504, b: 0.5019608, a: 1}
   m_Intensity: 100
   m_Range: 25
-  m_SpotAngle: 150
+  m_SpotAngle: 179
   m_InnerSpotAngle: 0
   m_CookieSize: 10
   m_Shadows:
@@ -878,6 +884,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: 30, z: 0}
+--- !u!114 &784011604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 784011600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6226cc7773f6c6d4bb4bfdd1a118a8aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isRegularFlicker: 0
+  minIntensity: 50
+  maxIntensity: 110
+  timeBetweenIntensity: 0.1
 --- !u!1 &818246945
 GameObject:
   m_ObjectHideFlags: 0
@@ -1090,7 +1112,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: 4.25, y: 7, z: -3.85}
+  m_LocalPosition: {x: 4.5, y: 7, z: -3.85}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1676,6 +1698,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1718720006}
   m_CullTransparentMesh: 1
+--- !u!1 &1733877441
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1733877442}
+  - component: {fileID: 1733877443}
+  m_Layer: 0
+  m_Name: EnvironmentManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1733877442
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733877441}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 499.24277, y: 430.95416, z: -51.307655}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1733877443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733877441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfc92b4d667c779409c82e4b74eb5b83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boardFlickingLights:
+  - {fileID: 621494618}
+  - {fileID: 784011604}
 --- !u!1 &1776695415
 GameObject:
   m_ObjectHideFlags: 0
@@ -1975,8 +2044,9 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1733877442}
   - {fileID: 1004160600}
   - {fileID: 963194228}
-  - {fileID: 1055595933}
   - {fileID: 621494617}
   - {fileID: 784011603}
+  - {fileID: 1055595933}

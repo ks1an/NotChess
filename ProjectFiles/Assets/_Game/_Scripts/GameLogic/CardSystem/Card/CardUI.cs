@@ -52,7 +52,7 @@ public class CardUI : MonoBehaviour
     void OnMouseEnter()
     {
         card.Hand.CardUpDownMove(card, true, true);
-        if (Deck.Instance.playerHand.CurrentSelectCard != card)
+        if (PlayerDeck.Instance.hand.CurrentSelectCard != card)
         {
             sorting.sortingOrder = 1;
             cardRender.color = hoverColor;
@@ -64,7 +64,7 @@ public class CardUI : MonoBehaviour
         cardRender.color = passiveColor;
         card.Hand.CardUpDownMove(card, false, true);
 
-        if(Deck.Instance.playerHand.CurrentSelectCard == card)
+        if(PlayerDeck.Instance.hand.CurrentSelectCard == card)
         {
             sorting.sortingOrder = 2;
             cardRender.color = selectColor;

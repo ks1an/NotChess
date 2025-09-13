@@ -6,6 +6,7 @@ public abstract class ScriptableEffector : ScriptableObject
     public int durationTurns;    
     public bool isDurationStacked;
     public bool isEffectStacked;
+    public DefendClass defendClass;
 
     [Header("VFX"), Tooltip("vfxPrefab = null if there is no vfx")]
     [field: SerializeField] public GameObject visualEffect;

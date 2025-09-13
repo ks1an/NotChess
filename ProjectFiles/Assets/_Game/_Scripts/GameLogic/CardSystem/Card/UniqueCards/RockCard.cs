@@ -4,6 +4,10 @@ using UnityEngine;
 public sealed class RockCard : Card
 {
     [field: SerializeField] ScriptableEffector effectOfTile;
+    [Header("Audio")]
+    [SerializeField] float volume = 1f;
+    [SerializeField] float minPitch = 1f, maxPitch = 1f;
+    [SerializeField] AudioClip[] audioClipsOnUsed;
 
     public override void Init()
     {
@@ -40,7 +44,7 @@ public sealed class RockCard : Card
             UseCard(availableMoves);
             Hand.ResetCurrentSelectCard(null);
         }
-        else if (Deck.Instance.playerHand.CurrentSelectCard == this)
+        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
         {
             Hand.ResetCurrentSelectCard(this);
         }
@@ -53,11 +57,13 @@ public sealed class RockCard : Card
     {
         Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
             AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
+        if (audioClipsOnUsed.Length > 0)
+            GameSound.Instance.PlaySound(audioClipsOnUsed, volume, minPitch, maxPitch);
 
         if (!isSynced)
         {
             GameController.Instance.states.UseCard(ID, moves);
-            Deck.Instance.DestroyCard(this);
+            PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else
         {

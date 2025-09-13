@@ -5,15 +5,16 @@ using UnityEngine.UI;
 
 public sealed class MenuUI : MonoBehaviour
 {
-    [SerializeField] Button lobbyListBttn, matchmakingBttn;
+    [SerializeField] Button lobbyListBttn, matchmakingBttn, singleplay;
 
     void Awake()
     {
         GameController.Instance.CreateDemostrationGame();
-
+        singleplay.onClick.AddListener(() => GameController.Instance.CreateGame(false));
         if (UnityServices.State == ServicesInitializationState.Initialized && AuthenticationService.Instance.IsAuthorized)
         {
             matchmakingBttn.onClick.AddListener(LobbyManager.Instance.QuickJoinLobby);
+            lobbyListBttn.onClick.AddListener(() => LobbyManager.Instance.SetActiveLobbyList(true));
 
             lobbyListBttn.interactable = true;
             matchmakingBttn.interactable = true;
@@ -27,8 +28,6 @@ public sealed class MenuUI : MonoBehaviour
         }
     }
 
-    public void OnSingleplayButton() => GameController.Instance.CreateGame(false);
-    public void OnLobbyListBttnClicked() => LobbyManager.Instance.SetActiveLobbyList(true);
     public void TryExitFromApp() => ModalViewWindowController.Instance.ShowHorizontal(false, "See you?", "Do you want to go out \n but promise to come back?",
             true, "I'm staying!", () => ModalViewWindowController.Instance.TryCloseModalViewWindow(), "I'll be back..\nAhem-hem-hem", Application.Quit);
 }

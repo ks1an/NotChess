@@ -5,6 +5,7 @@ using UnityEngine;
 public class CardCollection : ScriptableObject
 {
     [field: SerializeField] public List<Card> CardsInCollection { get; private set; }
+    [field: SerializeField] public GameObject cardBack;
 
     public void RemoveCardFromCollection(Card card)
     {

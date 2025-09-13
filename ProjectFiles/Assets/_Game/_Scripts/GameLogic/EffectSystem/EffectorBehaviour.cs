@@ -8,10 +8,11 @@ public abstract class EffectorBehaviour
     protected int effectStacks;
 
     public ScriptableEffector Effect { get; }
+    public bool isFinished;
     ParticleSystem vfxParticle;
     GameObject visualEffectObject;
     protected readonly GameObject targetObj;
-    public bool isFinished;
+    protected int tileX, tileY;
 
     public EffectorBehaviour(ScriptableEffector buff, GameObject obj)
     {
@@ -32,11 +33,14 @@ public abstract class EffectorBehaviour
         }
     }
 
-    public void Activate(Vector3 posForVFX)
+    public void Activate(int tileX, int tileY)
     {
         //VFX only 1
+        this.tileX = tileX;
+        this.tileY = tileY;
         if (vfxParticle == null && Effect.visualEffect != null && visualEffectObject == null)
         {
+            Vector3 posForVFX = Board.Instance.tilesController.GetTileCenter(tileX, tileY);
             posForVFX.y += Effect.hightFromWhichItInit;
             var obj = GameObject.Instantiate(Effect.visualEffect, posForVFX, Quaternion.identity);
             if (Effect.doRandomYForVfx)
@@ -54,6 +58,7 @@ public abstract class EffectorBehaviour
                 vfxParticle.Pause();
             }
         }
+        Board.Instance.tilesController.tiles[tileX, tileY].SetDefendClass(Effect.defendClass, this);
 
         //Stacks
         if (Effect.isEffectStacked || durationTurn <= 0)
@@ -79,9 +84,6 @@ public abstract class EffectorBehaviour
         if (visualEffectObject != null)
             GameObject.Destroy(visualEffectObject);
     }
-    /*  var posForSpawnPrefab = Board.Instance.tilesController.GetTileCenter(moves[0].x, moves[0].y);
-        Instantiate(spawnPrefabAfterUsed, new Vector3(posForSpawnPrefab.x, posForSpawnPrefab.y - posForSpawnPrefab.y * 2, posForSpawnPrefab.z), 
-            Quaternion.identity).transform.DOMoveY(posForSpawnPrefab.y, durationSpawn);*/
 
     protected abstract void DoOnStartEffect();
     protected abstract void DoOnTurnEnded();
