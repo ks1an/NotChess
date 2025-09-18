@@ -17,7 +17,6 @@ public sealed class EnemyDeck : Deck
     public override void SetDefaultSettings()
     {
         DestroyAllCard();
-        curDeckSize = maxDeckSize;
         AddToDeck(maxDeckSize, true);
     }
 
@@ -28,7 +27,18 @@ public sealed class EnemyDeck : Deck
             Debug.LogError("Trying add to enemy deck negative count of cards");
             return;
         }
+        curDeckSize += count;
         deckView.Add(cardCollection.cardBack, count);
+    }
+
+    public void AddToGraveyard(int count)
+    {
+        if (count < 0)
+        {
+            Debug.LogError("Trying add to player graveyard negative count of cards");
+            return;
+        }
+        gravejardView.Add(cardCollection.cardBack, count);
     }
 
     public void DrawCardInHand(GameObject card)
@@ -40,9 +50,14 @@ public sealed class EnemyDeck : Deck
         hand.AddCard(newCard);
     }
 
-    public override void DrawHandRandomFromDeck(int amount)
+    public override void DrawHandRandomFromDeck(int amount, bool ignoreCardLimit = false)
     {
-        if (hand.CardsInHand.Count == GameController.Instance.settings.maxCardsInHand || curDeckSize <= 0)
+        if (amount < 0)
+        {
+            Debug.LogError("Amount is negative!");
+            return;
+        }
+        if ((!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) || curDeckSize <= 0)
             return;
 
         for (int i = 0; i < amount; i++)
@@ -51,6 +66,7 @@ public sealed class EnemyDeck : Deck
             deckView.Remove();
             curDeckSize--;
             if (curDeckSize == 0) break;
+            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) break;
         }
     }
 
@@ -73,6 +89,14 @@ public sealed class EnemyDeck : Deck
         hand.RemoveCard(card);
         gravejardView.Add(card);
     }
+
+    public void DestroyAllCardsInHand(bool needToAddInGraveyard = true)
+    {
+        if (needToAddInGraveyard)
+            gravejardView.Add(cardCollection.cardBack, hand.CardsInHand.Count);
+        hand.RemoveAllCards();
+    }
+
     public GameObject GetCardBack() { return cardCollection.cardBack; }
     public GameObject GetRandomCardFromHand() { return hand.CardsInHand[Random.Range(0, hand.CardsInHand.Count)]; }
 }

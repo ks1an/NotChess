@@ -52,11 +52,8 @@ public sealed class PiecesController : MonoBehaviour
         Piece curPiece = pieces[originalX, originalY];
 
         if (pieces[x, y] != null)
-        {
-            if (curPiece.team == pieces[x, y].team)
-                return;
             match.states.TryDestroyUnit(x, y, true);
-        }
+
         pieces[x, y] = curPiece;
         pieces[originalX, originalY] = null;
 

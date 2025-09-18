@@ -12,8 +12,11 @@ public enum Team
 public class Piece : MonoBehaviour
 {
     public int currentX, currentY;
+    public bool canAttackTeammate;
     public Team team;
     [SerializeField] float durationSetPos = 0.5f;
+
+    public void SetCanAttackTeammate(bool canAttack) => canAttackTeammate = canAttack;
 
     public virtual void SetPos(Vector3 targetPos, bool force = false)
     {
@@ -67,7 +70,8 @@ public class Piece : MonoBehaviour
 
     bool IsAvailabeMove(ref Piece[,] board, int x, int y)
     {
-        if (board[x, y] != null && board[x, y].team != team && !Board.Instance.tilesController.tiles[x, y].banAttackTileByUnits)
+        if (board[x, y] != null && !Board.Instance.tilesController.tiles[x, y].banAttackTileByUnits 
+            && (board[x, y].team != team || (canAttackTeammate && board[x, y].team == team)))
             return true;
 
         return false;

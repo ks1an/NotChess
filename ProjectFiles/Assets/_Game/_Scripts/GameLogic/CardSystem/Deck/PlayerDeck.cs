@@ -23,7 +23,6 @@ public sealed class PlayerDeck : Deck
     public override void SetDefaultSettings()
     {
         DestroyAllCard();
-        curDeckSize = maxDeckSize;
         AddToDeck(maxDeckSize, true);
         isNet = GameController.Instance.states.isNetMatch;
         if (isNet)
@@ -38,10 +37,21 @@ public sealed class PlayerDeck : Deck
             Debug.LogError("Trying add to player deck negative count of cards");
             return;
         }
-
+        curDeckSize += count;
         deckView.Add(cardCollection.cardBack, count);
         if (isNet && !isDefSet)
             netCard.AddToDeckRpc(count);
+    }
+    public void AddToGraveyard(int count)
+    {
+        if (count < 0)
+        {
+            Debug.LogError("Trying add to player graveyard negative count of cards");
+            return;
+        }
+        gravejardView.Add(cardCollection.cardBack, count);
+        if (isNet)
+            netCard.AddToGraveyardRpc(count);
     }
 
     //====DRAW====
@@ -55,26 +65,34 @@ public sealed class PlayerDeck : Deck
 
         newCard.Init();
     }
-    public override void DrawHandRandomFromDeck(int amount)
+    public override void DrawHandRandomFromDeck(int amount, bool ignoreCardLimit = false)
     {
-        if (hand.CardsInHand.Count == GameController.Instance.settings.maxCardsInHand || curDeckSize <= 0)
+        if(amount < 0)
+        {
+            Debug.LogError("Amount is negative!");
+            return;
+        }
+        if ((!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) || curDeckSize <= 0)
             return;
 
         if (banForDrawLastGraveyardCard && Random.Range(0, 100) > (100 - chanceToSkipRestrictOnGetLastDestroyedCard))
             banForDrawLastGraveyardCard = false;
+        int cardSpawnedCount = 0;
         for (int i = 0; i < amount; i++)
         {
             Card card = GetRandomCard();
             DrawCardInHand(card);
             deckView.Remove();
             curDeckSize--;
+            cardSpawnedCount++;
             if (curDeckSize == 0) break;
+            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) break;
         }
     
         banForDrawLastIssuedCard = false;
         banForDrawLastGraveyardCard = false;
         if(netCard)
-            netCard.DrawHandRandomFromDeckRpc(amount);
+            netCard.DrawHandRandomFromDeckRpc(cardSpawnedCount, ignoreCardLimit);
     }
     public override void DrawLastFromGraveyard()
     {
@@ -89,6 +107,7 @@ public sealed class PlayerDeck : Deck
         {
             gravejardView.Remove();
             DrawCardInHand(card);
+
             if (isNet)
                 netCard.DrawLastFromGraveyardRpc();
         }
@@ -105,8 +124,6 @@ public sealed class PlayerDeck : Deck
 
         if (isNet)
             netCard.DestroyAllRpc();
-        else
-            EnemyDeck.Instance.DestroyAllCard();
     }
     public void DestroyCardInHand(Card card)
     {
@@ -114,8 +131,19 @@ public sealed class PlayerDeck : Deck
         Destroy(card.gameObject);
         hand.RemoveCard(card);
         gravejardView.Add(cardCollection.cardBack);
+
         if (isNet)
             netCard.DestroyCardRpc();
+    }
+
+    public void DestroyAllCardsInHand(bool needToAddInGraveyard = true)
+    {
+        if(needToAddInGraveyard)
+            gravejardView.Add(cardCollection.cardBack, hand.CardsInHand.Count);
+        hand.RemoveAllCards();
+
+        if (isNet)
+            netCard.DestroyAllCardsInHandRpc(needToAddInGraveyard);
     }
 
     public override int GetGraveyardCardCount() { return gravejardView.GetCountInStack(); }

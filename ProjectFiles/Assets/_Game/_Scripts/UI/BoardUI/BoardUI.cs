@@ -8,13 +8,18 @@ public sealed class BoardUI : MonoBehaviour
 
     public ManaBar manaBar;
 
+    [SerializeField] int howManyTurnsAllowMuligan;
     [SerializeField] TextMeshProUGUI teamMoveIndicator;
-    [SerializeField] Button restartButton;
+    [SerializeField] Button restartButton, muliganBttn;
 
+    Muligan muligan;
     bool isNetMatch;
+    int leftTurndAllowMuligan;
 
     void Awake()
     {
+        muligan = new();
+        muliganBttn.onClick.AddListener(muligan.TryDoMuligan);
         if (Singleton == null)
             Singleton = this;
         else
@@ -36,6 +41,10 @@ public sealed class BoardUI : MonoBehaviour
 
     void StartSettings()
     {
+        leftTurndAllowMuligan = howManyTurnsAllowMuligan;
+        muliganBttn.gameObject.SetActive(true);
+        muligan.SetDefault(muliganBttn.gameObject);
+
         if (GameController.Instance.states.isMoveOfZero)
             ChangeTeamMoveIndicator(-1, -1, Team.Cross);
         else
@@ -83,6 +92,11 @@ false, "Cancel", () => { }, "Revange", RevangeGame);
             teamMoveIndicator.text += "`s move";
             teamMoveIndicator.fontStyle = FontStyles.Bold;
         }
+
+        if(leftTurndAllowMuligan > 0)
+            leftTurndAllowMuligan--;
+        else
+            muliganBttn.gameObject.SetActive(false);
     }
 
     void OnGameEnded(int x, int y, Team teamWin)

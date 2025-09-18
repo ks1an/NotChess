@@ -1600,6 +1600,7 @@ MonoBehaviour:
   - {fileID: 1634816504681716270, guid: b5c33b0a5d113664b8992f5d6a959756, type: 3}
   - {fileID: 1892108300101702296, guid: e31598b8f203e6a4ab2715a4c11bac4f, type: 3}
   - {fileID: 1666185600731207230, guid: f50a275b6351c6943aa33a0a562f34c9, type: 3}
+  - {fileID: 5323299898323647108, guid: d081d17b28edf3a419484e97cc10226e, type: 3}
 --- !u!114 &1558030911
 MonoBehaviour:
   m_ObjectHideFlags: 0

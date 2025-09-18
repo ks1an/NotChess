@@ -31,20 +31,28 @@ public sealed class CardSystemSync : NetworkBehaviour
     [Rpc(SendTo.NotMe)]
     public void SetDefaultRpc() => EnemyDeck.SetDefaultSettings();
 
+
     [Rpc(SendTo.NotMe)]
     public void DestroyAllRpc() => EnemyDeck.DestroyAllCard();
     [Rpc(SendTo.NotMe)]
     public void DestroyCardRpc() => EnemyDeck.DestroyCardInHand(EnemyDeck.GetRandomCardFromHand());
 
     [Rpc(SendTo.NotMe)]
+    public void DestroyAllCardsInHandRpc(bool b) => EnemyDeck.DestroyAllCardsInHand(b);
+
+
+    [Rpc(SendTo.NotMe)]
     public void AddToDeckRpc(int count) => EnemyDeck.AddToDeck(count);
+    [Rpc(SendTo.NotMe)]
+    public void AddToGraveyardRpc(int count) => EnemyDeck.AddToGraveyard(count);
 
     [Rpc(SendTo.NotMe)]
     public void DrawInHandRpc() => EnemyDeck.DrawCardInHand(EnemyDeck.GetCardBack());
 
     [Rpc(SendTo.NotMe)]
-    public void DrawHandRandomFromDeckRpc(int count) => EnemyDeck.DrawHandRandomFromDeck(count);
+    public void DrawHandRandomFromDeckRpc(int count, bool ignoreCardsLimit) => EnemyDeck.DrawHandRandomFromDeck(count, ignoreCardsLimit);
 
     [Rpc(SendTo.NotMe)]
     public void DrawLastFromGraveyardRpc() => EnemyDeck.DrawLastFromGraveyard();
+
 }

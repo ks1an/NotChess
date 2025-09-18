@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MatchStates : MonoBehaviour 
+public class MatchStates : MonoBehaviour
 {
     [HideInInspector] public Board board;
     [HideInInspector] public bool isNetMatch;
@@ -21,6 +21,7 @@ public class MatchStates : MonoBehaviour
     public event Action OnLeaveMatch;
     #endregion
 
+    GameController game;
     NetMatchSync net;
     Player localPlayer;
     EnemyAI enemyBot;
@@ -29,10 +30,12 @@ public class MatchStates : MonoBehaviour
     public void CreateGame(bool isNetMatch, bool isDemontrationMatchAiVsAi)
     {
         ModalInputWindow.Instance.Hide();
-        board = GameController.Instance.board;
+
         this.isNetMatch = isNetMatch;
-        localPlayer = GameController.Instance.player;
         this.isDemonstrationMatchAiVsAi = isDemontrationMatchAiVsAi;
+        game = GameController.Instance;
+        board = game.board;
+        localPlayer = game.player;
 
         if (!isDemontrationMatchAiVsAi)
         {
@@ -47,19 +50,19 @@ public class MatchStates : MonoBehaviour
     {
         if (!isNetMatch)
         {
-            enemyBot = Instantiate(GameController.Instance.botPrefab).GetComponent<EnemyAI>();
+            enemyBot = Instantiate(game.botPrefab).GetComponent<EnemyAI>();
             Board.onBoardGenerated += GameStart;
             PreStart();
         }
         else
         {
-            GameController.Instance.CreateNetSync();
+            game.CreateNetSync();
         }
     }
 
     public void PreStart()
     {
-        net = GameController.Instance.netMatch;
+        net = game.netMatch;
         SetSettings();
         board.GenerateBoard();
 
@@ -68,16 +71,16 @@ public class MatchStates : MonoBehaviour
 
     void SetSettings()
     {
-        isMoveOfZero = GameController.Instance.settings.firtsMoveZero;
+        isMoveOfZero = game.settings.firtsMoveZero;
         lastWinTeam = Team.None;
         if (isDemonstrationMatchAiVsAi)
         {
             enemyBot.LoadEnemy(isMoveOfZero ? Team.Zero : Team.Cross);
-            GameController.Instance.player.SetSettings(Team.None);
+            game.player.SetSettings(Team.None);
         }
         else if (!isNetMatch)
         {
-            GameController.Instance.player.SetSettings(isMoveOfZero ? Team.Zero : Team.Cross);
+            game.player.SetSettings(isMoveOfZero ? Team.Zero : Team.Cross);
             enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
         }
     }
@@ -97,17 +100,18 @@ public class MatchStates : MonoBehaviour
     public void GameStart()
     {
         PlayerDeck.Instance.SetDefaultSettings();
+        EnemyDeck.Instance.SetDefaultSettings();
         WaitingWindowController.Instance.Hide();
 
         turnCount = 0;
-        if (GameController.Instance.player.GetLocalPlayerTeam() != Team.None)
-            PlayerDeck.Instance.DrawHandRandomFromDeck(GameController.Instance.settings.startCards);
-
+        if (game.player.GetLocalPlayerTeam() != Team.None)
+        {
+            PlayerDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
+            EnemyDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
+        }
         OnGameStarted?.Invoke();
     }
     #endregion
-
-    #region Play
 
     #region DoMove
     public void TryCreateUnitOnBoard(int x, int y, Team team)
@@ -136,8 +140,8 @@ public class MatchStates : MonoBehaviour
             }
             else
             {
-                if (destroyedByUnit && localPlayer.GetLocalPlayerTeam() != Team.None && board.piecesController.pieces[x, y].team != localPlayer.GetLocalPlayerTeam())
-                    localPlayer.IncreaseMana(GameController.Instance.settings.manaForDestroyEnemy);
+                if (destroyedByUnit && localPlayer.GetLocalPlayerTeam() != Team.None)
+                    localPlayer.IncreaseMana(game.settings.manaForDestroyEnemy);
 
                 Destroy(board.piecesController.pieces[x, y].gameObject);
             }
@@ -194,19 +198,18 @@ public class MatchStates : MonoBehaviour
             return;
         }
 
-        if(GameController.Instance.player.GetLocalPlayerTeam() != Team.None)
+        if (game.player.GetLocalPlayerTeam() != Team.None)
         {
-            if (PlayerDeck.Instance.hand.CardsInHand.Count < GameController.Instance.settings.maxCardsInHand)
-                PlayerDeck.Instance.DrawHandRandomFromDeck(GameController.Instance.settings.maxCardsInHand - PlayerDeck.Instance.hand.CardsInHand.Count);
+            if (PlayerDeck.Instance.hand.CardsInHand.Count < game.settings.defaultCardsInHand)
+                PlayerDeck.Instance.DrawHandRandomFromDeck(game.settings.defaultCardsInHand);
 
-            if (GameController.Instance.player.GetLocalPlayerTeam() != team && turnCount > GameController.Instance.settings.piecesWinSequence)
-                GameController.Instance.player.IncreaseMana(GameController.Instance.settings.manaPerTurn);
+            if (game.player.GetLocalPlayerTeam() != team && turnCount > game.settings.piecesWinSequence)
+                game.player.IncreaseMana(game.settings.manaPerTurn);
         }
 
         isMoveOfZero = !isMoveOfZero;
         OnTurnEnded?.Invoke(x, y, team);
     }
-    #endregion
 
     #region AfterPlay(End)
     void GameEnd(Team winTeam, int x, int y)
@@ -228,7 +231,7 @@ public class MatchStates : MonoBehaviour
         else
         {
             RevengeOffer();
-            if (GameController.Instance.player.GetLocalPlayerTeam() == lastWinTeam)
+            if (game.player.GetLocalPlayerTeam() == lastWinTeam)
             {
                 OnGameWin?.Invoke(x, y, winTeam);
             }
@@ -246,15 +249,15 @@ public class MatchStates : MonoBehaviour
             ModalViewWindowController.Instance.ShowHorizontal(false, $"Winner: <color=#FFD700>{lastWinTeam}</color>", "Victory. Nothing to add or take away.",
     false, "Restart", GameRestart, "Exit", LeaveFromMatch);
         }
-        else if(GameController.Instance.player.GetLocalPlayerTeam() != Team.None)
+        else if (game.player.GetLocalPlayerTeam() != Team.None)
         {
             //
-            if (GameController.Instance.player.GetLocalPlayerTeam() == lastWinTeam)
+            if (game.player.GetLocalPlayerTeam() == lastWinTeam)
             {
                 ModalViewWindowController.Instance.ShowHorizontal(false, $"You have won!", "My applause to you. Want to fight your opponent again? Offer a rematch!",
     false, "Revenge!", net.OfferRevenge, "Exit to menu", LeaveFromMatch);
             }
-            else if (lastWinTeam != Team.None && GameController.Instance.player.GetLocalPlayerTeam() != lastWinTeam)
+            else if (lastWinTeam != Team.None && game.player.GetLocalPlayerTeam() != lastWinTeam)
             {
                 ModalViewWindowController.Instance.ShowHorizontal(false, $"You lost", "I feel sorry for you. Have you tried? Try your luck again. Challenge your opponent to a rematch!",
 false, "Revenge! I'll win.", net.OfferRevenge, "Exit.", LeaveFromMatch);

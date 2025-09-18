@@ -43,7 +43,7 @@ public sealed class GameController : MonoBehaviour
     public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false,
         int winSequence = 5, bool firstMoveZero = true,
         int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1,
-        int startCards = 5, int maxCardInHand = 5)
+        int startCards = 6, int defaultCardsInHand = 5)
     {
         if (isDemonstration && !isMatchAiVsAi)
             states.EndDemonstrationGame();
@@ -51,7 +51,7 @@ public sealed class GameController : MonoBehaviour
         settings = new MatchSettings(8, 8, 1.25f, 
             winSequence, firstMoveZero, 
             startMana, startManaForEvenPlayer, manaPerTurn, maxMana, manaForDestoryEnemy, 
-            startCards, maxCardInHand);
+            startCards, defaultCardsInHand);
 
         states.CreateGame(isNetMatch, isMatchAiVsAi);
     }

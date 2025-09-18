@@ -15,7 +15,7 @@ public abstract class Deck : MonoBehaviour
     public abstract void AddToDeck(int count, bool isDefSet = false);
 
     //DRAW
-    public abstract void DrawHandRandomFromDeck(int amount);
+    public abstract void DrawHandRandomFromDeck(int amount, bool ignoreCardLimit = false);
     public abstract void DrawLastFromGraveyard();
 
     //DESTROY

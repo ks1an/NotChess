@@ -89,6 +89,7 @@ public abstract class EffectorBehaviour
     protected abstract void DoOnTurnEnded();
     public virtual void EndEffect()
     {
+        Board.Instance.tilesController.tiles[tileX, tileY].SetDefendClass(DefendClass.None, this);
         DestroyVFX();
     }
 }
