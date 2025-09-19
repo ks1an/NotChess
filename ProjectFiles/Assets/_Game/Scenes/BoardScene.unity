@@ -181,8 +181,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 10
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6aec04b085ae6284bb7de51c6ec03bbd, type: 2}
+  m_sharedMaterial: {fileID: -1587306635100675327, guid: 6aec04b085ae6284bb7de51c6ec03bbd, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -206,7 +206,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 34.4
+  m_fontSize: 32.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1360,6 +1360,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11ad9a2515937c2428d7d27f22c30527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localTable:
+    m_TableReference:
+      m_TableCollectionName: GUID:a628de426b525764083d07ed2e44540e
   manaBar: {fileID: 514189241}
   howManyTurnsAllowMuligan: 6
   teamMoveIndicator: {fileID: 1718720008}
@@ -1746,8 +1749,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Your move
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: fd1c4704602ce7c41bd28a0cddec1027, type: 2}
+  m_sharedMaterial: {fileID: 3857600279528089625, guid: fd1c4704602ce7c41bd28a0cddec1027, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

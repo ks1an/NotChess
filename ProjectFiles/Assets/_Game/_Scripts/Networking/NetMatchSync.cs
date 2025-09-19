@@ -1,8 +1,10 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class NetMatchSync : NetworkBehaviour
 {
+    [SerializeField] LocalizedStringTable localTable;
     [HideInInspector] public CardSystemSync cardSync;
     [HideInInspector] public UnitSystemSync unitSync;
     MatchStates states;
@@ -114,10 +116,17 @@ public class NetMatchSync : NetworkBehaviour
         NetworkManager.Singleton.Shutdown();
     }
 
-    void OnHostLeaved() => ModalViewWindowController.Instance.ShowHorizontal(false, "Host left!", "You will have to go to the menu too, bye-bye! <3", false,
-            "Exit", states.OnLeaveFromMatchTrigger, "Ok(", states.OnLeaveFromMatchTrigger);
-    void OnPlayerLeavedGame() => ModalViewWindowController.Instance.ShowHorizontal(false, "Player left!", "You broke him and he ran away! Now go back to the menu, strategist",
-            false, "Exit", states.OnLeaveFromMatchTrigger, "Boo-ha-ha-ha!", states.OnLeaveFromMatchTrigger);
+    void OnHostLeaved() =>
+        ModalViewWindowController.Instance.ShowHorizontalWithLocalize(
+            localTable, "HostLeft",
+            false, false, states.OnLeaveFromMatchTrigger, states.OnLeaveFromMatchTrigger
+            );
+
+    void OnPlayerLeavedGame() =>
+        ModalViewWindowController.Instance.ShowHorizontalWithLocalize(
+            localTable, "PlayerLeft",
+            false, false, states.OnLeaveFromMatchTrigger, states.OnLeaveFromMatchTrigger
+            );
     #endregion
 
     #region Revenge
@@ -141,8 +150,8 @@ public class NetMatchSync : NetworkBehaviour
     [Rpc(SendTo.Everyone)]
     void NotificateRevengeRpc(int wantRevengePlayers)
     {
-        if(isWantedToRevenge)
-            NotificationPanelConroller.Instance.ShowNotification($"{wantRevengePlayers}/{2} ready for a rematch",() => { });
+        if (isWantedToRevenge)
+            NotificationPanelConroller.Instance.ShowNotification($"{wantRevengePlayers}/{2} ready for a rematch", () => { });
         else
             NotificationPanelConroller.Instance.ShowNotification($"{wantRevengePlayers}/{2} ready for a rematch", () => states.RevengeOffer());
     }

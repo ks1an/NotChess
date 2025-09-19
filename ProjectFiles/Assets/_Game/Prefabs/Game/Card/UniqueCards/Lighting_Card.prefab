@@ -104,9 +104,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49a65fdfff23cc94ebff1516d5221f67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Lighting Bolt
-  <Description>k__BackingField: Hits the cell. <b><#ff0000>Destroyes</color> the
-    unit</b>  on that cell.
+  originalCardName: Lighting bolt
+  originalDescription: Hits the cell. <b><#ff0000>Destroyes</color> the unit</b> 
+    on that cell.
   <ManaCost>k__BackingField: 5
   <Image>k__BackingField: {fileID: 21300000, guid: 586c07ae0105fb94485ca7726505d31b, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
@@ -235,7 +235,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 586c07ae0105fb94485ca7726505d31b, type: 3}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Lighting Bolt
+      value: Lighting bolt
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
@@ -331,7 +331,13 @@ PrefabInstance:
     - {fileID: 7979881289621930186, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2987961070044687224}
+    - targetCorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1771143744449324686}
   m_SourcePrefab: {fileID: 100100000, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
 --- !u!114 &1026813138629430710 stripped
 MonoBehaviour:
@@ -376,6 +382,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &3726794167363857689 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+  m_PrefabInstance: {fileID: 8002781827172970264}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1771143744449324686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3726794167363857689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
+    m_TableEntryReference:
+      m_KeyId: 12482651930624
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 510541827946207621}
+        m_TargetAssemblyTypeName: Card, Assembly-CSharp
+        m_MethodName: SetDisplayDescriptionOfCard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!1 &7068830201447759933 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+  m_PrefabInstance: {fileID: 8002781827172970264}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2987961070044687224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068830201447759933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
+    m_TableEntryReference:
+      m_KeyId: 12367849635840
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 510541827946207621}
+        m_TargetAssemblyTypeName: Card, Assembly-CSharp
+        m_MethodName: SetDisplayNameOfCard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!212 &9080530353811764651 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}

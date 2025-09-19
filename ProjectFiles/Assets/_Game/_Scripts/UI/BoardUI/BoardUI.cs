@@ -1,9 +1,11 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public sealed class BoardUI : MonoBehaviour
 {
+    [SerializeField] LocalizedStringTable localTable;
     public static BoardUI Singleton;
 
     public ManaBar manaBar;
@@ -43,7 +45,7 @@ public sealed class BoardUI : MonoBehaviour
     {
         leftTurndAllowMuligan = howManyTurnsAllowMuligan;
         muliganBttn.gameObject.SetActive(true);
-        muligan.SetDefault(muliganBttn.gameObject);
+        muligan.SetDefault(muliganBttn.gameObject, localTable);
 
         if (GameController.Instance.states.isMoveOfZero)
             ChangeTeamMoveIndicator(-1, -1, Team.Cross);
@@ -53,20 +55,29 @@ public sealed class BoardUI : MonoBehaviour
 
     public void TryExitToMenu()
     {
-        ModalViewWindowController.Instance.ShowHorizontal(false, "Leave?", "Are you sure you want to quit? Progress for the round will be lost!",
-    false, "Cancel", () => { }, "Leave", ExitToMenu);
+        ModalViewWindowController.Instance.ShowHorizontalWithLocalize
+        (
+        localTable, "TryExitToMenu",
+        false, false, () => { }, ExitToMenu
+        );
     }
 
     public void TryRestartGame()
     {
-        ModalViewWindowController.Instance.ShowHorizontal(false, "Restart?", "Are you sure you want to restart?",
-false, "Cancel", () => { }, "Restart", RestartGame);
+        ModalViewWindowController.Instance.ShowHorizontalWithLocalize
+        (
+        localTable, "Restart",
+        false, false, () => { }, GameController.Instance.states.GameRestart
+        );
     }
 
     public void TryToRevange()
     {
-        ModalViewWindowController.Instance.ShowHorizontal(false, "Revange?", "Are you sure you want to revange?",
-false, "Cancel", () => { }, "Revange", RevangeGame);
+        ModalViewWindowController.Instance.ShowHorizontalWithLocalize
+        (
+        localTable, "Revange",
+        false, false, () => { }, GameController.Instance.netMatch.OfferRevenge
+        );
     }
 
     #region OnGameState
@@ -93,7 +104,7 @@ false, "Cancel", () => { }, "Revange", RevangeGame);
             teamMoveIndicator.fontStyle = FontStyles.Bold;
         }
 
-        if(leftTurndAllowMuligan > 0)
+        if (leftTurndAllowMuligan > 0)
             leftTurndAllowMuligan--;
         else
             muliganBttn.gameObject.SetActive(false);
@@ -107,8 +118,6 @@ false, "Cancel", () => { }, "Revange", RevangeGame);
     #endregion
 
     void ExitToMenu() => GameController.Instance.states.LeaveFromMatch();
-    void RestartGame() => GameController.Instance.states.GameRestart();
-    void RevangeGame() => GameController.Instance.netMatch.OfferRevenge();
 
     private void OnDisable()
     {

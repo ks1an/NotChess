@@ -35,8 +35,8 @@ public class CardUI : MonoBehaviour
         picture.sprite = card.Image;
         SetBorderColor(card.ColorBorder);
 
-        cardName.text = card.Name;
-        cardDescription.text = card.Description;
+        cardName.text = card.DisplayName;
+        cardDescription.text = card.DisplayDescription;
         manaCostTxt.text = card.ManaCost.ToString();
 
         orientation = (int)card.Orientation;

@@ -104,10 +104,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 277af769ca6798e41b259f6f7ec1912c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Rock
-  <Description>k__BackingField: "<#005500><b>Prevents</b></color> a unit from being
-    <b><#005500>placed</b> on a cell</color> for <b>two rounds</b>. \nCan only be
-    used <b>on a free cell</b>"
+  originalCardName: Rock
+  originalDescription: "<#005500><b>Prevents</b></color> a unit from being <b><#005500>placed</b>
+    on a cell</color> for <b>two rounds</b>. \nCan only be\r\nused <b>on a free cell</b>"
   <ManaCost>k__BackingField: 3
   <Image>k__BackingField: {fileID: 21300000, guid: 8aa312c8349b98845a6c35827c0e7e20, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8, b: 0.5686275, a: 1}
@@ -255,6 +254,14 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
       value: 3
@@ -262,6 +269,14 @@ PrefabInstance:
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
       value: 1.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.x
@@ -298,7 +313,7 @@ PrefabInstance:
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
       value: "<#005500><b>Prevents</b></color> a unit from being <b><#005500>placed</b>
-        on a cell</color> for <b>two rounds</b>. \nCan only be used <b>on a free
+        on a cell</color> for <b>two rounds</b>. \nCan only be\r\nused <b>on a free
         cell</b>"
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
@@ -345,6 +360,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8670474509859035786, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8907679441293784488, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5078114738019349710, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
     - {fileID: 5573046365338199542, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
@@ -354,7 +377,13 @@ PrefabInstance:
     - {fileID: 5418652438548528533, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6172478440885822947}
+    - targetCorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6334583754641456565}
   m_SourcePrefab: {fileID: 100100000, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
 --- !u!114 &1026813138629430710 stripped
 MonoBehaviour:
@@ -399,6 +428,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &3726794167363857689 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+  m_PrefabInstance: {fileID: 8002781827172970264}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6334583754641456565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3726794167363857689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
+    m_TableEntryReference:
+      m_KeyId: 16966333546496
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1634816504681716270}
+        m_TargetAssemblyTypeName: Card, Assembly-CSharp
+        m_MethodName: SetDisplayDescriptionOfCard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!1 &7068830201447759933 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+  m_PrefabInstance: {fileID: 8002781827172970264}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6172478440885822947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068830201447759933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
+    m_TableEntryReference:
+      m_KeyId: 16798607523840
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1634816504681716270}
+        m_TargetAssemblyTypeName: Card, Assembly-CSharp
+        m_MethodName: SetDisplayNameOfCard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!212 &9080530353811764651 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}

@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: StringCardsTable Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: StringCardsTable
+  m_TableCollectionNameGuidString: ff9908956b2db9f4b8309b90f0dfec04
+  m_Entries:
+  - m_Id: 101607587840
+    m_Key: CastleWallsName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3105161265152
+    m_Key: CastleWallsDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10614102081536
+    m_Key: ForbiddenShieldName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10719232311296
+    m_Key: ForbiddenShieldDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12367849635840
+    m_Key: LightingBoltName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12482651930624
+    m_Key: LightingBoltDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 13996447547392
+    m_Key: MeteorRainName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14078613962752
+    m_Key: MeteorRainDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15076115922944
+    m_Key: ReturnCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15315635847168
+    m_Key: ReturnCardDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16798607523840
+    m_Key: RockCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16966333546496
+    m_Key: RockCardDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19123539591168
+    m_Key: SacrificeCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19262060675072
+    m_Key: SacrificeCardDescribe
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1699026256732094488
+  references:
+    version: 2
+    RefIds:
+    - rid: 1699026256732094488
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1758186871293

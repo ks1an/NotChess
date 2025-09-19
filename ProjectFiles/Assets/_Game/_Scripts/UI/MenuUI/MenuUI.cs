@@ -1,10 +1,12 @@
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.UI;
 
 public sealed class MenuUI : MonoBehaviour
 {
+    [SerializeField] LocalizedStringTable localTable;
     [SerializeField] Button lobbyListBttn, matchmakingBttn, singleplay;
 
     void Awake()
@@ -21,13 +23,19 @@ public sealed class MenuUI : MonoBehaviour
         }
         else
         {
-            ModalViewWindowController.Instance.ShowHorizontal(true, "Warning!", "Network services were not implemented. Network functions were limited.", 
-                true, null, null, "Ok", () => { });
+            ModalViewWindowController.Instance.ShowHorizontalWithLocalize
+                (
+                    localTable, "NetworkServicesNotInit",
+                    true, true, null, () => { }
+                );
             lobbyListBttn.interactable = false;
             matchmakingBttn.interactable = false;
         }
     }
 
-    public void TryExitFromApp() => ModalViewWindowController.Instance.ShowHorizontal(false, "See you?", "Do you want to go out \n but promise to come back?",
-            true, "I'm staying!", () => ModalViewWindowController.Instance.TryCloseModalViewWindow(), "I'll be back..\nAhem-hem-hem", Application.Quit);
+    public void TryExitFromApp() => ModalViewWindowController.Instance.ShowHorizontalWithLocalize
+        (
+        localTable, "TryExitFromApp",
+        false, true, () => ModalViewWindowController.Instance.TryCloseModalViewWindow(), Application.Quit
+        );
 }

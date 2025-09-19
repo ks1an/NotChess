@@ -1,24 +1,27 @@
 using UnityEngine;
+using UnityEngine.Localization;
 
 public sealed class Muligan
 {
+    LocalizedStringTable localTable;
     GameObject buttonMuliganObj;
     int startCardsCount, countOfUsed, maxMuligan;
 
-    public void SetDefault(GameObject muliganBttnObj)
+    public void SetDefault(GameObject muliganBttnObj, LocalizedStringTable localTable)
     {
         buttonMuliganObj = muliganBttnObj;
         countOfUsed = 0;
         maxMuligan = GameController.Instance.settings.startCards;
         startCardsCount = GameController.Instance.settings.startCards;
+        this.localTable = localTable;
     }
 
-    public void TryDoMuligan()
-    {
-        ModalViewWindowController.Instance.ShowHorizontal(false, "Muligan?", "You discard <b>all</b> of your cards in your hand to the <b>deck</b> except for one. " +
-            "It goes to the <b>graveyard</b>.\r\nIn exchange, you <b>draw one fewer</b> but greater than zero cards <b>into your hand</b>.",
-    false, "Cancel", () => { }, "I'll be lucky", DoMuligan);
-    }
+    public void TryDoMuligan() =>
+        ModalViewWindowController.Instance.ShowHorizontalWithLocalize
+            (
+            localTable, "Muligan", false, false,
+            () => { }, DoMuligan
+            );
 
     void DoMuligan()
     {

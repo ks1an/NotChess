@@ -5,6 +5,7 @@ using Unity.Services.Core;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public sealed class LobbyManager : MonoBehaviour
 {
@@ -34,6 +35,7 @@ public sealed class LobbyManager : MonoBehaviour
     #endregion
 
     [SerializeField] GameObject lobbyList;
+    [SerializeField] LocalizedStringTable localTable;
     [SerializeField] float refreshLobbyListTimer = 5f;
 
     Lobby joinedLobby;
@@ -359,9 +361,10 @@ public sealed class LobbyManager : MonoBehaviour
         }
         catch (LobbyServiceException)
         {
-            ModalViewWindowController.Instance.ShowHorizontal(false, "Not found", 
-                "Unfortunately, no free lobbies were found that match your filters.",
-                true, altTxt: "Ok", altAction: () => { });
+            ModalViewWindowController.Instance.ShowHorizontalWithLocalize(
+                localTable, "LobbyNotFound",
+                false, true, altAction: () => { }
+                );
         }
     }
     #endregion

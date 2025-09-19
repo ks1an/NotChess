@@ -1,0 +1,213 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: ModalViewWindow_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: a628de426b525764083d07ed2e44540e, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 18342761512960
+    m_Localized: Network services were not implemented. Network functions were limited.
+      Check your connections and restart game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18182908198912
+    m_Localized: Warning!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18837630664704
+    m_Localized: 'Ok '
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20794218954752
+    m_Localized: See you?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20898527100928
+    m_Localized: 'Do you want to go out
+
+      but promise to come back?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21305454280704
+    m_Localized: I'm staying!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 21685923790848
+    m_Localized: I'll be back..\nAhem-hem-hem
+    m_Metadata:
+      m_Items: []
+  - m_Id: 23866051706880
+    m_Localized: Muligan?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 24018250416128
+    m_Localized: 'You discard <b>all</b> of your cards in your hand to the <b>deck</b>
+      except for one.It goes to the <b>graveyard</b>.
+
+      In exchange, you <b>draw
+      one fewer</b> but greater than zero cards <b>into your hand</b>.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25078855680000
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 25154940354560
+    m_Localized: I'll be lucky
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27486008688640
+    m_Localized: Revange?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27584901988352
+    m_Localized: Are you sure you want to revange?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27827215319040
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27792880746496
+    m_Localized: Revange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28376690114560
+    m_Localized: Restart?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28507418181632
+    m_Localized: Are you sure you want to restart?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28638024613888
+    m_Localized: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 28663043637248
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30888419704832
+    m_Localized: Leave?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31001846267904
+    m_Localized: Are you sure you want to quit? Progress for the round will be lost!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31262950080512
+    m_Localized: Cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31298584887296
+    m_Localized: Leave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299173354717184
+    m_Localized: Host left!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299259388280832
+    m_Localized: Ok
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299382520463360
+    m_Localized: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299453274177536
+    m_Localized: Player left!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299559511703552
+    m_Localized: You broke him and he ran away! Now go back to the menu, strategist
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299853607911424
+    m_Localized: Boo-ha-ha-ha.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 299969362313216
+    m_Localized: Exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300051054772224
+    m_Localized: Not found!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300138048831488
+    m_Localized: Unfortunately, no free lobbies were found that match your filters
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300421512478720
+    m_Localized: Ok
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300490412310528
+    m_Localized: Revange?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300599304830976
+    m_Localized: 'Will it work this time!
+
+      ...or not?'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300748265537536
+    m_Localized: Nope.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300822777348096
+    m_Localized: Revenge! I`ll win.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 300982806822912
+    m_Localized: YouLost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 301105259528192
+    m_Localized: I feel sorry for you. Have you tried? Try your luck again. Challenge
+      your opponent to a rematch!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 301159747731456
+    m_Localized: Revenge! I`ll win
+    m_Metadata:
+      m_Items: []
+  - m_Id: 301155595370496
+    m_Localized: Exit.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 303724367495168
+    m_Localized: You have won!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 303811726458880
+    m_Localized: My applause to you. Want to fight your opponent again? Offer a rematch!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 304166489079808
+    m_Localized: Revenge!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 304269270499328
+    m_Localized: Exit to menu
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

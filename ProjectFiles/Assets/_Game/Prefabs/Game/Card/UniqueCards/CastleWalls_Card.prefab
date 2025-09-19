@@ -104,10 +104,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 812996b12ac52e34b8e7cd31da1d3c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Castle Walls
-  <Description>k__BackingField: <#005500>Prevents attacking</color> a cell for <b>1
-    round</b>
-  <ManaCost>k__BackingField: 3
+  originalCardName: CastleWalls
+  originalDescription: <#005500>Prevents attacking</color> a cell for <b>1 round</b>
+  <ManaCost>k__BackingField: 2
   <Image>k__BackingField: {fileID: 21300000, guid: d18657fc874599b459f7fb41cf71d67a, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8, b: 0.5686275, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
@@ -248,11 +247,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Castle Walls
+      value: CastleWalls
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_fontSize
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
@@ -347,7 +350,13 @@ PrefabInstance:
     - {fileID: 5418652438548528533, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6018498449726068308}
+    - targetCorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8054118359823079332}
   m_SourcePrefab: {fileID: 100100000, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
 --- !u!114 &1026813138629430710 stripped
 MonoBehaviour:
@@ -392,6 +401,96 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &3726794167363857689 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+  m_PrefabInstance: {fileID: 8002781827172970264}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8054118359823079332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3726794167363857689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
+    m_TableEntryReference:
+      m_KeyId: 3105161265152
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1892108300101702296}
+        m_TargetAssemblyTypeName: Card, Assembly-CSharp
+        m_MethodName: SetDisplayDescriptionOfCard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
+--- !u!1 &7068830201447759933 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+  m_PrefabInstance: {fileID: 8002781827172970264}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6018498449726068308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068830201447759933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
+    m_TableEntryReference:
+      m_KeyId: 101607587840
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1892108300101702296}
+        m_TargetAssemblyTypeName: Card, Assembly-CSharp
+        m_MethodName: SetDisplayNameOfCard
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  references:
+    version: 2
+    RefIds: []
 --- !u!212 &9080530353811764651 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}

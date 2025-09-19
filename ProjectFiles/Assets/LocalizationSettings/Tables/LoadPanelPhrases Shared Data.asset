@@ -1,0 +1,233 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: LoadPanelPhrases Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: LoadPanelPhrases
+  m_TableCollectionNameGuidString: bd42a76fe5ff24841b1bc5504fd47e17
+  m_Entries:
+  - m_Id: 903105527808
+    m_Key: I arrange the pieces...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4699302969344
+    m_Key: Blowing away the dust...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8516488708096
+    m_Key: I'm ordering cement for the field
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8808546484224
+    m_Key: I'm sorting tic-tac-toe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8883817463808
+    m_Key: The figures on the green field touch the grass, try it yourself
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8969700032512
+    m_Key: I draw cards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9089610989568
+    m_Key: I draw crosses on the calendar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9182296719360
+    m_Key: If you find a bug, let me know, I will write a report and this timeline
+      will be destroyed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9503290998784
+    m_Key: "To win, you need to collect a line from a certain number of pieces on
+      the board. \nI'll give you a board, and maybe some pieces, too. I won't give
+      you a combination."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9737916170240
+    m_Key: The cards spend mana, I won't give it to you.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9856954712064
+    m_Key: I'm laying out the field
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9929159655424
+    m_Key: Coloring the shapes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10043643183104
+    m_Key: I can add something clever, for example...... Okay, that's fine. I'll
+      try it in the next timeline.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10224132472832
+    m_Key: I draw unicorns...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11045142315008
+    m_Key: "\u041E\u0431\u0443\u0447\u0430\u044E \u0444\u0438\u0433\u0443\u0440\u044B
+      \u0445\u043E\u0434\u0438\u0442\u044C "
+    m_Metadata:
+      m_Items: []
+  - m_Id: 11891376701440
+    m_Key: I'm putting the sticks under the servers. They won't fall..?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12021760835584
+    m_Key: What if the stones are soft, just harden when touched?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 12655474032640
+    m_Key: Doing the job
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14600037253120
+    m_Key: I leave jokes in other version lines.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 14918389121024
+    m_Key: I buy crutches
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15049826025472
+    m_Key: "Why did we add \u2018not\u2019 to chess and not use any of them?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15122744000512
+    m_Key: But in the old version lines.. Eh...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15329229586432
+    m_Key: Do you know about the important rule of the game? Write to me as soon
+      as you think of it.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15434359816192
+    m_Key: We are, aren't you?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15525845975040
+    m_Key: Jumping under textures is prohibited. Correction of line errors at your
+      expense :)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 15782881312768
+    m_Key: It happens to me that I say forbidden words. If you're vulnerable... Well,
+      let's not be sad.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16284905947136
+    m_Key: If the universe is endless, then there is a cat in it who can create a
+      game with random keystrokes, right?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16363402346496
+    m_Key: To aim, press pcm... oh, the wrong attractor.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16675299180544
+    m_Key: "- I made a game! \n-I'm not.-\n- Who are you!?"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 16970200694784
+    m_Key: What are you doing on my disk?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17119748603904
+    m_Key: The game will be delayed, I'm drinking tea.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17201810161664
+    m_Key: "\u2013 So, who are you? \n-Is it that important?\n\u2013 If you have
+      oatmeal cookies for my tea, then no"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17457364910080
+    m_Key: -I think we'll get along.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17578232168448
+    m_Key: Shuffling the deck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 17958068338688
+    m_Key: Um... what does this red button mean?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18040746459136
+    m_Key: The host is fighting for food, expect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19562683219968
+    m_Key: Loading...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19643977220096
+    m_Key: Loading resources...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19808523960320
+    m_Key: I connect with the higher mind
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19885804011520
+    m_Key: Beeeep beep!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 19945778364416
+    m_Key: I'm making my move
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20019270959104
+    m_Key: Thinking about something important. What if we take an existing name and
+      add \"Not\" to it?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20356178427904
+    m_Key: 'I can...I wish you good luck.
+
+      Yes, I will do that. Good luck.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20667945238528
+    m_Key: But it was better in the previous version... Or not? What has changed?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20758298935296
+    m_Key: Has something changed?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20847222374400
+    m_Key: I exist? But how?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20913756618752
+    m_Key: Again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20927262277632
+    m_Key: Again?
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1699026279654752258
+  references:
+    version: 2
+    RefIds:
+    - rid: 1699026279654752258
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1758274291141

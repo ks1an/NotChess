@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Shared
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-Assets-Shared
+  m_Data:
+    m_SerializedData: []
+  m_GUID: c87ee6b36f9af6040b6c8c19a00cc335
+  m_SerializeEntries:
+  - m_GUID: a628de426b525764083d07ed2e44540e
+    m_Address: Assets/LocalSettings/Tables/LoadScreen Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bd42a76fe5ff24841b1bc5504fd47e17
+    m_Address: Assets/LocalSettings/Tables/LoadPanelPhrases Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ff9908956b2db9f4b8309b90f0dfec04
+    m_Address: Assets/LocalSettings/Tables/StringCardsTable Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: c7f24693e5db3bb4a98952854c47f3e3, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 4ba279d0901a0cd46adb16ccdff8b513, type: 2}
+    - {fileID: 11400000, guid: b6654f4cea2a8f644808eb569c572ab4, type: 2}

@@ -13,10 +13,12 @@ public enum CardAttackStrong
 [RequireComponent(typeof(CardUI))]
 public class Card : MonoBehaviour
 {
+    [SerializeField] string originalCardName;
+    [field: SerializeField, TextArea] string originalDescription;
     public int ID { get; private set; }
 
-    [field: SerializeField] public string Name { get; private set; }
-    [field: SerializeField, TextArea] public string Description { get; private set; }
+    public string DisplayName { get; private set; }
+    public string DisplayDescription { get; private set; }
     [field: SerializeField] public int ManaCost { get; private set; }
     [field: SerializeField] public Sprite Image { get; private set; }
     [field: SerializeField] public Color ColorBorder { get; private set; }
@@ -35,17 +37,44 @@ public class Card : MonoBehaviour
     protected List<Vector2Int> availableMoves = new();
 
     public virtual void OnValidate()
-    { 
-        CardUI = GetComponent<CardUI>();
-        CardUI.SetCardUI(); 
+    {
+        DisplayName = originalCardName;
+        DisplayDescription = originalDescription;
+        UpdateCardUI();
     }
 
+    #region Sets
+    public void SetDisplayNameOfCard(string value)
+    {
+        DisplayName = value;
+        UpdateCardUI();
+    }
+
+    public void SetDisplayDescriptionOfCard(string value)
+    {
+        DisplayDescription = value;
+        UpdateCardUI();
+    }
+    #endregion
+
+    
     public virtual void Init()
     {
         CardUI = GetComponent<CardUI>();
-        CardUI.SetCardUI();
+        UpdateCardUI();
         ID = SelfGetID();
         Hand = PlayerDeck.Instance.hand;
+    }
+
+    void UpdateCardUI()
+    {
+        if (CardUI != null)
+            CardUI.SetCardUI();
+        else
+        {
+            CardUI = GetComponent<CardUI>();
+            CardUI.SetCardUI();
+        }
     }
 
     public virtual void UseCard(List<Vector2Int> moves, bool isSynced) { }
@@ -63,8 +92,8 @@ public class Card : MonoBehaviour
         if(ID != 0)
             return ID;
 
-        string id = Name.Length.ToString() + Description.Length.ToString() + ((int)ColorBorder.b).ToString() +
-            ((int)Orientation).ToString() + ((int)Category).ToString() + ((int)Rarity).ToString();
+        string id = originalCardName.Length.ToString() + originalDescription.Length.ToString() + ((int)ColorBorder.b).ToString() +
+            ((int)Orientation).ToString() + ((int)Category).ToString() + ((int)Rarity).ToString() + ((int)AttackClass).ToString();
 
         return int.Parse(id);
     }

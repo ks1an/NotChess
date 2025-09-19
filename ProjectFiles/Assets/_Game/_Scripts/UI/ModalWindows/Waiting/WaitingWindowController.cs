@@ -13,7 +13,7 @@ public sealed class WaitingWindowController : MonoBehaviour
     public void ShowWithRandomTxt()
     {
         window.gameObject.SetActive(true);
-        window.SetLoadText();
+        window.SetRandomLoadText();
     }
 
     public void Hide()

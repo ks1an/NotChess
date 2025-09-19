@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Localization;
 
 public class MatchStates : MonoBehaviour
 {
+    [SerializeField] LocalizedStringTable localTable;
     [HideInInspector] public Board board;
     [HideInInspector] public bool isNetMatch;
     [HideInInspector] public bool isMoveOfZero;
@@ -251,23 +253,27 @@ public class MatchStates : MonoBehaviour
         }
         else if (game.player.GetLocalPlayerTeam() != Team.None)
         {
-            //
+            string entryKey;
+            Action confirmAction = net.OfferRevenge, 
+                declineAction = LeaveFromMatch;
+
             if (game.player.GetLocalPlayerTeam() == lastWinTeam)
             {
-                ModalViewWindowController.Instance.ShowHorizontal(false, $"You have won!", "My applause to you. Want to fight your opponent again? Offer a rematch!",
-    false, "Revenge!", net.OfferRevenge, "Exit to menu", LeaveFromMatch);
+                entryKey = "WinNetMatch";
             }
             else if (lastWinTeam != Team.None && game.player.GetLocalPlayerTeam() != lastWinTeam)
             {
-                ModalViewWindowController.Instance.ShowHorizontal(false, $"You lost", "I feel sorry for you. Have you tried? Try your luck again. Challenge your opponent to a rematch!",
-false, "Revenge! I'll win.", net.OfferRevenge, "Exit.", LeaveFromMatch);
+                entryKey = "LostNetMatch";
             }
             else
             {
-                ModalViewWindowController.Instance.ShowHorizontal(false, $"Revange?", "Will it work this time!\n...or not?",
-false, "Revenge! I'll win.", net.OfferRevenge, "Nope.", LeaveFromMatch);
+                entryKey = "TryRevange";
             }
-            //
+
+            ModalViewWindowController.Instance.ShowHorizontalWithLocalize(
+                localTable, entryKey,
+                false, false, confirmAction, declineAction
+                );
         }
     }
 
