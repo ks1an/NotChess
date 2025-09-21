@@ -21,12 +21,12 @@ public sealed class Player : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public void SetSettings(Team type)
+    public void SetPlayerTeam(Team type) => localPlayerTeam = type;
+
+    public void SetStartMana()
     {
         var settings = GameController.Instance.settings;
-        localPlayerTeam = type;
-
-        if(type != Team.None)
+        if (localPlayerTeam != Team.None)
         {
             maxMana = settings.maxMana;
             currentMana = settings.startMana;

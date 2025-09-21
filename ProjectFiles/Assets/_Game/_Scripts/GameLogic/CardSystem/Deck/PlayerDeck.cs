@@ -26,9 +26,10 @@ public sealed class PlayerDeck : Deck
         AddToDeck(maxDeckSize, true);
         isNet = GameController.Instance.states.isNetMatch;
         if (isNet)
+        {
             netCard = GameController.Instance.netMatch.cardSync;
-        if (isNet)
             netCard.SetDefaultRpc();
+        }
     }
     public override void AddToDeck(int count, bool isDefSet = false)
     {
@@ -37,8 +38,16 @@ public sealed class PlayerDeck : Deck
             Debug.LogError("Trying add to player deck negative count of cards");
             return;
         }
-        curDeckSize += count;
-        deckView.Add(cardCollection.cardBack, count);
+
+        int cardAdded = 0;
+        for (int i = 0; i < count; i++)
+        {
+            if (curDeckSize == maxDeckSize) break;
+            curDeckSize++;
+            cardAdded++;
+        }
+        deckView.Add(cardCollection.cardBack, cardAdded);
+
         if (isNet && !isDefSet)
             netCard.AddToDeckRpc(count);
     }
@@ -80,13 +89,15 @@ public sealed class PlayerDeck : Deck
         int cardSpawnedCount = 0;
         for (int i = 0; i < amount; i++)
         {
+            if (curDeckSize == 0) break;
+            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) break;
+
             Card card = GetRandomCard();
             DrawCardInHand(card);
             deckView.Remove();
+
             curDeckSize--;
             cardSpawnedCount++;
-            if (curDeckSize == 0) break;
-            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) break;
         }
     
         banForDrawLastIssuedCard = false;
@@ -119,6 +130,7 @@ public sealed class PlayerDeck : Deck
         hand.RemoveAllCards();
         deckView.RemoveAll();
         gravejardView.RemoveAll();
+        curDeckSize = 0;
         lastGraveyardCardID = -1;
         lastIssuedCardID = -1;
 

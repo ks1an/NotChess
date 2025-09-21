@@ -46,7 +46,7 @@ public abstract class EffectorBehaviour
             if (Effect.doRandomYForVfx)
                 obj.transform.DORotate(obj.transform.rotation.eulerAngles + new Vector3(0, Random.Range(0, 360)), Effect.durationForSpawn);
             if (Effect.hightFromWhichItInit != 0)
-                obj.transform.DOMoveY(posForVFX.y-Effect.hightFromWhichItInit, Effect.durationForSpawn);
+                obj.transform.DOMoveY(posForVFX.y - Effect.hightFromWhichItInit, Effect.durationForSpawn);
 
             obj.TryGetComponent<ParticleSystem>(out vfxParticle);
             if (vfxParticle == null)
@@ -57,6 +57,9 @@ public abstract class EffectorBehaviour
                 vfxParticle.Simulate(0.1f, true, true);
                 vfxParticle.Pause();
             }
+
+            if (Effect.audioClipsOnUsed.Length > 0)
+                GameSound.Instance.PlaySound(Effect.audioClipsOnUsed, Effect.volume, Effect.minPitch, Effect.maxPitch);
         }
         Board.Instance.tilesController.tiles[tileX, tileY].SetDefendClass(Effect.defendClass, this);
 

@@ -57,8 +57,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 15315635847168
-    m_Localized: <b><#118a7e>Returns</color></b> the <b>last used card</b> to your
-      hand
+    m_Localized: "<b><#118a7e>Returns</color></b> the <b>last used card</b> to your
+      hand. \n<b>Able to return this card</b>"
     m_Metadata:
       m_Items: []
   - m_Id: 16798607523840

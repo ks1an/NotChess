@@ -19,6 +19,11 @@ public class CardUI : MonoBehaviour
     Card card;
     int orientation, effectType, rarity;
 
+    void Awake()
+    {
+        cardRender.color = passiveColor;
+    }
+
     public void SetCardUI()
     {
         card = GetComponent<Card>();
@@ -27,8 +32,6 @@ public class CardUI : MonoBehaviour
 
         SetCardSettings();
     }
-
-    public void SetBorderColor(Color color) => border.color = color;
 
     void SetCardSettings()
     {
@@ -44,12 +47,15 @@ public class CardUI : MonoBehaviour
         rarity = (int)card.Rarity;
     }
 
-    void Awake()
+    public void SetBorderColor(Color color) => border.color = color;
+
+    public void CreateCardInHandLogic()
     {
-        cardRender.color = passiveColor;
+        HoverObject cardInHand = gameObject.AddComponent<HoverObject>();
+        cardInHand.SetSettigns(MouseEnterFromCard, MouseExitFromCard);
     }
 
-    void OnMouseEnter()
+    void MouseEnterFromCard(GameObject cardInHand)
     {
         card.Hand.CardUpDownMove(card, true, true);
         if (PlayerDeck.Instance.hand.CurrentSelectCard != card)
@@ -58,17 +64,17 @@ public class CardUI : MonoBehaviour
             cardRender.color = hoverColor;
         }
     }
-    void OnMouseExit()
+
+    void MouseExitFromCard(GameObject cardInHand)
     {
         sorting.sortingOrder = 0;
         cardRender.color = passiveColor;
         card.Hand.CardUpDownMove(card, false, true);
 
-        if(PlayerDeck.Instance.hand.CurrentSelectCard == card)
+        if (PlayerDeck.Instance.hand.CurrentSelectCard == card)
         {
             sorting.sortingOrder = 2;
             cardRender.color = selectColor;
         }
-
     }
 }

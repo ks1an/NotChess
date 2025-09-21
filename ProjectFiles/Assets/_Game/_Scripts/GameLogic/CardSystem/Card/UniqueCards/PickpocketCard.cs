@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class CastleWallsCard : Card
+public class PickpocketCard : Card
 {
-    [field: SerializeField] ScriptableEffector effectOfTile;
-
     public override void Init()
     {
         base.Init();
+        PlayerDeck.Instance.DestroyCardInHand(this);
     }
 
     #region OnDrag
@@ -34,7 +33,8 @@ public sealed class CastleWallsCard : Card
 
     void OnMouseUp()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
+        if (GameController.Instance.player.GetCurrentMana() >= ManaCost &&
+            EnemyDeck.Instance.hand.CurrentSelectCardIndex > -1)
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
@@ -51,40 +51,22 @@ public sealed class CastleWallsCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
-        Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
-            AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
-
-        if (!isSynced)
+       /* if (!isSynced)
         {
-            GameController.Instance.states.UseCard(ID, moves);
+            List<Vector2Int> targetCards = new()
+            {
+                new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
+            };
+
+            GameController.Instance.states.UseCard(ID, targetCards);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else
-            Destroy(gameObject);
-    }
-
-    #region AvailableMoves
-    public override List<Vector2Int> GetAvailableMoves(int maxX, int maxY, int hoverX, int hoverY)
-    {
-        List<Vector2Int> availables = new();
-        if (hoverX < 0 || hoverY < 0)
         {
-            availableMoves = availables;
-            return availables;
-        }
-
-        if (IsAvailableMove(hoverX, hoverY))
-            availables.Add(new Vector2Int(hoverX, hoverY));
-
-        availableMoves = availables;
-        return availables;
+            int cardID = PlayerDeck.Instance.hand.CardsInHand[moves[0][0]].SelfGetID();
+            EnemyDeck.Instance.DrawCardInHand(GameController.Instance.globalCardCollection.GlobalCardsDictionary[cardID]);
+            PlayerDeck.Instance.DestroyCardInHand(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]]);
+            Destroy(gameObject);
+        }*/
     }
-
-    public override bool IsAvailableMove(int targetX, int targetY)
-    {
-        if (Board.Instance.tilesController.tiles[targetX, targetY] != null)
-            return true;
-        return false;
-    }
-    #endregion
 }

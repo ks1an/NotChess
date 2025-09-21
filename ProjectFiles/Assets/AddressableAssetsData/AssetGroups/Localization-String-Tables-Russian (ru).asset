@@ -23,6 +23,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-ru
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 581097957bbd66a4a912198ab28496cd
+    m_Address: UITable_ru
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-ru
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 611fef8d14652a04ca795f35a5294b7a
     m_Address: LoadPanelPhrases_ru
     m_ReadOnly: 1

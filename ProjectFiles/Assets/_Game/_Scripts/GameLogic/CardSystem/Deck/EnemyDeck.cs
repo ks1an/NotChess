@@ -27,11 +27,17 @@ public sealed class EnemyDeck : Deck
             Debug.LogError("Trying add to enemy deck negative count of cards");
             return;
         }
-        curDeckSize += count;
-        deckView.Add(cardCollection.cardBack, count);
+        int cardAdded = 0;
+        for (int i = 0; i < count; i++)
+        {
+            if (curDeckSize == maxDeckSize) break;
+            curDeckSize++;
+            cardAdded++;
+        }
+        deckView.Add(cardCollection.cardBack, cardAdded);
     }
 
-    public void AddToGraveyard(int count)
+    public void AddToGraveyardMirror(int count)
     {
         if (count < 0)
         {
@@ -82,15 +88,16 @@ public sealed class EnemyDeck : Deck
         hand.RemoveAllCards();
         deckView.RemoveAll();
         gravejardView.RemoveAll();
+        curDeckSize = 0;
     }
 
-    public void DestroyCardInHand(GameObject card)
+    public void DestroyCardIn(GameObject card)
     {
         hand.RemoveCard(card);
         gravejardView.Add(card);
     }
 
-    public void DestroyAllCardsInHand(bool needToAddInGraveyard = true)
+    public void DestroyAllCardsIn(bool needToAddInGraveyard = true)
     {
         if (needToAddInGraveyard)
             gravejardView.Add(cardCollection.cardBack, hand.CardsInHand.Count);

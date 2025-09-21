@@ -27,6 +27,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: cccfe98fd3b263640a432bb9f06a2371
+    m_Address: Assets/LocalizationSettings/Tables/UI Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ff9908956b2db9f4b8309b90f0dfec04
     m_Address: Assets/LocalSettings/Tables/StringCardsTable Shared Data.asset
     m_ReadOnly: 1

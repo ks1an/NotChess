@@ -75,14 +75,15 @@ public class MatchStates : MonoBehaviour
     {
         isMoveOfZero = game.settings.firtsMoveZero;
         lastWinTeam = Team.None;
+
         if (isDemonstrationMatchAiVsAi)
         {
             enemyBot.LoadEnemy(isMoveOfZero ? Team.Zero : Team.Cross);
-            game.player.SetSettings(Team.None);
+            game.player.SetPlayerTeam(Team.None);
         }
         else if (!isNetMatch)
         {
-            game.player.SetSettings(isMoveOfZero ? Team.Zero : Team.Cross);
+            game.player.SetPlayerTeam(isMoveOfZero ? Team.Zero : Team.Cross);
             enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
         }
     }
@@ -108,6 +109,7 @@ public class MatchStates : MonoBehaviour
         turnCount = 0;
         if (game.player.GetLocalPlayerTeam() != Team.None)
         {
+            game.player.SetStartMana();
             PlayerDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
             EnemyDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
         }
@@ -267,7 +269,8 @@ public class MatchStates : MonoBehaviour
             }
             else
             {
-                entryKey = "TryRevange";
+                entryKey = "TryRevenge";
+                declineAction = () => { };
             }
 
             ModalViewWindowController.Instance.ShowHorizontalWithLocalize(

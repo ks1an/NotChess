@@ -21,6 +21,12 @@ public sealed class Tile : MonoBehaviour, IEffectable
 
     public void SetDefendClass(DefendClass defClass, EffectorBehaviour buffGiving)
     {
+        if(buffGiving == buffGivingDefend)
+        {
+            defendClass = defClass;
+            return;
+        }
+
         if ((int)defClass > (int)defendClass)
         {
             defendClass = defClass;

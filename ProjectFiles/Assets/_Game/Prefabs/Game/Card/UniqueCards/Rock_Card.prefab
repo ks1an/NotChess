@@ -117,11 +117,6 @@ MonoBehaviour:
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
   effectOfTile: {fileID: 11400000, guid: 3e986e4ab27dbd846b92cc090d7d179a, type: 2}
-  volume: 1
-  minPitch: 0.9
-  maxPitch: 1.1
-  audioClipsOnUsed:
-  - {fileID: 8300000, guid: a235b51baf95584438f1fdf6b5ca890d, type: 3}
 --- !u!1 &9098353681655225977
 GameObject:
   m_ObjectHideFlags: 0

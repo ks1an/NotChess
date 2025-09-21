@@ -35,19 +35,16 @@ public sealed class CardSystemSync : NetworkBehaviour
     [Rpc(SendTo.NotMe)]
     public void DestroyAllRpc() => EnemyDeck.DestroyAllCard();
     [Rpc(SendTo.NotMe)]
-    public void DestroyCardRpc() => EnemyDeck.DestroyCardInHand(EnemyDeck.GetRandomCardFromHand());
+    public void DestroyCardRpc() => EnemyDeck.DestroyCardIn(EnemyDeck.GetRandomCardFromHand());
 
     [Rpc(SendTo.NotMe)]
-    public void DestroyAllCardsInHandRpc(bool b) => EnemyDeck.DestroyAllCardsInHand(b);
+    public void DestroyAllCardsInHandRpc(bool b) => EnemyDeck.DestroyAllCardsIn(b);
 
 
     [Rpc(SendTo.NotMe)]
     public void AddToDeckRpc(int count) => EnemyDeck.AddToDeck(count);
     [Rpc(SendTo.NotMe)]
-    public void AddToGraveyardRpc(int count) => EnemyDeck.AddToGraveyard(count);
-
-    [Rpc(SendTo.NotMe)]
-    public void DrawInHandRpc() => EnemyDeck.DrawCardInHand(EnemyDeck.GetCardBack());
+    public void AddToGraveyardRpc(int count) => EnemyDeck.AddToGraveyardMirror(count);
 
     [Rpc(SendTo.NotMe)]
     public void DrawHandRandomFromDeckRpc(int count, bool ignoreCardsLimit) => EnemyDeck.DrawHandRandomFromDeck(count, ignoreCardsLimit);
@@ -55,4 +52,10 @@ public sealed class CardSystemSync : NetworkBehaviour
     [Rpc(SendTo.NotMe)]
     public void DrawLastFromGraveyardRpc() => EnemyDeck.DrawLastFromGraveyard();
 
+    [Rpc(SendTo.NotMe)]
+    public void CardHandUpDownMoveRpc(int cardIndex, bool toUp, bool liftSlightly) =>
+        EnemyDeck.hand.CardUpDownMove(cardIndex, toUp, liftSlightly);
+
+    [Rpc(SendTo.NotMe)]
+    public void DrawInHandRpc() => EnemyDeck.DrawCardInHand(EnemyDeck.GetCardBack());
 }

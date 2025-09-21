@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum CardAttackStrong
 {
-    Zero,
+    Zero = 0,
     Light,
     Average,
     Advaced,
@@ -64,6 +64,8 @@ public class Card : MonoBehaviour
         UpdateCardUI();
         ID = SelfGetID();
         Hand = PlayerDeck.Instance.hand;
+        if (Hand.CardsInHand.Contains(this))
+            CardUI.CreateCardInHandLogic();
     }
 
     void UpdateCardUI()

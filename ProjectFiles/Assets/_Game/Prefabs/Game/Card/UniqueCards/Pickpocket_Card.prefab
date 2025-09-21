@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 7341410178081323573}
   - component: {fileID: 2853115293100631884}
   - component: {fileID: 8852499382935469920}
-  - component: {fileID: 1892108300101702296}
+  - component: {fileID: -6072306200835679900}
   m_Layer: 31
-  m_Name: CastleWalls_Card
+  m_Name: Pickpocket_Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -92,7 +92,7 @@ MonoBehaviour:
   passiveColor: {r: 0, g: 0, b: 0, a: 0.34901962}
   hoverColor: {r: 0, g: 0, b: 0, a: 0.14901961}
   selectColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &1892108300101702296
+--- !u!114 &-6072306200835679900
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,21 +101,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5201084852685327064}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812996b12ac52e34b8e7cd31da1d3c8f, type: 3}
+  m_Script: {fileID: 11500000, guid: d572a581b46bf5d45a84fdd7d1eb184c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalCardName: CastleWalls
-  originalDescription: <#005500>Prevents attacking</color> a cell for <b>1 round</b>
-  <ManaCost>k__BackingField: 2
-  <Image>k__BackingField: {fileID: 21300000, guid: d18657fc874599b459f7fb41cf71d67a, type: 3}
-  <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8, b: 0.5686275, a: 1}
-  <IsUseOnlyMyTurn>k__BackingField: 1
-  <Orientation>k__BackingField: 1
-  <Category>k__BackingField: 0
-  <Rarity>k__BackingField: 0
-  <AttackClass>k__BackingField: 0
-  <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
-  effectOfTile: {fileID: 11400000, guid: c097b0ff9a50d5344b73360abe67e557, type: 2}
 --- !u!1 &9098353681655225977
 GameObject:
   m_ObjectHideFlags: 0
@@ -223,18 +211,26 @@ PrefabInstance:
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: d18657fc874599b459f7fb41cf71d67a, type: 3}
+      objectReference: {fileID: 21300000, guid: 60ea1fc4a185e6346918434b348c9531, type: 3}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.7924528
       objectReference: {fileID: 0}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.7924528
       objectReference: {fileID: 0}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.r
-      value: 1
+      value: 0.7924528
+      objectReference: {fileID: 0}
+    - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_MaskInteraction
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_SpriteSortPoint
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_WasSpriteAssigned
@@ -242,15 +238,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: CastleWalls
+      value: Return card
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 2.5
+      value: 2.3
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
@@ -258,19 +254,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.56630224
+      value: 0.6024214
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.50833637
+      value: 0.5098708
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.0025
+      value: -0.0097
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.9882
+      value: 1.045
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.a
@@ -278,23 +274,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
-      value: 0.5686275
+      value: 0.39215687
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.g
-      value: 0.8
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.r
-      value: 0.52156866
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <#005500>Prevents attacking</color> a cell for <b>1 round</b>
+      value: <b><#118a7e>Returns</color></b> the <b>last used card</b> to your hand
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 3.6
+      value: 2.8
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x
@@ -348,10 +344,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6018498449726068308}
+      addedObject: {fileID: 1417541925798410637}
     - targetCorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8054118359823079332}
+      addedObject: {fileID: 3630888294944307680}
   m_SourcePrefab: {fileID: 100100000, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
 --- !u!114 &1026813138629430710 stripped
 MonoBehaviour:
@@ -401,7 +397,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6680997856119144961, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
   m_PrefabInstance: {fileID: 8002781827172970264}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8054118359823079332
+--- !u!114 &3630888294944307680
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -417,7 +413,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
     m_TableEntryReference:
-      m_KeyId: 3105161265152
+      m_KeyId: 15315635847168
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -426,7 +422,7 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1892108300101702296}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Card, Assembly-CSharp
         m_MethodName: SetDisplayDescriptionOfCard
         m_Mode: 0
@@ -446,7 +442,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 942958998129241893, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
   m_PrefabInstance: {fileID: 8002781827172970264}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6018498449726068308
+--- !u!114 &1417541925798410637
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -462,7 +458,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
     m_TableEntryReference:
-      m_KeyId: 101607587840
+      m_KeyId: 15076115922944
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -471,7 +467,7 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1892108300101702296}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: Card, Assembly-CSharp
         m_MethodName: SetDisplayNameOfCard
         m_Mode: 0

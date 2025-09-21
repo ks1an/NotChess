@@ -37,6 +37,9 @@ public class PlayerCardHand : HandObject
 
         card.transform.DOComplete();
         card.transform.DOMoveY(card.transform.position.y + objSelectUpDistance * multipleDirect, 0.1f);
+
+        if (GameController.Instance.states.isNetMatch)
+            GameController.Instance.netMatch.cardSync.CardHandUpDownMoveRpc(CardsInHand.IndexOf(card),toUp,liftSlightly);
     }
 
     public void AddCard(Card card)

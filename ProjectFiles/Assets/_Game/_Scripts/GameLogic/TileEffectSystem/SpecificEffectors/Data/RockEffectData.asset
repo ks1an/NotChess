@@ -15,11 +15,17 @@ MonoBehaviour:
   durationTurns: 4
   isDurationStacked: 1
   isEffectStacked: 0
+  defendClass: 0
   visualEffect: {fileID: 6530906115176955355, guid: 4944276ff6bc3a44e8a8da53180655a5, type: 3}
   doRandomYForVfx: 1
   hightFromWhichItInit: -0.75
   durationForSpawn: 6
   pauseVfxAfterInstantiate: 0
+  volume: 1
+  minPitch: 0.9
+  maxPitch: 1.1
+  audioClipsOnUsed:
+  - {fileID: 8300000, guid: a235b51baf95584438f1fdf6b5ca890d, type: 3}
   banPutUnitsOnTile: 1
   banAttackTileByUnits: 1
   banLeaveTile: 0

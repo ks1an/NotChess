@@ -4,10 +4,6 @@ using UnityEngine;
 public sealed class RockCard : Card
 {
     [field: SerializeField] ScriptableEffector effectOfTile;
-    [Header("Audio")]
-    [SerializeField] float volume = 1f;
-    [SerializeField] float minPitch = 1f, maxPitch = 1f;
-    [SerializeField] AudioClip[] audioClipsOnUsed;
 
     public override void Init()
     {
@@ -57,8 +53,6 @@ public sealed class RockCard : Card
     {
         Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
             AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
-        if (audioClipsOnUsed.Length > 0)
-            GameSound.Instance.PlaySound(audioClipsOnUsed, volume, minPitch, maxPitch);
 
         if (!isSynced)
         {
