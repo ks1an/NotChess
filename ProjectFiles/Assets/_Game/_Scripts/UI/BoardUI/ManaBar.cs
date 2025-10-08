@@ -35,8 +35,9 @@ public sealed class ManaBar : MonoBehaviour
         deacreaseEffectSlider.maxValue = maxMana;
         increaseEffectSlider.maxValue = maxMana;
 
-        DeacreaseMana(maxMana);
-        IncreaseMana(curMana);
+        manaTxt.text = curMana.ToString();
+        manaSlider.value = curMana;
+        CompleteAllEffects();
     }
 
     void Update()
@@ -68,7 +69,7 @@ public sealed class ManaBar : MonoBehaviour
             return;
         }
 
-        deacreaseEffectSlider.value = curMana;
+        CompleteAllEffects();
         curMana -= value;
         increaseEffectSlider.value = curMana;
 
@@ -87,12 +88,14 @@ public sealed class ManaBar : MonoBehaviour
             return;
         }
 
-        increaseEffectSlider.value = curMana;
+        CompleteAllEffects();
         curMana += value;
+
         if (curMana > maxMana)
             curMana = maxMana;
         manaTxt.text = curMana.ToString();
 
+        CompleteAllEffects();
         IncreaseEffectAnim();
     }
     #endregion
@@ -111,6 +114,15 @@ public sealed class ManaBar : MonoBehaviour
         isIncreaseAnimPlaying = true;
         increaseEffectSlider.DOValue(curMana, increaseAnimTime).SetDelay(increaseAnimDelayTime).
             OnComplete(SetFalseIncreaseAnimPlaying);
+    }
+    
+    void CompleteAllEffects()
+    {
+        increaseEffectSlider.DOKill();
+        deacreaseEffectSlider.DOKill();
+        increaseEffectSlider.value = curMana;
+        deacreaseEffectSlider.value = curMana;
+        isIncreaseAnimPlaying = false;
     }
 
     void SetFalseIncreaseAnimPlaying() => isIncreaseAnimPlaying = false;

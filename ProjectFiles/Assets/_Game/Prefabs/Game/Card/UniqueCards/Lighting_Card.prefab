@@ -114,10 +114,11 @@ MonoBehaviour:
   <Orientation>k__BackingField: 0
   <Category>k__BackingField: 2
   <Rarity>k__BackingField: 0
-  <AttackClass>k__BackingField: 2
+  <AttackClass>k__BackingField: 3
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
   OnUsedVFX: {fileID: 5627696518775099638, guid: 543d521d2176ace4aba4667ddca92d97, type: 3}
-  effectOfTile: {fileID: 11400000, guid: 4c3ac6dbcc56cf243b3b62618842b503, type: 2}
+  buffOnTile: {fileID: 11400000, guid: a5bcb078c8d3b524fa2c36fd4f1704f8, type: 2}
+  durationEffect: 1
   volume: 1
   minPitch: 0.9
   maxPitch: 1.1

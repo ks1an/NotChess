@@ -116,7 +116,9 @@ MonoBehaviour:
   <Rarity>k__BackingField: 0
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
-  effectOfTile: {fileID: 11400000, guid: 87c781acfb777674a85fd2ea12b81d76, type: 2}
+  defendClassForTile: 3
+  durationEffectOfBanPut: 2
+  visualEffectOnTile: {fileID: 11400000, guid: 3a969f45729fdd448854da1f3a30851c, type: 2}
 --- !u!1 &9098353681655225977
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,6 +259,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Forbidden shield
       objectReference: {fileID: 0}
+    - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_fontSize
+      value: 2.3
+      objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
       value: 3
@@ -308,7 +314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 2.95
+      value: 2.7
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x

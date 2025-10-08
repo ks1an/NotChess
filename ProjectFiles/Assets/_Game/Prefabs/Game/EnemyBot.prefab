@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 164469b508e2e564cbd5abe993241423, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minDelayBeforeDoMove: 0.5
+  minDelayBeforeDoMove: 0.85
   chanceOfSkipTheMostValuableMove: 10
   complexity: 0
   valueIf_Enemy_VertOrHoriz: 1

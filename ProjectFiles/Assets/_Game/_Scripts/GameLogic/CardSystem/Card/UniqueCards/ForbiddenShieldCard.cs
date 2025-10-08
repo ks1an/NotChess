@@ -3,7 +3,10 @@ using UnityEngine;
 
 public sealed class ForbiddenShieldCard : Card
 {
-    [field: SerializeField] ScriptableEffector effectOfTile;
+    [SerializeField] DefendClass defendClassForTile;
+    [SerializeField] int durationEffectOfBanPut;
+    [field: SerializeField] InstanceParticle_SO_VB visualEffectOnTile;
+
 
     public override void Init()
     {
@@ -51,8 +54,18 @@ public sealed class ForbiddenShieldCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
-        Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
-            AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
+        Tile tile = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y];
+
+        List<IBuff> buffsOnTile = new()
+        {
+            new BanPut_TileBuff(false, true),
+            new DefendClass_TileBuff(false, true, defendClassForTile)
+        };
+        var buffsOnTilePocket = new PocketBuff(false, true, buffsOnTile);
+        var tileBuff = new TemporaryBuff(tile.tileBuffAndStatsComponent, buffsOnTilePocket, durationEffectOfBanPut);
+        new VisualParticleBuffBehaviour(tileBuff, visualEffectOnTile, tile.tileCenter);
+        tile.tileBuffAndStatsComponent.AddBuff(tileBuff);
+
 
         if (!isSynced)
         {

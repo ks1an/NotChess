@@ -91,7 +91,7 @@ public sealed class EnemyDeck : Deck
         curDeckSize = 0;
     }
 
-    public void DestroyCardIn(GameObject card)
+    public void DestroyCardInHand(GameObject card)
     {
         hand.RemoveCard(card);
         gravejardView.Add(card);

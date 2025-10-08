@@ -1,0 +1,97 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class SpyCard : Card
+{
+    bool enemyCardFromHandWasSelected;
+
+    public override void Init()
+    {
+        base.Init();
+        enemyCardFromHandWasSelected = false;
+    }
+
+    #region OnDrag
+    void OnMouseDown()
+    {
+        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
+        {
+            if (IsUseOnlyMyTurn)
+            {
+                if (GameController.Instance.player.IsMyTurnOrNot())
+                {
+                    Hand.SetCurrentSelectCard(this);
+                    CardUI.SetBorderColor(BoarderColorOnDrag);
+                }
+            }
+            else
+            {
+                Hand.SetCurrentSelectCard(this);
+                CardUI.SetBorderColor(BoarderColorOnDrag);
+            }
+
+        }
+    }
+
+    void OnMouseUp()
+    {
+        if (GameController.Instance.player.GetCurrentMana() >= ManaCost &&
+            EnemyDeck.Instance.hand.CurrentSelectCardIndex > -1)
+        {
+            enemyCardFromHandWasSelected = true;
+            GameController.Instance.player.DeacreaseMana(ManaCost);
+            UseCard(availableMoves);
+            Hand.ResetCurrentSelectCard(null);
+        }
+        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
+        {
+            Hand.ResetCurrentSelectCard(this);
+        }
+
+        CardUI.SetBorderColor(ColorBorder);
+    }
+    #endregion
+
+    public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
+    {
+        if (!enemyCardFromHandWasSelected && !isSynced)
+        {
+            Hand.ResetCurrentSelectCard(this);
+            return;
+        }
+
+        if (GameController.Instance.states.isNetMatch)
+            if (!isSynced)
+            {
+                List<Vector2Int> targetCards = new()
+                    {
+                        new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
+                    };
+
+                GameController.Instance.states.UseCard(GetID(), targetCards);
+                PlayerDeck.Instance.DestroyCardInHand(this);
+            }
+            else
+            {
+                GameController.Instance.netMatch.cardSync.ShowSpyInfoAboutCardRpc(
+                    PlayerDeck.Instance.hand.CardsInHand[moves[0][0]].GetID());
+                Destroy(gameObject);
+            }
+        else
+        {
+            List<Vector2Int> targetCards = new()
+                    {
+                        new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
+                    };
+            NotificationPanelConroller.Instance.ShowNotification
+                (
+                GameController.Instance.globalCards.GetImortantWordsFromDescriptionOfCard(
+                    PlayerDeck.Instance.cardCollection.CardsInCollection[
+                        Random.Range(0, PlayerDeck.Instance.cardCollection.CardsInCollection.Count)].GetID()), () => { }
+                );
+
+            GameController.Instance.states.UseCard(GetID(), targetCards);
+            PlayerDeck.Instance.DestroyCardInHand(this);
+        }
+    }
+}

@@ -8,6 +8,8 @@ public class EnemyCardHand : HandObject
     public List<GameObject> CardsInHand { get; private set; } = new();
 
     [SerializeField] float objSelectUpDistance = 0.25f;
+    [SerializeField] bool needToHighlightOnHover;
+    [SerializeField] Color highlightColor;
 
     void SetCurrentSelectCard(GameObject cardInHand) => CurrentSelectCardIndex = CardsInHand.IndexOf(cardInHand);
 
@@ -15,7 +17,7 @@ public class EnemyCardHand : HandObject
 
     public void CardUpDownMove(int cardIndex, bool toUp, bool liftSlightly)
     {
-        if (isDealing)
+        if (isDealing || cardIndex < 0)
             return;
 
         GameObject card = CardsInHand[cardIndex];
@@ -32,7 +34,7 @@ public class EnemyCardHand : HandObject
         CardsInHand.Add(obj);
         obj.AddComponent(typeof(BoxCollider2D));
         HoverObject cardInHand = obj.AddComponent<HoverObject>();
-        cardInHand.SetSettigns(SetCurrentSelectCard, ResetCurrentSelectCard);
+        cardInHand.SetSettigns(SetCurrentSelectCard, ResetCurrentSelectCard, needToHighlightOnHover, highlightColor);
         StartCoroutine(AddObj(obj));
     }
 

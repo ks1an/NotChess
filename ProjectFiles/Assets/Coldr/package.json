@@ -1,0 +1,22 @@
+{
+  "name": "com.coldr.foldercolorizer",
+  "version": "1.0.0",
+  "displayName": "Coldr - Folder Colorizer",
+  "description": "A powerful Unity Editor tool that allows you to color-code your project folders for better organization.",
+  "unity": "2020.3",
+  "keywords": [
+    "folder",
+    "color",
+    "organization",
+    "editor",
+    "utility",
+    "productivity"
+  ],
+  "author": {
+    "name": "Coldr Developer",
+    "email": "support@coldr.com",
+    "url": "https://coldr.com"
+  },
+  "dependencies": {},
+  "samples": []
+} 

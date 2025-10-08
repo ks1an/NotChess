@@ -9,12 +9,12 @@ public sealed class BoardUI : MonoBehaviour
     public static BoardUI Singleton;
 
     public ManaBar manaBar;
+    public Muligan muligan;
 
     [SerializeField] int howManyTurnsAllowMuligan;
     [SerializeField] TextMeshProUGUI teamMoveIndicator;
     [SerializeField] Button restartButton, muliganBttn;
 
-    Muligan muligan;
     bool isNetMatch;
     int leftTurndAllowMuligan;
 
@@ -30,7 +30,7 @@ public sealed class BoardUI : MonoBehaviour
         isNetMatch = GameController.Instance.states.isNetMatch;
 
         GameController.Instance.states.OnGameStarted += StartSettings;
-        GameController.Instance.states.OnTurnEnded += ChangeTeamMoveIndicator;
+        GameController.Instance.states.OnTurnEnded += OnTurned;
         GameController.Instance.states.OnGameTied += OnGameEnded;
         GameController.Instance.states.OnGameWin += OnGameEnded;
 
@@ -44,13 +44,13 @@ public sealed class BoardUI : MonoBehaviour
     void StartSettings()
     {
         leftTurndAllowMuligan = howManyTurnsAllowMuligan;
-        muliganBttn.gameObject.SetActive(true);
         muligan.SetDefault(muliganBttn.gameObject, localTable);
+        muligan.TryShowMuliganButton();
 
         if (GameController.Instance.states.isMoveOfZero)
-            ChangeTeamMoveIndicator(-1, -1, Team.Cross);
+            OnTurned(-1, -1, Team.Cross);
         else
-            ChangeTeamMoveIndicator(-1, -1, Team.Zero);
+            OnTurned(-1, -1, Team.Zero);
     }
 
     public void TryExitToMenu()
@@ -81,18 +81,27 @@ public sealed class BoardUI : MonoBehaviour
     }
 
     #region OnGameState
+    void OnTurned(int x, int y, Team teamMoved)
+    {
+        ChangeTeamMoveIndicator(x, y, teamMoved);
+        if (teamMoved == GameController.Instance.player.GetLocalPlayerTeam())
+            muligan.HideMuliganButton();
+        else
+            muligan.TryShowMuliganButton();
+    }
+
     void ChangeTeamMoveIndicator(int x, int y, Team teamMoved)
     {
         if (isNetMatch)
         {
             if (GameController.Instance.player.GetLocalPlayerTeam() == teamMoved)
             {
-                teamMoveIndicator.text = "Opponent`s move";
+                teamMoveIndicator.text = "Opponent`s turn";
                 teamMoveIndicator.fontStyle = FontStyles.Normal;
             }
             else
             {
-                teamMoveIndicator.text = "Your move!";
+                teamMoveIndicator.text = "<b>Your</b> turn!";
                 teamMoveIndicator.fontStyle = FontStyles.Underline;
                 teamMoveIndicator.fontStyle = FontStyles.Bold;
             }
@@ -100,7 +109,7 @@ public sealed class BoardUI : MonoBehaviour
         else
         {
             teamMoveIndicator.text = teamMoved == Team.Zero ? Team.Cross.ToString() : Team.Zero.ToString();
-            teamMoveIndicator.text += "`s move";
+            teamMoveIndicator.text += "`s turn";
             teamMoveIndicator.fontStyle = FontStyles.Bold;
         }
 
@@ -124,6 +133,6 @@ public sealed class BoardUI : MonoBehaviour
         GameController.Instance.states.OnGameTied -= OnGameEnded;
         GameController.Instance.states.OnGameWin -= OnGameEnded;
         GameController.Instance.states.OnGameStarted -= StartSettings;
-        GameController.Instance.states.OnTurnEnded -= ChangeTeamMoveIndicator;
+        GameController.Instance.states.OnTurnEnded -= OnTurned;
     }
 }

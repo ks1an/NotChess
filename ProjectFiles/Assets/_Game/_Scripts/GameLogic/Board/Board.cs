@@ -37,6 +37,7 @@ public sealed class Board : MonoBehaviour
         curHoverTile = -Vector2Int.one;
         curCamera = Camera.main;
 
+        match.states.OnSetSettings += OnSetSettings;
         match.states.OnGameStarted += OnGameStart;
         match.states.OnGameTied += OnGameEnd;
         match.states.OnGameWin += OnGameEnd;
@@ -102,7 +103,7 @@ public sealed class Board : MonoBehaviour
             #region PutPiece
 
             if (Input.GetMouseButtonDown(0) && piecesController.currentlySelectingPiece == null && piecesController.pieces[hitPos.x, hitPos.y] == null
-                && !tilesController.tiles[hitPos.x, hitPos.y].banPutUnitsOnTile)
+                && tilesController.tiles[hitPos.x, hitPos.y].tileBuffAndStatsComponent.CurrentStats.CanPutOnTile)
             {
                 if (match.player.IsMyTurnOrNot())
                     match.states.TryCreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam());
@@ -134,7 +135,7 @@ public sealed class Board : MonoBehaviour
             if (PlayerDeck.Instance.hand.CurrentSelectCard != null)
             {
                 List<Vector2Int> availabe = PlayerDeck.Instance.hand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, -1, -1);
-                tilesController.RemoveAllHighlight();
+                tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
             }
 
             if (Input.GetMouseButtonUp(0) && piecesController.currentlySelectingPiece)
@@ -148,51 +149,64 @@ public sealed class Board : MonoBehaviour
     }
 
     #region OnGameStates
-    public bool CheckWin(int movedX, int movedY)
+    public List<Vector2Int> CheckWin(int movedX, int movedY)
     {
+        List<Vector2Int> tileOnWinLine = new();
+
         #region CheckCol
 
         int typeCount = 0;
+        tileOnWinLine.Clear();
         for (int YTile = 0; YTile < match.settings.tileCountY; YTile++)
         {
             if (piecesController.pieces[movedX, YTile] == null)
             {
+                tileOnWinLine.Clear();
                 typeCount = 0;
                 continue;
             }
 
+            tileOnWinLine.Add(tilesController.tiles[movedX, YTile].coord);
             if (match.states.isMoveOfZero && piecesController.pieces[movedX, YTile].team == Team.Zero)
                 typeCount++;
             else if (!match.states.isMoveOfZero && piecesController.pieces[movedX, YTile].team == Team.Cross)
                 typeCount++;
             else
+            {
+                tileOnWinLine.Clear();
                 typeCount = 0;
+            }
 
             if (typeCount == match.settings.piecesWinSequence)
-                return true;
+                return tileOnWinLine;
         }
         #endregion
 
         #region CheckRow
 
         typeCount = 0;
+        tileOnWinLine.Clear();
         for (int XTile = 0; XTile < match.settings.tileCountX; XTile++)
         {
             if (piecesController.pieces[XTile, movedY] == null)
             {
+                tileOnWinLine.Clear();
                 typeCount = 0;
                 continue;
             }
-
+            tileOnWinLine.Add(tilesController.tiles[XTile, movedY].coord);
             if (match.states.isMoveOfZero && piecesController.pieces[XTile, movedY].team == Team.Zero)
                 typeCount++;
             else if (!match.states.isMoveOfZero && piecesController.pieces[XTile, movedY].team == Team.Cross)
                 typeCount++;
             else
+            {
+                tileOnWinLine.Clear();
                 typeCount = 0;
+            }
 
             if (typeCount == match.settings.piecesWinSequence)
-                return true;
+                return tileOnWinLine;
         }
         #endregion
 
@@ -207,24 +221,29 @@ public sealed class Board : MonoBehaviour
                 break;
             }
         }
+        tileOnWinLine.Clear();
         typeCount = 0;
         for (int x = xEdge, y = yEdge; x < match.settings.tileCountX && y < match.settings.tileCountY; x++, y++)
         {
             if (piecesController.pieces[x, y] == null)
             {
+                tileOnWinLine.Clear();
                 typeCount = 0;
                 continue;
             }
-
+            tileOnWinLine.Add(tilesController.tiles[x, y].coord);
             if (match.states.isMoveOfZero && piecesController.pieces[x, y].team == Team.Zero)
                 typeCount++;
             else if (!match.states.isMoveOfZero && piecesController.pieces[x, y].team == Team.Cross)
                 typeCount++;
             else
+            {
+                tileOnWinLine.Clear();
                 typeCount = 0;
+            }
 
             if (typeCount == match.settings.piecesWinSequence)
-                return true;
+                return tileOnWinLine;
         }
         #endregion
 
@@ -241,32 +260,39 @@ public sealed class Board : MonoBehaviour
         }
 
         typeCount = 0;
+        tileOnWinLine.Clear();
         for (int x = xEdge, y = yEdge; x < match.settings.tileCountX && y >= 0; x++, y--)
         {
             if (piecesController.pieces[x, y] == null)
             {
+                tileOnWinLine.Clear();
                 typeCount = 0;
                 continue;
             }
 
+            tileOnWinLine.Add(tilesController.tiles[x, y].coord);
             if (match.states.isMoveOfZero && piecesController.pieces[x, y].team == Team.Zero)
                 typeCount++;
             else if (!match.states.isMoveOfZero && piecesController.pieces[x, y].team == Team.Cross)
                 typeCount++;
             else
+            {
+                tileOnWinLine.Clear();
                 typeCount = 0;
+            }
 
             if (typeCount == match.settings.piecesWinSequence)
-                return true;
+                return tileOnWinLine;
         }
         #endregion
 
-        return false;
+        tileOnWinLine.Clear();
+        return tileOnWinLine;
     }
     public void SetDefaultBoardSettings()
     {
         piecesController.currentlySelectingPiece = null;
-        tilesController.RemoveHighlightTiles(piecesController.availableMoves);
+        tilesController.RemoveAllHighlight();
         piecesController.availableMoves = new List<Vector2Int>();
 
         for (int x = 0; x < match.settings.tileCountX; x++)
@@ -285,6 +311,7 @@ public sealed class Board : MonoBehaviour
         isGameStart = false;
         isBoardReady = false;
 
+        match.states.OnSetSettings -= OnSetSettings;
         match.states.OnGameStarted -= OnGameStart;
         match.states.OnGameTied -= OnGameEnd;
         match.states.OnGameWin -= OnGameEnd;
@@ -294,11 +321,8 @@ public sealed class Board : MonoBehaviour
         tilesController.DestroyTiles();
     }
 
-    void OnGameStart()
-    {
-        SetDefaultBoardSettings();
-        isGameStart = true;
-    }
+    void OnSetSettings() => SetDefaultBoardSettings();
+    void OnGameStart() => isGameStart = true;
 
     private void OnGameEnd(int arg1, int arg2, Team team)
     {

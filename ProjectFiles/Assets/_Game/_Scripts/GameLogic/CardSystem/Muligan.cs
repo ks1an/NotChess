@@ -23,14 +23,15 @@ public sealed class Muligan
             () => { }, DoMuligan
             );
 
+    public void HideMuliganButton() => buttonMuliganObj.SetActive(false);
+    public void TryShowMuliganButton()
+    {
+        if(countOfUsed < maxMuligan)
+            buttonMuliganObj.SetActive(true);
+    }
+
     void DoMuligan()
     {
-        if (countOfUsed >= maxMuligan)
-        {
-            buttonMuliganObj.SetActive(false);
-            return;
-        }
-
         countOfUsed++;
         int needToDraw = countOfUsed <= startCardsCount - 1 ? startCardsCount - countOfUsed : 1;
         PlayerDeck.Instance.DestroyAllCardsInHand(false);
@@ -39,5 +40,7 @@ public sealed class Muligan
         PlayerDeck.Instance.AddToGraveyard(1);
         PlayerDeck.Instance.AddToDeck(needToDraw - 1);
 
+        if (countOfUsed == maxMuligan)
+            HideMuliganButton();
     }
 }

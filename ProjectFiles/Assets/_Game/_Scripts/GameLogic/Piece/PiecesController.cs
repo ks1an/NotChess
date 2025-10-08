@@ -51,8 +51,8 @@ public sealed class PiecesController : MonoBehaviour
     {
         Piece curPiece = pieces[originalX, originalY];
 
-        if (pieces[x, y] != null)
-            match.states.TryDestroyUnit(x, y, true);
+        if (pieces[x, y] != null && curPiece != null)
+            match.states.TryDestroyUnit(x, y, true, curPiece.team);
 
         pieces[x, y] = curPiece;
         pieces[originalX, originalY] = null;
@@ -100,7 +100,8 @@ public sealed class PiecesController : MonoBehaviour
             match.states.SetUnitPos(previousPos.x, previousPos.y, tilesController.GetTileCenter(previousPos.x, previousPos.y));
 
         currentlySelectingPiece = null;
-        tilesController.RemoveHighlightTiles(availableMoves);
+        if(match.states.lastWinTeam == Team.None)
+            tilesController.RemoveHighlightTiles(availableMoves);
     }
     #endregion
 

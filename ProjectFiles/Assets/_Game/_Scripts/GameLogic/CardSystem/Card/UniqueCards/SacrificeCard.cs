@@ -53,7 +53,8 @@ public sealed class SacrificeCard : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y, false);
+            GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y,
+                false, GameController.Instance.player.GetLocalPlayerTeam());
             GameController.Instance.player.IncreaseMana(manaToAdd);
 
             GameController.Instance.states.UseCard(ID, moves);

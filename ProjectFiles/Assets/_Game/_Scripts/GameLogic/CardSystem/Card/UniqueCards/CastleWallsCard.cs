@@ -3,7 +3,8 @@ using UnityEngine;
 
 public sealed class CastleWallsCard : Card
 {
-    [field: SerializeField] ScriptableEffector effectOfTile;
+    [field: SerializeField] InstanceGameobject_SO_VB visualEffectOnTile;
+    [SerializeField] int duration;
 
     public override void Init()
     {
@@ -51,8 +52,11 @@ public sealed class CastleWallsCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
-        Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
-            AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
+        Tile tile = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y];
+        var buff = new BanAttack_TileBuff(false, true);
+        new VisualGameobjectBuffBehaviour(buff, visualEffectOnTile, tile.tileCenter);
+        var tBuff = new TemporaryBuff(tile.tileBuffAndStatsComponent, buff, duration);
+        tile.tileBuffAndStatsComponent.AddBuff(tBuff);
 
         if (!isSynced)
         {

@@ -28,7 +28,7 @@ public sealed class PlayerDeck : Deck
         if (isNet)
         {
             netCard = GameController.Instance.netMatch.cardSync;
-            netCard.SetDefaultRpc();
+            netCard.Enemy_SetDefaultRpc();
         }
     }
     public override void AddToDeck(int count, bool isDefSet = false)
@@ -49,7 +49,7 @@ public sealed class PlayerDeck : Deck
         deckView.Add(cardCollection.cardBack, cardAdded);
 
         if (isNet && !isDefSet)
-            netCard.AddToDeckRpc(count);
+            netCard.Enemy_AddToDeckRpc(count);
     }
     public void AddToGraveyard(int count)
     {
@@ -60,11 +60,11 @@ public sealed class PlayerDeck : Deck
         }
         gravejardView.Add(cardCollection.cardBack, count);
         if (isNet)
-            netCard.AddToGraveyardRpc(count);
+            netCard.Enemy_AddToGraveyardRpc(count);
     }
 
     //====DRAW====
-    void DrawCardInHand(Card card)
+    public void DrawCardInHand(Card card)
     {
         Card newCard = Instantiate(card.gameObject, parent: hand.transform).GetComponent<Card>();
         Vector3 targetScale = card.transform.localScale;
@@ -103,14 +103,14 @@ public sealed class PlayerDeck : Deck
         banForDrawLastIssuedCard = false;
         banForDrawLastGraveyardCard = false;
         if(netCard)
-            netCard.DrawHandRandomFromDeckRpc(cardSpawnedCount, ignoreCardLimit);
+            netCard.Enemy_DrawHandRandomFromDeckRpc(cardSpawnedCount, ignoreCardLimit);
     }
     public override void DrawLastFromGraveyard()
     {
         Card card = null;
         if (gravejardView.GetCountInStack() > 0)
         {
-            GameController.Instance.globalCardCollection.GlobalCardsDictionary.TryGetValue(lastGraveyardCardID, out Card c);
+            GameController.Instance.globalCards.GlobalCardsDictionary.TryGetValue(lastGraveyardCardID, out Card c);
             card = c;
         }
 
@@ -120,7 +120,7 @@ public sealed class PlayerDeck : Deck
             DrawCardInHand(card);
 
             if (isNet)
-                netCard.DrawLastFromGraveyardRpc();
+                netCard.Enemy_DrawLastFromGraveyardRpc();
         }
     }
 
@@ -135,17 +135,18 @@ public sealed class PlayerDeck : Deck
         lastIssuedCardID = -1;
 
         if (isNet)
-            netCard.DestroyAllRpc();
+            netCard.Enemy_DestroyAllRpc();
     }
     public void DestroyCardInHand(Card card)
     {
         lastGraveyardCardID = card.ID;
+        card.DOComplete();
         Destroy(card.gameObject);
         hand.RemoveCard(card);
         gravejardView.Add(cardCollection.cardBack);
 
         if (isNet)
-            netCard.DestroyCardRpc();
+            netCard.Enemy_DestroyCardRpc();
     }
 
     public void DestroyAllCardsInHand(bool needToAddInGraveyard = true)
@@ -155,7 +156,7 @@ public sealed class PlayerDeck : Deck
         hand.RemoveAllCards();
 
         if (isNet)
-            netCard.DestroyAllCardsInHandRpc(needToAddInGraveyard);
+            netCard.Enemy_DestroyAllCardsInHandRpc(needToAddInGraveyard);
     }
 
     public override int GetGraveyardCardCount() { return gravejardView.GetCountInStack(); }

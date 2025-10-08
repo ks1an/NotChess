@@ -15,7 +15,6 @@ public sealed class Player : MonoBehaviour
     int currentMana;
     int maxMana;
 
-
     void Awake()
     {
         DontDestroyOnLoad(this);
@@ -30,8 +29,9 @@ public sealed class Player : MonoBehaviour
         {
             maxMana = settings.maxMana;
             currentMana = settings.startMana;
-            currentMana += ((settings.firtsMoveZero == (localPlayerTeam == Team.Cross)) && localPlayerTeam != Team.None) ?
-                settings.startManaForEvenPlayer : 0;
+            currentMana += ((settings.firtsMoveZero == (localPlayerTeam == Team.Cross)) 
+                && localPlayerTeam != Team.None) ?
+                    settings.startManaForEvenPlayer : 0;
 
             BoardUI.Singleton.manaBar.SetSettings(currentMana, maxMana);
         }

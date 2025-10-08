@@ -15,6 +15,7 @@ public class MatchStates : MonoBehaviour
 
     #region Events
     public event Action OnGamePreStart;
+    public event Action OnSetSettings;
     public event Action OnGameStarted;
     public event Action OnGameRestarted;
     public event Action<int, int, Team> OnTurnEnded;
@@ -86,6 +87,7 @@ public class MatchStates : MonoBehaviour
             game.player.SetPlayerTeam(isMoveOfZero ? Team.Zero : Team.Cross);
             enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
         }
+        OnSetSettings?.Invoke();
     }
 
     public void GameRestart()
@@ -134,17 +136,23 @@ public class MatchStates : MonoBehaviour
         TeamMoved(x, y, team);
     }
 
-    public void TryDestroyUnit(int x, int y, bool destroyedByUnit)
+    public void TryDestroyUnit(int x, int y, bool destroyedByUnit, Team teamWhoDestroyed)
     {
+        if(teamWhoDestroyed == Team.None)
+        {
+            Debug.LogError("Player with NONE team trying destroy unit");
+            return;
+        }
+
         if (board.piecesController.pieces[x, y] != null)
             if (isNetMatch)
             {
-                net.unitSync.DestroyUnitRpc(x, y, destroyedByUnit);
+                net.unitSync.DestroyUnitRpc(x, y, destroyedByUnit, (int)teamWhoDestroyed);
                 return;
             }
             else
             {
-                if (destroyedByUnit && localPlayer.GetLocalPlayerTeam() != Team.None)
+                if (destroyedByUnit && teamWhoDestroyed == localPlayer.GetLocalPlayerTeam())
                     localPlayer.IncreaseMana(game.settings.manaForDestroyEnemy);
 
                 Destroy(board.piecesController.pieces[x, y].gameObject);
@@ -189,15 +197,17 @@ public class MatchStates : MonoBehaviour
 
             net.cardSync.UseCardRpc(cardID, movesX, movesY);
         }
+        BoardUI.Singleton.muligan.HideMuliganButton();
     }
     #endregion
 
     public void TeamMoved(int x, int y, Team team)
     {
         turnCount += 1;
-
-        if (board.CheckWin(x, y))
+        List<Vector2Int> winTiles = board.CheckWin(x, y);
+        if (winTiles.Count == game.settings.piecesWinSequence)
         {
+            board.tilesController.HighlighTiles(winTiles);
             GameEnd(team, x, y);
             return;
         }

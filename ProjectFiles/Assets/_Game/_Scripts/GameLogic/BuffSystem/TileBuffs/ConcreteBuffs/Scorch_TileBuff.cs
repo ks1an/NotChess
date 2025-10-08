@@ -1,0 +1,75 @@
+using System;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class Scorch_TileBuff : IBuff
+{
+    public event Action OnBuffAdded;
+    public event Action OnBuffRemoved;
+    public event Action OnBuffTicked;
+    public int CountStacks
+    {
+        get
+        {
+            return countStacks;
+        }
+        set => countStacks = value;
+    }
+    public bool CanEffectStack
+    {
+        get
+        {
+            return canEffectStack;
+        }
+        set => canEffectStack = value;
+    }
+    public bool CanDurationStack
+    {
+        get
+        {
+            return canDurationStack;
+        }
+        set => canDurationStack = value;
+    }
+
+    int countStacks;
+    bool canEffectStack, canDurationStack;
+
+    public Scorch_TileBuff(bool canEffectStack, bool canDurationStack)
+    {
+        countStacks = 0;
+        this.canEffectStack = canEffectStack;
+        this.canDurationStack = canDurationStack;
+    }
+
+    public IBuffableStats ApplyBuff(IBuffableStats baseStats, IBuffable owner)
+    {
+        if (baseStats.GetType() == typeof(TileStats))
+        {
+            return baseStats;
+        }
+        else
+        {
+            Debug.LogError($"GetNotEqualTypeBuff. My want {typeof(TileStats)}, but I get {baseStats.GetType()}");
+            owner.RemoveBuff(this);
+            return baseStats;
+        }
+    }
+
+    public void DoOnAddBuff() { OnBuffAdded?.Invoke(); }
+    public void DoOnRemoveBuff() { OnBuffRemoved?.Invoke(); }
+    public void DoOnTick() { OnBuffTicked?.Invoke(); }
+    public bool TryStack(IBuff stackingBuff) 
+    {
+        if (!stackingBuff.CanEffectStack || !CanEffectStack) return false;
+
+        if (stackingBuff.GetType() != GetType())
+        {
+            Debug.LogError($"GetNotEqualTypeBuff on stacking. " +
+                $"I want {GetType()}, but I get {stackingBuff.GetType()}");
+            return false;
+        }
+        CountStacks++;
+        return true;
+    }
+}

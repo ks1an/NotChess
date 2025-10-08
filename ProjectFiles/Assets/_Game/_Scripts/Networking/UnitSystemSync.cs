@@ -41,15 +41,10 @@ public sealed class UnitSystemSync : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void DestroyUnitRpc(int x, int y, bool destroyedByUnit)
+    public void DestroyUnitRpc(int x, int y, bool destroyedByUnit, int teamWhoDestroy)
     {
         if (destroyedByUnit)
-        {
-            if (board.piecesController.pieces[x, y].team == Team.Zero)
-                IncreaseManaForDestroyRpc((int)Team.Cross);
-            else
-                IncreaseManaForDestroyRpc((int)Team.Zero);
-        }
+            IncreaseManaForDestroyRpc(teamWhoDestroy);
 
         Destroy(board.piecesController.pieces[x, y].gameObject);
         UpdateUnitArrayOnClientsRpc(x, y, 0, Team.None);

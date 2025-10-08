@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class MathOperations
 {
@@ -10,7 +10,7 @@ public sealed class MathOperations
 
     public static MathOperations GetInstance()
     {
-        if(_instance == null)
+        if (_instance == null)
             lock (_lock)
                 _instance ??= new MathOperations();
 
@@ -45,7 +45,7 @@ public sealed class MathOperations
             (min, max) = (max, min);
 
         if (needIntRandom)
-            return UnityEngine.Random.Range((int)min,(int)max);
+            return UnityEngine.Random.Range((int)min, (int)max);
 
         return UnityEngine.Random.Range(min, max);
     }

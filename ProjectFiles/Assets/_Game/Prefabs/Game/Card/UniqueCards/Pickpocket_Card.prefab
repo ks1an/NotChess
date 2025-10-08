@@ -104,6 +104,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d572a581b46bf5d45a84fdd7d1eb184c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalCardName: Pickpocket
+  originalDescription: <b>Steals</b> the chosen card <b>from your opponent's hand</b>
+    and places it in your hand.
+  <ManaCost>k__BackingField: 4
+  <Image>k__BackingField: {fileID: 21300000, guid: b795c1757fdb3ee4ea73205a4f35f2f4, type: 3}
+  <ColorBorder>k__BackingField: {r: 0.57992166, g: 0.6395158, b: 0.6792453, a: 1}
+  <IsUseOnlyMyTurn>k__BackingField: 1
+  <Orientation>k__BackingField: 3
+  <Category>k__BackingField: 3
+  <Rarity>k__BackingField: 4
+  <AttackClass>k__BackingField: 0
+  <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1 &9098353681655225977
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +223,7 @@ PrefabInstance:
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 60ea1fc4a185e6346918434b348c9531, type: 3}
+      objectReference: {fileID: 21300000, guid: b795c1757fdb3ee4ea73205a4f35f2f4, type: 3}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
       value: 0.7924528
@@ -238,7 +250,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Return card
+      value: Pickpocket
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
@@ -246,7 +258,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
@@ -254,19 +266,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.6024214
+      value: 0.53754365
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5098708
+      value: 0.5124438
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.9837
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.0097
+      value: -0.0305
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.045
+      value: 1.0516
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.a
@@ -274,23 +290,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
-      value: 0.39215687
+      value: 0.6792453
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.6395158
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.r
-      value: 1
+      value: 0.57992166
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <b><#118a7e>Returns</color></b> the <b>last used card</b> to your hand
+      value: <b>Steals</b> the chosen card <b>from your opponent's hand</b> and places
+        it in your hand.
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 2.8
+      value: 2.15
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x
@@ -413,7 +430,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
     m_TableEntryReference:
-      m_KeyId: 15315635847168
+      m_KeyId: 1551935880118272
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -422,7 +439,7 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: -6072306200835679900}
         m_TargetAssemblyTypeName: Card, Assembly-CSharp
         m_MethodName: SetDisplayDescriptionOfCard
         m_Mode: 0
@@ -458,7 +475,7 @@ MonoBehaviour:
     m_TableReference:
       m_TableCollectionName: GUID:ff9908956b2db9f4b8309b90f0dfec04
     m_TableEntryReference:
-      m_KeyId: 15076115922944
+      m_KeyId: 1551844968579072
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
@@ -467,7 +484,7 @@ MonoBehaviour:
   m_UpdateString:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: -6072306200835679900}
         m_TargetAssemblyTypeName: Card, Assembly-CSharp
         m_MethodName: SetDisplayNameOfCard
         m_Mode: 0

@@ -17,7 +17,7 @@ public sealed class GameController : MonoBehaviour
 
     [HideInInspector] public MatchSettings settings;
     [HideInInspector] public MatchStates states;
-    [HideInInspector] public GlobalCardCollection globalCardCollection;
+    [HideInInspector] public GlobalCardCollection globalCards;
     [HideInInspector] bool isDemonstration;
 
 
@@ -26,8 +26,8 @@ public sealed class GameController : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            globalCardCollection = GetComponent<GlobalCardCollection>();
-            globalCardCollection.CreateGlobalCards();
+            globalCards = GetComponent<GlobalCardCollection>();
+            globalCards.CreateGlobalCards();
             states = GetComponent<MatchStates>();
             DontDestroyOnLoad(this);
         }

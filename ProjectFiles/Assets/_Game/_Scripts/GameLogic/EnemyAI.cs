@@ -456,7 +456,7 @@ public sealed class EnemyAI : MonoBehaviour
             //Tile empty
             if (pieces[x, y] == null)
             {
-                if (!Board.Instance.tilesController.tiles[x, y].banPutUnitsOnTile)
+                if (Board.Instance.tilesController.tiles[x, y].tileBuffAndStatsComponent.CurrentStats.CanPutOnTile)
                 {
                     EndEnemyTurn(() => states.TryCreateUnitOnBoard(x, y, myTeam));
                     isMoving = false;
@@ -467,14 +467,14 @@ public sealed class EnemyAI : MonoBehaviour
 
             Dictionary<Vector2Int, Team> myDiagonalNeighbours = GetDiagonalNeighborsTeams(x, y);
             //Enemy on tile
-            if (pieces[x, y].team != myTeam && !Board.Instance.tilesController.tiles[x, y].banAttackTileByUnits)
+            if (pieces[x, y].team != myTeam && Board.Instance.tilesController.tiles[x, y].tileBuffAndStatsComponent.CurrentStats.CanAttackTile)
             {
                 #region TryToAttackByDiagonal
                 Vector2Int bestMove = new();
                 int minValue = 1000000000;
                 foreach (var neighbour in myDiagonalNeighbours)
                     if (neighbour.Value == myTeam && tilesCost[neighbour.Key] < minValue && tilesCost[neighbour.Key] < tile.Value
-                        && !Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].banLeaveTile)
+                        && Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].tileBuffAndStatsComponent.CurrentStats.CanLeaveFromTile)
                     {
                         minValue = tilesCost[neighbour.Key];
                         bestMove = neighbour.Key;
@@ -498,7 +498,7 @@ public sealed class EnemyAI : MonoBehaviour
                 int maxValue = -1000000000;
                 foreach (var neighbour in myDiagonalNeighbours)
                     if (neighbour.Value == Team.None && tilesCost[neighbour.Key] > maxValue
-                        && !Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].banPutUnitsOnTile)
+                        && Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].tileBuffAndStatsComponent.CurrentStats.CanPutOnTile)
                     {
                         maxValue = tilesCost[neighbour.Key];
                         bestMove = neighbour.Key;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class Deck : MonoBehaviour
 {
-    [SerializeField] protected CardCollection cardCollection;
+    [SerializeField] public CardCollection cardCollection;
     [SerializeField, Range(0, 100)] protected int chanceToSkipRestrictOnGetLastDestroyedCard, maxDeckSize, curDeckSize;
     [SerializeField] protected StackView gravejardView, deckView;
 
@@ -30,7 +30,7 @@ public abstract class Deck : MonoBehaviour
         for (int i = 0; i < cardCollection.CardsInCollection.Count; i++)
         {
             Card potentionalCard = cardCollection.CardsInCollection[i];
-            int ID = potentionalCard.SelfGetID();
+            int ID = potentionalCard.GetID();
 
             if (banForDrawLastIssuedCard)
                 if (ID == lastIssuedCardID)
@@ -48,11 +48,11 @@ public abstract class Deck : MonoBehaviour
         if (collectionWithoutBlock.Count > 1)
         {
             card = collectionWithoutBlock[Random.Range(0, collectionWithoutBlock.Count)];
-            lastIssuedCardID = card.SelfGetID();
+            lastIssuedCardID = card.GetID();
             return card;
         }
         card = cardCollection.CardsInCollection[Random.Range(0, cardCollection.CardsInCollection.Count)];
-        lastIssuedCardID = card.SelfGetID();
+        lastIssuedCardID = card.GetID();
         return card;
     }
     #endregion

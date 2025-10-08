@@ -13,8 +13,8 @@ public enum CardAttackStrong
 [RequireComponent(typeof(CardUI))]
 public class Card : MonoBehaviour
 {
-    [SerializeField] string originalCardName;
-    [field: SerializeField, TextArea] string originalDescription;
+    [SerializeField] public string originalCardName;
+    [field: SerializeField, TextArea] public string originalDescription;
     public int ID { get; private set; }
 
     public string DisplayName { get; private set; }
@@ -23,7 +23,7 @@ public class Card : MonoBehaviour
     [field: SerializeField] public Sprite Image { get; private set; }
     [field: SerializeField] public Color ColorBorder { get; private set; }
 
-    [field: SerializeField] public bool IsUseOnlyMyTurn { get; private set; }
+    [field: SerializeField] public bool IsUseOnlyMyTurn { get; private set; } = true;
     [field: SerializeField] public CardOrientation Orientation { get; private set; }
     [field: SerializeField] public Category Category { get; private set; }
     [field: SerializeField] public CardRarity Rarity { get; private set; }
@@ -62,7 +62,7 @@ public class Card : MonoBehaviour
     {
         CardUI = GetComponent<CardUI>();
         UpdateCardUI();
-        ID = SelfGetID();
+        ID = GetID();
         Hand = PlayerDeck.Instance.hand;
         if (Hand.CardsInHand.Contains(this))
             CardUI.CreateCardInHandLogic();
@@ -89,7 +89,7 @@ public class Card : MonoBehaviour
 
     public virtual bool IsAvailableMove(int targetX, int targetY) { return false; }
 
-    public int SelfGetID()
+    public int GetID()
     {
         if(ID != 0)
             return ID;
@@ -105,14 +105,16 @@ public enum CardOrientation
 {
     ATTACK,
     PROTECT,
-    BUILD
+    BUILD, 
+    Social
 }
 
 public enum Category
 {
     CELLS,
     PIECES,
-    PIECES_AND_CELLS
+    PIECES_AND_CELLS,
+    HandOrDeck
 }
 
 public enum CardRarity

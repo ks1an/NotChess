@@ -11,7 +11,8 @@ public sealed class MeteorRainCard : Card
     [SerializeField] int radiousHeightRangeAttack;
 
     [SerializeField] GameObject spawnOnUsed;
-    [field: SerializeField] ScriptableEffector effectOfTile;
+    [field: SerializeField] InstanceParticle_SO_VB buffOnTile;
+    [SerializeField] int durationEffect;
 
     List<Vector2Int> alreadyAttacked;
 
@@ -89,10 +90,14 @@ public sealed class MeteorRainCard : Card
             {
                 if (!isSynced)
                 {
-                    GameController.Instance.states.TryDestroyUnit(moves[i].x, moves[i].y, false);
+                    GameController.Instance.states.TryDestroyUnit(moves[i].x, moves[i].y,
+                        false, GameController.Instance.player.GetLocalPlayerTeam());
                 }
-                Board.Instance.tilesController.tiles[moves[i].x, moves[i].y].
-    AddEffect(effectOfTile.InitializeEffect(null, moves[i].x, moves[i].y));
+                Tile tile = Board.Instance.tilesController.tiles[moves[i].x, moves[i].y];
+                //ScorchTemporaryBuff
+                var logicEffectOnTile = new Scorch_TileBuff(false, false);
+                new VisualParticleBuffBehaviour(logicEffectOnTile, buffOnTile, tile.tileCenter);
+                tile.tileBuffAndStatsComponent.AddBuff(new TemporaryBuff(tile.tileBuffAndStatsComponent, logicEffectOnTile, durationEffect));
             }
         }
 

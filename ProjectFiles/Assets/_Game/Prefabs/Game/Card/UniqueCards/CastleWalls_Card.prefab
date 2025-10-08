@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: CastleWalls
-  originalDescription: <#005500>Prevents attacking</color> a cell for <b>1 round</b>
+  originalDescription: <#005500>Prevents attacking</b></color> a cell for <b>1 round</b>
   <ManaCost>k__BackingField: 2
   <Image>k__BackingField: {fileID: 21300000, guid: d18657fc874599b459f7fb41cf71d67a, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8, b: 0.5686275, a: 1}
@@ -115,7 +115,8 @@ MonoBehaviour:
   <Rarity>k__BackingField: 0
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
-  effectOfTile: {fileID: 11400000, guid: c097b0ff9a50d5344b73360abe67e557, type: 2}
+  visualEffectOnTile: {fileID: 11400000, guid: fc569b6fa6b0bd142b35ef5dcf6c412a, type: 2}
+  duration: 2
 --- !u!1 &9098353681655225977
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +247,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 2.5
+      value: 2.3
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
@@ -290,11 +291,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <#005500>Prevents attacking</color> a cell for <b>1 round</b>
+      value: <#005500>Prevents attacking</b></color> a cell for <b>1 round</b>
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 3.6
+      value: 2.9
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x

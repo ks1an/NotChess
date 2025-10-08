@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdee09508af1e524ba1378bc8f176d8c, type: 3}
+  m_Name: CastleWalls
+  m_EditorClassIdentifier: 
+  volume: 1
+  minPitch: 0.9
+  maxPitch: 1.1
+  audioClipsOnAdded:
+  - {fileID: 8300000, guid: 9e72993278a7f08479a8400376a3a131, type: 3}
+  audioClipsOnRemoved: []
+  audioClipsOnTurned: []
+  prefab: {fileID: -7474463185496864822, guid: 3f48f7d150d4c6b4eb74624ae34b1831, type: 3}
+  doRndYRotOnSpawn: 0
+  hightOnSpawn: -0.75
+  spawnDuration: 3

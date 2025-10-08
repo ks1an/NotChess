@@ -7,7 +7,8 @@ public sealed class LightingBoltCard : Card
     #region Inspector Variable
     [Header("On used")]
     [SerializeField] GameObject OnUsedVFX;
-    [field: SerializeField] ScriptableEffector effectOfTile;
+    [field: SerializeField] InstanceParticle_SO_VB buffOnTile;
+    [SerializeField] int durationEffect;
 
     [Header("Audio")]
     [SerializeField] float volume = 1f;
@@ -62,12 +63,15 @@ public sealed class LightingBoltCard : Card
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
         EnvironmentManager.Instance.DoMediumBoardFlickeringLight();
-        Instantiate(OnUsedVFX, Board.Instance.tilesController.GetTileCenter(moves[0].x, moves[0].y), Quaternion.identity);
-        bool attackWasSuccessful = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].TryGetAroundDefend((int)AttackClass);
+        Tile tile = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y];
+        Instantiate(OnUsedVFX, tile.tileCenter, Quaternion.identity);
+        bool attackWasSuccessful = tile.TryGetAroundDefend((int)AttackClass);
         if (attackWasSuccessful)
         {
-            Board.Instance.tilesController.tiles[moves[0].x, moves[0].y].
-AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
+            //ScorchTemporaryBuff
+            var logicEffectOnTile = new Scorch_TileBuff(false, false);
+            new VisualParticleBuffBehaviour(logicEffectOnTile, buffOnTile, tile.tileCenter);
+            tile.tileBuffAndStatsComponent.AddBuff(new TemporaryBuff(tile.tileBuffAndStatsComponent, logicEffectOnTile, durationEffect));
         }
 
         if (audioClipsOnUsed.Length > 0)
@@ -78,7 +82,8 @@ AddEffect(effectOfTile.InitializeEffect(null, moves[0].x, moves[0].y));
         {
             if (attackWasSuccessful)
             {
-                GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y, false);
+                GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y, 
+                    false, GameController.Instance.player.GetLocalPlayerTeam());
             }
             GameController.Instance.states.UseCard(ID, moves);
             PlayerDeck.Instance.DestroyCardInHand(this);

@@ -198,13 +198,14 @@ MonoBehaviour:
   <Orientation>k__BackingField: 0
   <Category>k__BackingField: 2
   <Rarity>k__BackingField: 1
-  <AttackClass>k__BackingField: 2
+  <AttackClass>k__BackingField: 3
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
   countShells: 5
   radiousWidthRangeAttack: 2
   radiousHeightRangeAttack: 2
   spawnOnUsed: {fileID: 8906116423058164431, guid: 19df3c1a0a9c7d4439230b23d42da72b, type: 3}
-  effectOfTile: {fileID: 11400000, guid: 4c3ac6dbcc56cf243b3b62618842b503, type: 2}
+  buffOnTile: {fileID: 11400000, guid: a5bcb078c8d3b524fa2c36fd4f1704f8, type: 2}
+  durationEffect: 1
 --- !u!1001 &8002781827172970264
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -253,6 +254,10 @@ PrefabInstance:
       propertyPath: m_text
       value: Meteor rain
       objectReference: {fileID: 0}
+    - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_fontSize
+      value: 2.3
+      objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
       value: 4
@@ -299,7 +304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 3.7
+      value: 2.95
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x

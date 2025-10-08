@@ -70,7 +70,7 @@ public class Piece : MonoBehaviour
 
     bool IsAvailabeMove(ref Piece[,] board, int x, int y)
     {
-        if (board[x, y] != null && !Board.Instance.tilesController.tiles[x, y].banAttackTileByUnits 
+        if (board[x, y] != null && Board.Instance.tilesController.tiles[x, y].tileBuffAndStatsComponent.CurrentStats.CanAttackTile 
             && (board[x, y].team != team || (canAttackTeammate && board[x, y].team == team)))
             return true;
 
