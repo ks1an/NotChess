@@ -3,12 +3,10 @@ using UnityEngine;
 
 public class SpyCard : Card
 {
-    bool enemyCardFromHandWasSelected;
 
     public override void Init()
     {
         base.Init();
-        enemyCardFromHandWasSelected = false;
     }
 
     #region OnDrag
@@ -38,7 +36,6 @@ public class SpyCard : Card
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost &&
             EnemyDeck.Instance.hand.CurrentSelectCardIndex > -1)
         {
-            enemyCardFromHandWasSelected = true;
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
             Hand.ResetCurrentSelectCard(null);
@@ -54,7 +51,7 @@ public class SpyCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
-        if (!enemyCardFromHandWasSelected && !isSynced)
+        if ((EnemyDeck.Instance.hand.CurrentSelectCardIndex < 0 && !isSynced))
         {
             Hand.ResetCurrentSelectCard(this);
             return;

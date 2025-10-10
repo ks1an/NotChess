@@ -32,10 +32,10 @@ public class EnemyCardHand : HandObject
     public void AddCard(GameObject obj)
     {
         CardsInHand.Add(obj);
-        obj.AddComponent(typeof(BoxCollider2D));
+        StartCoroutine(AddObj(obj));
+        obj.AddComponent(typeof(BoxCollider));
         HoverObject cardInHand = obj.AddComponent<HoverObject>();
         cardInHand.SetSettigns(SetCurrentSelectCard, ResetCurrentSelectCard, needToHighlightOnHover, highlightColor);
-        StartCoroutine(AddObj(obj));
     }
 
     public void RemoveCard(GameObject obj)
@@ -46,6 +46,7 @@ public class EnemyCardHand : HandObject
 
     public void RemoveAllCards()
     {
+        CurrentSelectCardIndex = -1;
         CardsInHand.Clear();
         RemoveAllObjects();
     }

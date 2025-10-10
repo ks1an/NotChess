@@ -7,6 +7,7 @@ public class MatchStates : MonoBehaviour
 {
     [SerializeField] LocalizedStringTable localTable;
     [HideInInspector] public Board board;
+    [HideInInspector] public bool isGameStarted;
     [HideInInspector] public bool isNetMatch;
     [HideInInspector] public bool isMoveOfZero;
     [HideInInspector] public bool isDemonstrationMatchAiVsAi;
@@ -32,6 +33,7 @@ public class MatchStates : MonoBehaviour
     #region BeforePlay
     public void CreateGame(bool isNetMatch, bool isDemontrationMatchAiVsAi)
     {
+        isGameStarted = false;
         ModalInputWindow.Instance.Hide();
 
         this.isNetMatch = isNetMatch;
@@ -115,6 +117,7 @@ public class MatchStates : MonoBehaviour
             PlayerDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
             EnemyDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
         }
+        isGameStarted = true;
         OnGameStarted?.Invoke();
     }
     #endregion
@@ -197,7 +200,7 @@ public class MatchStates : MonoBehaviour
 
             net.cardSync.UseCardRpc(cardID, movesX, movesY);
         }
-        BoardUI.Singleton.muligan.HideMuliganButton();
+        BoardUI.Singleton.muligan.OnUsedCard();
     }
     #endregion
 
@@ -228,6 +231,7 @@ public class MatchStates : MonoBehaviour
     #region AfterPlay(End)
     void GameEnd(Team winTeam, int x, int y)
     {
+        isGameStarted = false;
         EnvironmentManager.Instance.DoSmallBoardFlickeringLight();
         lastWinTeam = winTeam;
         if (!isNetMatch)
@@ -294,6 +298,7 @@ public class MatchStates : MonoBehaviour
 
     public void OnLeaveFromMatchTrigger()
     {
+        isGameStarted = false;
         if (!isNetMatch)
         {
             Board.onBoardGenerated -= GameStart;

@@ -5,11 +5,13 @@ public sealed class Muligan
 {
     LocalizedStringTable localTable;
     GameObject buttonMuliganObj;
+    bool wasUsedCard;
     int startCardsCount, countOfUsed, maxMuligan;
 
     public void SetDefault(GameObject muliganBttnObj, LocalizedStringTable localTable)
     {
         buttonMuliganObj = muliganBttnObj;
+        wasUsedCard = false;
         countOfUsed = 0;
         maxMuligan = GameController.Instance.settings.startCards;
         startCardsCount = GameController.Instance.settings.startCards;
@@ -26,8 +28,13 @@ public sealed class Muligan
     public void HideMuliganButton() => buttonMuliganObj.SetActive(false);
     public void TryShowMuliganButton()
     {
-        if(countOfUsed < maxMuligan)
+        if(countOfUsed < maxMuligan && !wasUsedCard)
             buttonMuliganObj.SetActive(true);
+    }
+    public void OnUsedCard()
+    {
+        wasUsedCard = true;
+        HideMuliganButton();
     }
 
     void DoMuligan()

@@ -29,17 +29,23 @@ public class PlayerCardHand : HandObject
 
     public void CardUpDownMove(Card card, bool toUp, bool liftSlightly)
     {
-        if (isDealing)
+        if (!GameController.Instance.states.isGameStarted)
             return;
 
         float multipleDirect = toUp ? 1 : -1;
         multipleDirect /= liftSlightly ? 2 : 1;
 
         card.transform.DOComplete();
+
+        if(toUp)
+            StartCoroutine(UpdateObjPos(objUpdatePosTime/2, CardsInHand.IndexOf(card)));
+        else
+            StartCoroutine(UpdateObjPos(objUpdatePosTime/4));
+
         card.transform.DOMoveY(card.transform.position.y + objSelectUpDistance * multipleDirect, 0.1f);
 
         if (GameController.Instance.states.isNetMatch)
-            GameController.Instance.netMatch.cardSync.Enemy_CardHandUpDownMoveRpc(CardsInHand.IndexOf(card),toUp,liftSlightly);
+            GameController.Instance.netMatch.cardSync.Enemy_CardHandUpDownMoveRpc(CardsInHand.IndexOf(card), toUp, liftSlightly);
     }
 
     public void AddCard(Card card)

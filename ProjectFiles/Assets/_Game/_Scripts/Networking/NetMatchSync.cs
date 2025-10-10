@@ -75,6 +75,7 @@ public class NetMatchSync : NetworkBehaviour
             GameController.Instance.player.SetPlayerTeam(Team.None);
         #endregion
 
+        readyPlayers = 0;
         ReadyToStartRpc();
     }
 

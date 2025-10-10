@@ -27,7 +27,7 @@ public class CardUI : MonoBehaviour
     public void SetCardUI()
     {
         card = GetComponent<Card>();
-        if(sorting == null)
+        if (sorting == null)
             sorting = GetComponent<SortingGroup>();
 
         SetCardSettings();
@@ -70,7 +70,6 @@ public class CardUI : MonoBehaviour
         sorting.sortingOrder = 0;
         cardRender.color = passiveColor;
         card.Hand.CardUpDownMove(card, false, true);
-
         if (PlayerDeck.Instance.hand.CurrentSelectCard == card)
         {
             sorting.sortingOrder = 2;

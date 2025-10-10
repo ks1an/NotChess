@@ -28,7 +28,7 @@ public class HandObject : MonoBehaviour
     }
     protected IEnumerator RemoveObjects(int amount)
     {
-        if(amount >= handObjects.Count)
+        if (amount >= handObjects.Count)
         {
             RemoveAllObjects();
             yield break;
@@ -49,21 +49,37 @@ public class HandObject : MonoBehaviour
     }
 
     //DoSomeWithAllList
-    IEnumerator UpdateObjPos(float duration)
+    protected IEnumerator UpdateObjPos(float duration, int indexSelectObj = -1)
     {
         if (handObjects.Count == 0) 
             yield break;
         isDealing = true;
-        float firtsCardPos = 0.5f - (handObjects.Count - 1) * objSpacing / 2;
+        float firtsCardPos = 0.5f - (handObjects.Count - 1) * objSpacing/2;
         Spline spline = splineContainer.Spline;
+
+        for (int i = 0; i < handObjects.Count; i++)
+            handObjects[i].transform.DOComplete();
 
         for (int i = 0; i < handObjects.Count; i++)
         {
             Transform objTransform = handObjects[i].transform;
             if (objTransform == null)
+            {
+                Debug.LogWarning("Not find transform in handObjects: " + handObjects[i].name);
                 continue;
+            }
 
-            float pos = firtsCardPos + i * objSpacing;
+            float additionalSpacing=0;
+            if(indexSelectObj > -1)
+            {
+                if (i + 1 == indexSelectObj)
+                    additionalSpacing = -0.005f;
+                if (i - 1 == indexSelectObj)
+                    additionalSpacing = 0.005f;
+            }
+            float pos = firtsCardPos + i * objSpacing + additionalSpacing;
+
+
             Vector3 splinePos = spline.EvaluatePosition(pos);
             Vector3 forward = spline.EvaluateTangent(pos);
             Vector3 up = spline.EvaluateUpVector(pos);
