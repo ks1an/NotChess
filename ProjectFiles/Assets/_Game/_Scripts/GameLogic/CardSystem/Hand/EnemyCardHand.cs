@@ -36,6 +36,7 @@ public class EnemyCardHand : HandObject
         obj.AddComponent(typeof(BoxCollider));
         HoverObject cardInHand = obj.AddComponent<HoverObject>();
         cardInHand.SetSettigns(SetCurrentSelectCard, ResetCurrentSelectCard, needToHighlightOnHover, highlightColor);
+        obj.layer = LayerMask.NameToLayer("Card");
     }
 
     public void RemoveCard(GameObject obj)

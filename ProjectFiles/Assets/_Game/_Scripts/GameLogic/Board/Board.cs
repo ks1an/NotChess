@@ -103,7 +103,7 @@ public sealed class Board : MonoBehaviour
             #region PutPiece
 
             if (Input.GetMouseButtonDown(0) && piecesController.currentlySelectingPiece == null && piecesController.pieces[hitPos.x, hitPos.y] == null
-                && tilesController.tiles[hitPos.x, hitPos.y].tileBuffAndStatsComponent.CurrentStats.CanPutOnTile)
+                && tilesController.tiles[hitPos.x, hitPos.y].Stats.CurrentStats.CanPutOnTile)
             {
                 if (match.player.IsMyTurnOrNot())
                     match.states.TryCreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam());

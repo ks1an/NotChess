@@ -4,17 +4,16 @@ using UnityEngine;
 //Zeus and Perun cast their hatred on the enemy
 public sealed class LightingBoltCard : Card
 {
-    #region Inspector Variable
     [Header("On used")]
     [SerializeField] GameObject OnUsedVFX;
     [field: SerializeField] InstanceParticle_SO_VB buffOnTile;
     [SerializeField] int durationEffect;
+    [SerializeField] float chromDurationIfAttackSuccess, chromDurationIfAttackNOTSuccess;
 
     [Header("Audio")]
     [SerializeField] float volume = 1f;
     [SerializeField] float minPitch = 1f, maxPitch = 1f;
     [SerializeField] AudioClip[] audioClipsOnUsed;
-    #endregion
 
     public override void Init()
     {
@@ -22,56 +21,49 @@ public sealed class LightingBoltCard : Card
     }
 
     #region OnDrag
-    void OnMouseDown()
+    protected override void OnCursorDown()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
         {
-            if (IsUseOnlyMyTurn)
+            if (GameController.Instance.player.IsMyTurnOrNot())
             {
-                if (GameController.Instance.player.IsMyTurnOrNot())
-                {
-                    Hand.SetCurrentSelectCard(this);
-                    CardUI.SetBorderColor(BoarderColorOnDrag);
-                }
+                Hand.TrySetCurrentSelectCard(this);
+                CardUI.MouseEnterFromCard(gameObject);
             }
-            else
-            {
-                Hand.SetCurrentSelectCard(this);
-                CardUI.SetBorderColor(BoarderColorOnDrag);
-            }
-
         }
     }
 
-    void OnMouseUp()
+    protected override void OnCursorUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
-            Hand.ResetCurrentSelectCard(null);
         }
-        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
-        {
-            Hand.ResetCurrentSelectCard(this);
-        }
-
-        CardUI.SetBorderColor(ColorBorder);
     }
     #endregion
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
-        EnvironmentManager.Instance.DoMediumBoardFlickeringLight();
+        EnvironmentManager.Instance.DoBoardFlickeringLight(6);
+        EnvironmentManager.Instance.SetActiveChromeAbb(true);
+
         Tile tile = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y];
         Instantiate(OnUsedVFX, tile.tileCenter, Quaternion.identity);
         bool attackWasSuccessful = tile.TryGetAroundDefend((int)AttackClass);
         if (attackWasSuccessful)
         {
+            GameController.Instance.secTimer.StartTimer(chromDurationIfAttackSuccess, out SecondTimerSubscriber sub,
+    () => EnvironmentManager.Instance.SetActiveChromeAbb(false));
             //ScorchTemporaryBuff
             var logicEffectOnTile = new Scorch_TileBuff(false, false);
             new VisualParticleBuffBehaviour(logicEffectOnTile, buffOnTile, tile.tileCenter);
-            tile.tileBuffAndStatsComponent.AddBuff(new TemporaryBuff(tile.tileBuffAndStatsComponent, logicEffectOnTile, durationEffect));
+            tile.Stats.AddBuff(new TemporaryBuff(tile.Stats, logicEffectOnTile, durationEffect));
+        }
+        else
+        {
+            GameController.Instance.secTimer.StartTimer(chromDurationIfAttackNOTSuccess, out SecondTimerSubscriber sub,
+() => EnvironmentManager.Instance.SetActiveChromeAbb(false));
         }
 
         if (audioClipsOnUsed.Length > 0)
@@ -82,7 +74,7 @@ public sealed class LightingBoltCard : Card
         {
             if (attackWasSuccessful)
             {
-                GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y, 
+                GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y,
                     false, GameController.Instance.player.GetLocalPlayerTeam());
             }
             GameController.Instance.states.UseCard(ID, moves);

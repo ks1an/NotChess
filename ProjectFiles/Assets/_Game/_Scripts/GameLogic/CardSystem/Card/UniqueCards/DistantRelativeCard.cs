@@ -11,41 +11,25 @@ public class DistantRelativeCard : Card
     }
 
     #region OnDrag
-    void OnMouseDown()
+    protected override void OnCursorDown()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
         {
-            if (IsUseOnlyMyTurn)
+            if (GameController.Instance.player.IsMyTurnOrNot())
             {
-                if (GameController.Instance.player.IsMyTurnOrNot())
-                {
-                    Hand.SetCurrentSelectCard(this);
-                    CardUI.SetBorderColor(BoarderColorOnDrag);
-                }
+                Hand.TrySetCurrentSelectCard(this);
+                CardUI.MouseEnterFromCard(gameObject);
             }
-            else
-            {
-                Hand.SetCurrentSelectCard(this);
-                CardUI.SetBorderColor(BoarderColorOnDrag);
-            }
-
         }
     }
 
-    void OnMouseUp()
+    protected override void OnCursorUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
-            Hand.ResetCurrentSelectCard(null);
         }
-        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
-        {
-            Hand.ResetCurrentSelectCard(this);
-        }
-
-        CardUI.SetBorderColor(ColorBorder);
     }
     #endregion
 
@@ -72,7 +56,7 @@ public class DistantRelativeCard : Card
         {
             GameController.Instance.player.IncreaseMana(amountGetMana);
             TurnTimer.GetInstance().StartTimer(
-                afterTurnsRepayDebt, 
+                afterTurnsRepayDebt,
                 DoAfterTurnsRepayDebt,
                 null,
                 out TurnTimerSubscriber sub

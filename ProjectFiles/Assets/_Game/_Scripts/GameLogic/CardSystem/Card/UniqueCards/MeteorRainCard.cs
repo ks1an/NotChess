@@ -22,42 +22,26 @@ public sealed class MeteorRainCard : Card
     }
 
     #region OnDrag
-    void OnMouseDown()
+    protected override void OnCursorDown()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
         {
-            if (IsUseOnlyMyTurn)
+            if (GameController.Instance.player.IsMyTurnOrNot())
             {
-                if (GameController.Instance.player.IsMyTurnOrNot())
-                {
-                    Hand.SetCurrentSelectCard(this);
-                    CardUI.SetBorderColor(BoarderColorOnDrag);
-                }
+                Hand.TrySetCurrentSelectCard(this);
+                CardUI.MouseEnterFromCard(gameObject);
             }
-            else
-            {
-                Hand.SetCurrentSelectCard(this);
-                CardUI.SetBorderColor(BoarderColorOnDrag);
-            }
-
         }
 
     }
 
-    void OnMouseUp()
+    protected override void OnCursorUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
-            Hand.ResetCurrentSelectCard(null);
         }
-        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
-        {
-            Hand.ResetCurrentSelectCard(this);
-        }
-
-        CardUI.SetBorderColor(ColorBorder);
     }
     #endregion
 
@@ -97,7 +81,7 @@ public sealed class MeteorRainCard : Card
                 //ScorchTemporaryBuff
                 var logicEffectOnTile = new Scorch_TileBuff(false, false);
                 new VisualParticleBuffBehaviour(logicEffectOnTile, buffOnTile, tile.tileCenter);
-                tile.tileBuffAndStatsComponent.AddBuff(new TemporaryBuff(tile.tileBuffAndStatsComponent, logicEffectOnTile, durationEffect));
+                tile.Stats.AddBuff(new TemporaryBuff(tile.Stats, logicEffectOnTile, durationEffect));
             }
         }
 

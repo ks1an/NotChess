@@ -98,6 +98,15 @@ public class NetMatchSync : NetworkBehaviour
         states.TeamMoved(x, y, (Team)teamNum);
     }
 
+    [Rpc(SendTo.NotMe)]
+    public void OnPlayerManaChangeRpc(int mana)
+    {
+        if(mana >= 0)
+            GameController.Instance.enemy.IncreaseMana(mana);
+        else
+            GameController.Instance.enemy.DeacreaseMana(mana*-1);
+    }
+
     #region OnLeaved
     public void LeaveNetMatch()
     {

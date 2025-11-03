@@ -8,7 +8,6 @@ public sealed class BoardUI : MonoBehaviour
     [SerializeField] LocalizedStringTable localTable;
     public static BoardUI Singleton;
 
-    public ManaBar manaBar;
     public Muligan muligan;
 
     [SerializeField] int howManyTurnsAllowMuligan;

@@ -29,11 +29,11 @@ public sealed class Player : MonoBehaviour
         {
             maxMana = settings.maxMana;
             currentMana = settings.startMana;
-            currentMana += ((settings.firtsMoveZero == (localPlayerTeam == Team.Cross)) 
+            IncreaseMana(((settings.firtsMoveZero == (localPlayerTeam == Team.Cross)) 
                 && localPlayerTeam != Team.None) ?
-                    settings.startManaForEvenPlayer : 0;
+                    settings.startManaForEvenPlayer : 0);
 
-            BoardUI.Singleton.manaBar.SetSettings(currentMana, maxMana);
+            GameController.Instance.playerManaBottle.SetSettings(currentMana, maxMana);
         }
     }
 
@@ -49,7 +49,10 @@ public sealed class Player : MonoBehaviour
         if (currentMana > maxMana)
             currentMana = maxMana;
 
-        BoardUI.Singleton.manaBar.IncreaseMana(value);
+        if (GameController.Instance.states.isNetMatch)
+            GameController.Instance.netMatch.OnPlayerManaChangeRpc(value);
+
+        GameController.Instance.playerManaBottle.IncreaseMana(value);
     }
 
     public void DeacreaseMana(int value)
@@ -64,7 +67,10 @@ public sealed class Player : MonoBehaviour
         if (currentMana < 0)
             currentMana = 0;
 
-        BoardUI.Singleton.manaBar.DeacreaseMana(value);
+        if(GameController.Instance.states.isNetMatch)
+            GameController.Instance.netMatch.OnPlayerManaChangeRpc(value * -1);
+
+        GameController.Instance.playerManaBottle.DeacreaseMana(value);
     }
     #endregion
 

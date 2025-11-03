@@ -220,6 +220,46 @@ MonoBehaviour:
     m_Key: Again?
     m_Metadata:
       m_Items: []
+  - m_Id: 10173843563429888
+    m_Key: NothingIsImpossible
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10174475972198400
+    m_Key: DontNeglectYourEnemies
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10174903053008896
+    m_Key: NightToDay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175174030213120
+    m_Key: DefeatIsNotAsDangerous
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175425420017664
+    m_Key: ICameISawIWon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175769864650752
+    m_Key: DivideAndConquer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175907899195392
+    m_Key: ExperienceisATeacher
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10176361743859712
+    m_Key: NoTaskWillSeemImpossible
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10176683266621440
+    m_Key: OurFailuresAreMoreInstructive
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10176958966611968
+    m_Key: WayOutOfTheCoffinDontWhine
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

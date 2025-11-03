@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ public enum CardAttackStrong
     Strong
 }
 
-[RequireComponent(typeof(CardUI))]
+[RequireComponent(typeof(CardVisual))]
 public class Card : MonoBehaviour
 {
     [SerializeField] public string originalCardName;
@@ -27,11 +28,11 @@ public class Card : MonoBehaviour
     [field: SerializeField] public CardOrientation Orientation { get; private set; }
     [field: SerializeField] public Category Category { get; private set; }
     [field: SerializeField] public CardRarity Rarity { get; private set; }
-    [field: SerializeField] public CardAttackStrong AttackClass { get; private set; }  
+    [field: SerializeField] public CardAttackStrong AttackClass { get; private set; }
 
     [field: SerializeField] public Color BoarderColorOnDrag { get; private set; }
 
-    public CardUI CardUI { get; private set; }
+    public CardVisual CardUI { get; private set; }
     public PlayerCardHand Hand { get; private set; }
 
     protected List<Vector2Int> availableMoves = new();
@@ -57,10 +58,9 @@ public class Card : MonoBehaviour
     }
     #endregion
 
-    
     public virtual void Init()
     {
-        CardUI = GetComponent<CardUI>();
+        CardUI = GetComponent<CardVisual>();
         UpdateCardUI();
         ID = GetID();
         Hand = PlayerDeck.Instance.hand;
@@ -74,10 +74,27 @@ public class Card : MonoBehaviour
             CardUI.SetCardUI();
         else
         {
-            CardUI = GetComponent<CardUI>();
+            CardUI = GetComponent<CardVisual>();
             CardUI.SetCardUI();
         }
     }
+
+    void OnMouseDown()
+    {
+        OnCursorDown();
+    }
+    protected virtual void OnCursorDown() { }
+
+    void OnMouseUp()
+    {
+        OnCursorUp();
+        if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
+        {
+            Hand.ResetCurrentSelectCard(this);
+        }
+        CardUI.MouseExitFromCard(gameObject);
+    }
+    protected virtual void OnCursorUp() { }
 
     public virtual void UseCard(List<Vector2Int> moves, bool isSynced) { }
 
@@ -91,7 +108,7 @@ public class Card : MonoBehaviour
 
     public int GetID()
     {
-        if(ID != 0)
+        if (ID != 0)
             return ID;
 
         string id = originalCardName.Length.ToString() + originalDescription.Length.ToString() + ((int)ColorBorder.b).ToString() +
@@ -99,13 +116,18 @@ public class Card : MonoBehaviour
 
         return int.Parse(id);
     }
+
+    private void OnDestroy()
+    {
+        transform.DOKill();
+    }
 }
 
 public enum CardOrientation
 {
     ATTACK,
     PROTECT,
-    BUILD, 
+    BUILD,
     Social
 }
 

@@ -95,6 +95,14 @@ MonoBehaviour:
     m_Key: DistantRelativeCardDescribe
     m_Metadata:
       m_Items: []
+  - m_Id: 10621526212165632
+    m_Key: RuneStoneCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10621701248860160
+    m_Key: RuneStoneCardDescribe
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

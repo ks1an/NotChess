@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: TestDeck
   m_EditorClassIdentifier: 
   <CardsInCollection>k__BackingField:
-  - {fileID: 271522993271443470, guid: 2861d28c24fd65243acfc1683225de55, type: 3}
+  - {fileID: 6225908422702042889, guid: 4d2fccf961dbd764ca171a881b04eda3, type: 3}
+  - {fileID: 3890863732558626456, guid: 25abea6f8f6479b4e95661f5142ac23a, type: 3}
   - {fileID: 510541827946207621, guid: d0593010e7083154ab61f53b41a80116, type: 3}
   cardBack: {fileID: 1227872481659094142, guid: cf9eac3735dc87a4598b99eaf515a999, type: 3}

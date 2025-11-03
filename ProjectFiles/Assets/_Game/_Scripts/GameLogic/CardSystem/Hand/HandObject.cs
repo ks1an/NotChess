@@ -7,7 +7,7 @@ using UnityEngine.Splines;
 public class HandObject : MonoBehaviour
 {
     [SerializeField] protected SplineContainer splineContainer;
-    [SerializeField] protected float objSpacing = 0.1f;
+    [SerializeField] protected float objSpacing = 0.1f, sizeMultiple = 1f;
     [SerializeField] protected float objUpdatePosTime = 0.15f;
     protected bool isDealing;
     protected List<GameObject> handObjects = new();
@@ -16,6 +16,7 @@ public class HandObject : MonoBehaviour
     protected IEnumerator AddObj(GameObject obj)
     {
         handObjects.Add(obj);
+
         yield return StartCoroutine(UpdateObjPos(objUpdatePosTime));
     }
 

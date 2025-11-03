@@ -8,28 +8,21 @@ public class PlayerCardHand : HandObject
     public List<Card> CardsInHand { get; private set; } = new();
     [SerializeField] protected float objSelectUpDistance = 0.25f;
 
-    public void SetCurrentSelectCard(Card card)
+    #region Select/Hover Card
+    public void TrySetCurrentSelectCard(Card card)
     {
-        if (card == null)
-            ResetCurrentSelectCard(null);
-        else if (CardsInHand.Contains(card))
-        {
+        if (CardsInHand.Contains(card))
             CurrentSelectCard = card;
-            CardUpDownMove(card, true, false);
-        }
-        else
-            ResetCurrentSelectCard(card);
     }
     public void ResetCurrentSelectCard(Card card)
     {
-        if (card != null)
-            CardUpDownMove(card, false, false);
-        CurrentSelectCard = null;
+        if(card == CurrentSelectCard)
+            CurrentSelectCard = null;
     }
 
     public void CardUpDownMove(Card card, bool toUp, bool liftSlightly)
     {
-        if (!GameController.Instance.states.isGameStarted)
+        if (!GameController.Instance.states.isGameStarted || card == null)
             return;
 
         float multipleDirect = toUp ? 1 : -1;
@@ -37,17 +30,17 @@ public class PlayerCardHand : HandObject
 
         card.transform.DOComplete();
 
-        if(toUp)
-            StartCoroutine(UpdateObjPos(objUpdatePosTime/2, CardsInHand.IndexOf(card)));
+        if (toUp)
+            StartCoroutine(UpdateObjPos(objUpdatePosTime / 2, CardsInHand.IndexOf(card)));
         else
-            StartCoroutine(UpdateObjPos(objUpdatePosTime/4));
+            StartCoroutine(UpdateObjPos(objUpdatePosTime / 4));
 
         card.transform.DOMoveY(card.transform.position.y + objSelectUpDistance * multipleDirect, 0.1f);
 
         if (GameController.Instance.states.isNetMatch)
             GameController.Instance.netMatch.cardSync.Enemy_CardHandUpDownMoveRpc(CardsInHand.IndexOf(card), toUp, liftSlightly);
     }
-
+    #endregion
     public void AddCard(Card card)
     {
         CardsInHand.Add(card);
@@ -57,8 +50,9 @@ public class PlayerCardHand : HandObject
     public void RemoveCard(Card card)
     {
         if (CurrentSelectCard == card)
-            ResetCurrentSelectCard(card);
-        card.transform.DOKill();
+            CurrentSelectCard = null;
+        if (CurrentSelectCard == card)
+            CurrentSelectCard = null;
 
         CardsInHand.Remove(card);
         StartCoroutine(RemoveObjectInHand(card.gameObject));
@@ -66,10 +60,10 @@ public class PlayerCardHand : HandObject
 
     public void RemoveAllCards()
     {
-        ResetCurrentSelectCard(null);
-        for(int i = 0; i < CardsInHand.Count; i++)
+        for (int i = 0; i < CardsInHand.Count; i++)
             CardsInHand[i].transform.DOKill();
 
+        CurrentSelectCard = null;
         CardsInHand.Clear();
         RemoveAllObjects();
     }

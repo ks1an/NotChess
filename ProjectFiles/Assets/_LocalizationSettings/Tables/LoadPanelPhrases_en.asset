@@ -224,6 +224,80 @@ MonoBehaviour:
     m_Localized: Again?
     m_Metadata:
       m_Items: []
+  - m_Id: 10173843563429888
+    m_Localized: 'Nothing is impossible for someone who tries.
+
+
+      <i>Alexander
+      the Great</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10174475972198400
+    m_Localized: 'Don''t neglect your enemies: They''re the first to notice your
+      mistakes.
+
+
+      <i>Antisphere</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10174903053008896
+    m_Localized: Night is followed by day, and hunger is followed by abundance.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175174030213120
+    m_Localized: 'Defeat is not as dangerous as the fear of admitting defeat.
+
+
+      <i>Vladimir
+      Ilyich Lenin</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175425420017664
+    m_Localized: '<b>I came, I saw, I won</b>.
+
+
+      <i>Gaius Julius Caesar</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175769864650752
+    m_Localized: 'Divide and conquer
+
+
+      <i>Gaius Julius Caesar</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10175907899195392
+    m_Localized: '<b>Experience is a teacher of everything</b>
+
+
+      <i>Gaius Julius
+      Caesar</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10176361743859712
+    m_Localized: 'No task will seem impossible if you break it down into small parts.
+
+
+      <i>Henry
+      Ford</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10176683266621440
+    m_Localized: 'Our failures are more instructive than our successes
+
+
+      <i>Henry
+      Ford</i>'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10176958966611968
+    m_Localized: '<b>There''s only one way out of the coffin, so don''t whine.</b>
+
+
+      <i>Johnny
+      Depp</i>'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

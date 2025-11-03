@@ -5,12 +5,12 @@ public sealed class Tile : MonoBehaviour
     public Vector2Int coord;
     public Vector3 tileCenter;
 
-    public TileStatsAndBuffs tileBuffAndStatsComponent;
+    public TileStatsComponent Stats;
     public TileStats StatsView;
 
     void SetDef()
     {
-        tileBuffAndStatsComponent?.RemoveAllBuffs();
+        Stats?.RemoveAllBuffs();
         TileStats stats = new()
         {
             CanAttackTile = true,
@@ -18,7 +18,7 @@ public sealed class Tile : MonoBehaviour
             CanPutOnTile = true,
             DefendClass = 0
         };
-        tileBuffAndStatsComponent = new TileStatsAndBuffs(stats, UpdateStatsView);
+        Stats = new TileStatsComponent(stats, UpdateStatsView, this);
     }
 
     void UpdateStatsView(TileStats newStats) => StatsView = newStats;
@@ -30,17 +30,17 @@ public sealed class Tile : MonoBehaviour
             Debug.LogError("Trying attack with negative attack class");
             return false;
         }
-        if (tileBuffAndStatsComponent.CurrentStats.DefendClass == 0)
+        if (Stats.CurrentStats.DefendClass == 0)
             return true;
 
-        if (attackClass == (int)tileBuffAndStatsComponent.CurrentStats.DefendClass)
+        if (attackClass == (int)Stats.CurrentStats.DefendClass)
         {
-            tileBuffAndStatsComponent.DestroyBuffWithMostDefendClass();
+            Stats.DestroyBuffWithMostDefendClass();
             return false;
         }
-        if (attackClass > (int)tileBuffAndStatsComponent.CurrentStats.DefendClass)
+        if (attackClass > (int)Stats.CurrentStats.DefendClass)
         {
-            tileBuffAndStatsComponent.DestroyBuffWithMostDefendClass();
+            Stats.DestroyBuffWithMostDefendClass();
             return true;
         }
         return false;

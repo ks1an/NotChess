@@ -77,7 +77,7 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 19262060675072
     m_Localized: "You <b><color=\"red\">sacrifice</color></b> your <color=\"red\">unit</color>
-      \r\nand <b>gain <#0000FF>2</b> mana</color> in return"
+      \r\nand <b>gain <#0000FF>1</b> mana</color> in return"
     m_Metadata:
       m_Items: []
   - m_Id: 1551844968579072
@@ -98,13 +98,23 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7247470494564352
-    m_Localized: You <b>instantly gain</b> <b><#118a7e>2</color></b> mana points.
-      You'll have <b><#118a7e>3</color></b> mana points <b>back</b> by <b><color="red>your</color>
-      next turn</b>. The debt can be forgiven
+    m_Localized: You <b>instantly gain</b> <b><#118a7e>1</color></b> mana points.
+      You'll have <b><#118a7e>1</color></b> mana points <b>back</b> by <b><color="red>your</color>
+      next turn</b>
     m_Metadata:
       m_Items: []
   - m_Id: 7247461267095552
     m_Localized: Distant relative
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10621526212165632
+    m_Localized: Rune stone
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10621701248860160
+    m_Localized: Hits the cell <b>with a delay</b> of one round. <b><#ff0000>Destroys
+      the</color> object</b> on this cell and blocks the staging and attack in this
+      cell
     m_Metadata:
       m_Items: []
   references:

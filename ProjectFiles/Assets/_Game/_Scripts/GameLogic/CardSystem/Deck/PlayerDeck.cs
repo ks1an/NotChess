@@ -140,7 +140,7 @@ public sealed class PlayerDeck : Deck
     public void DestroyCardInHand(Card card)
     {
         lastGraveyardCardID = card.ID;
-        card.DOComplete();
+        card.transform.DOComplete();
         Destroy(card.gameObject);
         hand.RemoveCard(card);
         gravejardView.Add(cardCollection.cardBack);

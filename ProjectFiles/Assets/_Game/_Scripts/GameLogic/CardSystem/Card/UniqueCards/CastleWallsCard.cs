@@ -12,41 +12,25 @@ public sealed class CastleWallsCard : Card
     }
 
     #region OnDrag
-    void OnMouseDown()
+    protected override void OnCursorDown()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
         {
-            if (IsUseOnlyMyTurn)
+            if (GameController.Instance.player.IsMyTurnOrNot())
             {
-                if (GameController.Instance.player.IsMyTurnOrNot())
-                {
-                    Hand.SetCurrentSelectCard(this);
-                    CardUI.SetBorderColor(BoarderColorOnDrag);
-                }
+                Hand.TrySetCurrentSelectCard(this);
+                CardUI.MouseEnterFromCard(gameObject);
             }
-            else
-            {
-                Hand.SetCurrentSelectCard(this);
-                CardUI.SetBorderColor(BoarderColorOnDrag);
-            }
-
         }
     }
 
-    void OnMouseUp()
+    protected override void OnCursorUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
             GameController.Instance.player.DeacreaseMana(ManaCost);
             UseCard(availableMoves);
-            Hand.ResetCurrentSelectCard(null);
         }
-        else if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
-        {
-            Hand.ResetCurrentSelectCard(this);
-        }
-
-        CardUI.SetBorderColor(ColorBorder);
     }
     #endregion
 
@@ -55,8 +39,8 @@ public sealed class CastleWallsCard : Card
         Tile tile = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y];
         var buff = new BanAttack_TileBuff(false, true);
         new VisualGameobjectBuffBehaviour(buff, visualEffectOnTile, tile.tileCenter);
-        var tBuff = new TemporaryBuff(tile.tileBuffAndStatsComponent, buff, duration);
-        tile.tileBuffAndStatsComponent.AddBuff(tBuff);
+        var tBuff = new TemporaryBuff(tile.Stats, buff, duration);
+        tile.Stats.AddBuff(tBuff);
 
         if (!isSynced)
         {

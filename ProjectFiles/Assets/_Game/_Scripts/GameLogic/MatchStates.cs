@@ -53,6 +53,7 @@ public class MatchStates : MonoBehaviour
 
     void OnSceneLoaded()
     {
+        game.enemy = new();
         if (!isNetMatch)
         {
             enemyBot = Instantiate(game.botPrefab).GetComponent<EnemyAI>();
@@ -89,6 +90,12 @@ public class MatchStates : MonoBehaviour
             game.player.SetPlayerTeam(isMoveOfZero ? Team.Zero : Team.Cross);
             enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
         }
+
+        if (game.player.GetLocalPlayerTeam() == Team.Zero)
+            game.enemy.SetTeam(Team.Cross);
+        else if (game.player.GetLocalPlayerTeam() == Team.Cross)
+            game.enemy.SetTeam(Team.Zero);
+
         OnSetSettings?.Invoke();
     }
 
@@ -114,9 +121,11 @@ public class MatchStates : MonoBehaviour
         if (game.player.GetLocalPlayerTeam() != Team.None)
         {
             game.player.SetStartMana();
+            game.enemy.SetStartMana();
             PlayerDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
             EnemyDeck.Instance.DrawHandRandomFromDeck(game.settings.startCards, true);
         }
+
         isGameStarted = true;
         OnGameStarted?.Invoke();
     }
@@ -232,13 +241,13 @@ public class MatchStates : MonoBehaviour
     void GameEnd(Team winTeam, int x, int y)
     {
         isGameStarted = false;
-        EnvironmentManager.Instance.DoSmallBoardFlickeringLight();
+        EnvironmentManager.Instance.DoBoardFlickeringLight(3);
         lastWinTeam = winTeam;
         if (!isNetMatch)
         {
             if (isDemonstrationMatchAiVsAi)
             {
-                GameRestart();
+                game.secTimer.StartTimer(3, out SecondTimerSubscriber sub, GameRestart);
                 return;
             }
 

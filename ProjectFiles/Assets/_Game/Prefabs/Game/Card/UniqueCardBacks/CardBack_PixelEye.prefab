@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8538271642077066422}
   - component: {fileID: 5096381167904551837}
-  m_Layer: 31
+  m_Layer: 0
   m_Name: CardBack_PixelEye
   m_TagString: Untagged
   m_Icon: {fileID: 0}

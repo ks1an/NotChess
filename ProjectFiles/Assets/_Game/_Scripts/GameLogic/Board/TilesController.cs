@@ -76,6 +76,9 @@ public sealed class TilesController : MonoBehaviour
         tile.tileCenter = tileObject.transform.position +
             new Vector3(-scaledSize.x / 2, scaledSize.y, -scaledSize.z / 2);
         tile.coord = new Vector2Int(x, y);
+
+        tileObject.isStatic = true;
+
         return tile;
     }
     #endregion

@@ -15,7 +15,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: Hover
-    Event: 550
+    Event: 600
     filterSettings:
       RenderQueueType: 1
       LayerMask:
@@ -41,7 +41,7 @@ MonoBehaviour:
       overrideCamera: 0
       restoreCamera: 0
       offset: {x: 0, y: 0, z: 0, w: 0}
-      cameraFieldOfView: 60
+      cameraFieldOfView: 52.6
 --- !u!114 &-1141970780739394221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: Tile
-    Event: 1000
+    Event: 600
     filterSettings:
       RenderQueueType: 1
       LayerMask:
@@ -143,7 +143,7 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
-  m_RenderingMode: 0
+  m_RenderingMode: 2
   m_DepthPrimingMode: 0
   m_CopyDepthMode: 1
   m_AccurateGbufferNormals: 0
@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: Card
-    Event: 1000
+    Event: 550
     filterSettings:
       RenderQueueType: 1
       LayerMask:
@@ -175,7 +175,7 @@ MonoBehaviour:
     overrideShader: {fileID: 0}
     overrideShaderPassIndex: 0
     overrideMode: 1
-    overrideDepthState: 0
+    overrideDepthState: 1
     depthCompareFunction: 8
     enableWrite: 1
     stencilSettings:

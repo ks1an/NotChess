@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
+[RequireComponent(typeof(GlobalCardCollection), typeof(MatchStates))]
 public sealed class GameController : MonoBehaviour
 {
     public static GameController Instance { get; private set; }
@@ -12,12 +13,17 @@ public sealed class GameController : MonoBehaviour
     [Space(10)]
     public Player player;
     public GameObject botPrefab;
+
+    [Header("Board")]
     public Board board;
+    public ManaBottle playerManaBottle, enemyManaBottle;
 
 
+    [HideInInspector] public Enemy enemy;
     [HideInInspector] public MatchSettings settings;
     [HideInInspector] public MatchStates states;
     [HideInInspector] public GlobalCardCollection globalCards;
+    [HideInInspector] public SecondTimer secTimer;
     [HideInInspector] bool isDemonstration;
 
 
@@ -29,6 +35,7 @@ public sealed class GameController : MonoBehaviour
             globalCards = GetComponent<GlobalCardCollection>();
             globalCards.CreateGlobalCards();
             states = GetComponent<MatchStates>();
+            secTimer = gameObject.AddComponent<SecondTimer>();
             DontDestroyOnLoad(this);
         }
     }

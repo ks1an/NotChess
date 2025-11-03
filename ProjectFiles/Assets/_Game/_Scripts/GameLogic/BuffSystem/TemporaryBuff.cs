@@ -55,10 +55,13 @@ public class TemporaryBuff : IBuff
     }
 
     void OnLifeTurnsEnd() => owner.RemoveBuff(this);
+
+
     public void DoOnAddBuff() { coreBuff.DoOnAddBuff(); OnBuffAdded?.Invoke(); }
+
     public void DoOnRemoveBuff() 
     {
-        coreBuff.DoOnRemoveBuff(); 
+        coreBuff.DoOnRemoveBuff();
         OnBuffRemoved?.Invoke(); 
     }
     public void DoOnTick()
