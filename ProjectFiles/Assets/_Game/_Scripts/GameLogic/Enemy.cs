@@ -11,7 +11,7 @@ public class Enemy
 
     public void SetStartMana()
     {
-        var settings = GameController.Instance.settings;
+        var settings = GameController.Instance.matchSettings;
         maxMana = settings.maxMana;
         currentMana = settings.startMana;
         GameController.Instance.enemyManaBottle.SetSettings(currentMana, maxMana);

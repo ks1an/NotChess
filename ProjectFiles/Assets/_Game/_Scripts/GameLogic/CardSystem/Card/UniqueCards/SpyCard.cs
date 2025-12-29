@@ -22,7 +22,7 @@ public class SpyCard : Card
 
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost &&
             EnemyDeck.Instance.hand.CurrentSelectCardIndex > -1)
@@ -48,7 +48,7 @@ public class SpyCard : Card
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
 
-                GameController.Instance.states.UseCard(GetID(), targetCards);
+                GameController.Instance.states.move.UseCard(GetID(), targetCards);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
@@ -70,7 +70,7 @@ public class SpyCard : Card
                         Random.Range(0, PlayerDeck.Instance.cardCollection.CardsInCollection.Count)].GetID()), () => { }
                 );
 
-            GameController.Instance.states.UseCard(GetID(), targetCards);
+            GameController.Instance.states.move.UseCard(GetID(), targetCards);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
     }

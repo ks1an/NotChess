@@ -22,7 +22,7 @@ public sealed class SacrificeCard : Card
 
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
@@ -36,11 +36,11 @@ public sealed class SacrificeCard : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.TryDestroyUnit(moves[0].x, moves[0].y,
+            GameController.Instance.states.move.TryDestroyUnit(moves[0].x, moves[0].y,
                 false, GameController.Instance.player.GetLocalPlayerTeam());
             GameController.Instance.player.IncreaseMana(manaToAdd);
 
-            GameController.Instance.states.UseCard(ID, moves);
+            GameController.Instance.states.move.UseCard(ID, moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else

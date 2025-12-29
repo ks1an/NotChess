@@ -24,7 +24,7 @@ public sealed class Player : MonoBehaviour
 
     public void SetStartMana()
     {
-        var settings = GameController.Instance.settings;
+        var settings = GameController.Instance.matchSettings;
         if (localPlayerTeam != Team.None)
         {
             maxMana = settings.maxMana;

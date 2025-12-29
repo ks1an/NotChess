@@ -106,8 +106,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   originalCardName: Distant relative
   originalDescription: You <b>instantly gain</b> <b><#118a7e>1</color></b> mana points.
-    You'll have <b><#118a7e>1</color></b> mana points <b>back</b> by <b><color="red>your</color>
-    next turn</b>
+    <color="red">You'll have</color> <b><#118a7e>1</color></b> mana points <b>back</b>
+    by <b><color="red>your</color> next turn</b>
   <ManaCost>k__BackingField: 0
   <Image>k__BackingField: {fileID: 21300000, guid: f71f9f0588ab96848a0eb65f8ab54381, type: 3}
   <ColorBorder>k__BackingField: {r: 0.5803922, g: 0.6392157, b: 0.6784314, a: 1}
@@ -313,8 +313,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: You <b>instantly gain</b> <b><#118a7e>1</color></b> mana points. You'll
-        have <b><#118a7e>1</color></b> mana points <b>back</b> by <b><color="red>your</color>
+      value: You <b>instantly gain</b> <b><#118a7e>1</color></b> mana points. <color="red">You'll
+        have</color> <b><#118a7e>1</color></b> mana points <b>back</b> by <b><color="red>your</color>
         next turn</b>
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}

@@ -21,7 +21,7 @@ public sealed class ReturnCard : Card
 
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0
             && PlayerDeck.Instance.GetGraveyardCardCount() > 0)
@@ -36,7 +36,7 @@ public sealed class ReturnCard : Card
         if (!isSynced)
         {
             PlayerDeck.Instance.DrawLastFromGraveyard();
-            GameController.Instance.states.UseCard(ID, moves);
+            GameController.Instance.states.move.UseCard(ID, moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else

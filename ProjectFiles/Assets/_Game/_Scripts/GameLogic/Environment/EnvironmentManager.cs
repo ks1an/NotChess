@@ -59,11 +59,6 @@ public sealed class EnvironmentManager : MonoBehaviour
             playerLight.intensity = playerIntensityBase;
             enemyLight.intensity = enemyIntensityOnTurn;
         }
-
-        if (highlightPlayer)
-            SetActiveVignetteFocus(false);
-        else
-            SetActiveVignetteFocus(true);
     }
 
     //PostEffects

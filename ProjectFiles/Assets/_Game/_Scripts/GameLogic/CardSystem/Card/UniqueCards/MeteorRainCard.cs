@@ -35,7 +35,7 @@ public sealed class MeteorRainCard : Card
 
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
@@ -60,7 +60,7 @@ public sealed class MeteorRainCard : Card
                         break;
                     }
             }
-            GameController.Instance.states.UseCard(ID, alreadyAttacked);
+            GameController.Instance.states.move.UseCard(ID, alreadyAttacked);
             Board.Instance.tilesController.RemoveHighlightTiles(moves);
             moves = alreadyAttacked;
         }
@@ -74,7 +74,7 @@ public sealed class MeteorRainCard : Card
             {
                 if (!isSynced)
                 {
-                    GameController.Instance.states.TryDestroyUnit(moves[i].x, moves[i].y,
+                    GameController.Instance.states.move.TryDestroyUnit(moves[i].x, moves[i].y,
                         false, GameController.Instance.player.GetLocalPlayerTeam());
                 }
                 Tile tile = Board.Instance.tilesController.tiles[moves[i].x, moves[i].y];

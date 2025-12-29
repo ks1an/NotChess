@@ -77,8 +77,8 @@ public sealed class EnemyAI : MonoBehaviour
         isDemontrate = GameController.Instance.states.isDemonstrationMatchAiVsAi;
         tilesCost.Clear();
         states = GameController.Instance.states;
-        tileCountX = GameController.Instance.settings.tileCountX;
-        tileCountY = GameController.Instance.settings.tileCountY;
+        tileCountX = GameController.Instance.matchSettings.tileCountX;
+        tileCountY = GameController.Instance.matchSettings.tileCountY;
         SetMyTeam(enemyTeam);
 
         for (int x = 0; x < tileCountX; x++)
@@ -440,7 +440,7 @@ public sealed class EnemyAI : MonoBehaviour
         {
             if (isDemontrate && GameController.Instance.states.turnCount == 0)
             {
-                EndEnemyTurn(() => states.TryCreateUnitOnBoard((int)mathOp.GetSafeRandom(0, tileCountX - 1), (int)mathOp.GetSafeRandom(0, tileCountY - 1), myTeam));
+                EndEnemyTurn(() => states.move.TryCreateUnitOnBoard((int)mathOp.GetSafeRandom(0, tileCountX - 1), (int)mathOp.GetSafeRandom(0, tileCountY - 1), myTeam));
                 isMoving = false;
                 break;
             }
@@ -458,7 +458,7 @@ public sealed class EnemyAI : MonoBehaviour
             {
                 if (Board.Instance.tilesController.tiles[x, y].Stats.CurrentStats.CanPutOnTile)
                 {
-                    EndEnemyTurn(() => states.TryCreateUnitOnBoard(x, y, myTeam));
+                    EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(x, y, myTeam));
                     isMoving = false;
                     break;
                 }
@@ -482,7 +482,7 @@ public sealed class EnemyAI : MonoBehaviour
                 if (minValue < 1000000000)
                 {
                     isMoving = false;
-                    EndEnemyTurn(() => states.MoveUnit(bestMove.x, bestMove.y, x, y));
+                    EndEnemyTurn(() => states.move.MoveUnit(bestMove.x, bestMove.y, x, y));
                     break;
                 }
                 #endregion
@@ -506,7 +506,7 @@ public sealed class EnemyAI : MonoBehaviour
                 if (maxValue > -1000000000)
                 {
                     isMoving = false;
-                    EndEnemyTurn(() => states.TryCreateUnitOnBoard(bestMove.x, bestMove.y, myTeam));
+                    EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(bestMove.x, bestMove.y, myTeam));
                     break;
                 }
                 #endregion
@@ -566,7 +566,7 @@ public sealed class EnemyAI : MonoBehaviour
     {
         int needToAddValueOnTile;
 
-        switch ((float)lineLenght / GameController.Instance.settings.piecesWinSequence * 100)
+        switch ((float)lineLenght / GameController.Instance.matchSettings.piecesWinSequence * 100)
         {
             case >= 80:
                 needToAddValueOnTile = isEnemyLine ? valueIf_Enemy_lineCompleted_80_procent : valueIf_Friend_lineCompleted_80_procent;

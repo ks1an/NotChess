@@ -41,6 +41,7 @@ public class PlayerCardHand : HandObject
             GameController.Instance.netMatch.cardSync.Enemy_CardHandUpDownMoveRpc(CardsInHand.IndexOf(card), toUp, liftSlightly);
     }
     #endregion
+
     public void AddCard(Card card)
     {
         CardsInHand.Add(card);

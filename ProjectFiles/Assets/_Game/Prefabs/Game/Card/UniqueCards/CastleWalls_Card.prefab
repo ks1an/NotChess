@@ -130,6 +130,18 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 230508515667678443, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    - target: {fileID: 746920533324864158, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    - target: {fileID: 1085095598990673800, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 1227872481659094142, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Name
       value: Card
@@ -150,6 +162,18 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    - target: {fileID: 2053732718833975522, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    - target: {fileID: 4627980856894063220, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
       value: CastleWalls
@@ -182,6 +206,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.52156866
       objectReference: {fileID: 0}
+    - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
       value: <b><#005500>Prevents attacking</b></color> a cell for <b>1 round</b>
@@ -395,6 +423,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3315975895440761915, guid: 351d73e8702d8f34aaf8f1f9cecfad0f, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 5528455739978711777, guid: 351d73e8702d8f34aaf8f1f9cecfad0f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

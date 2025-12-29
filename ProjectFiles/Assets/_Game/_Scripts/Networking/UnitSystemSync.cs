@@ -15,6 +15,7 @@ public sealed class UnitSystemSync : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void CreateUnitOnBoardRpc(int x, int y, Team team)
     {
+        Debug.LogError("CREATE UNIT");
         if ((team == Team.Zero && !GameController.Instance.states.isMoveOfZero) ||
             (team == Team.Cross && GameController.Instance.states.isMoveOfZero))
             return;
@@ -22,6 +23,7 @@ public sealed class UnitSystemSync : NetworkBehaviour
         board.piecesController.SetPositionSinglePiece(x, y, true);
         NetworkObject netObj = board.piecesController.pieces[x, y].gameObject.GetComponent<NetworkObject>();
         netObj.Spawn();
+        Debug.LogError("CREATED UNIT");
 
         UpdateUnitArrayOnClientsRpc(x, y, netObj.NetworkObjectId, team);
         net.OnTeamMovedRpc(x, y, (int)team);
@@ -57,7 +59,7 @@ public sealed class UnitSystemSync : NetworkBehaviour
         int playerTeam = (int)GameController.Instance.player.GetLocalPlayerTeam();
         if (playerTeam == playerWhoDestroy && playerTeam != (int)Team.None)
         {
-            GameController.Instance.player.IncreaseMana(GameController.Instance.settings.manaForDestroyEnemy);
+            GameController.Instance.player.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
         }
     }
 

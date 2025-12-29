@@ -35,6 +35,7 @@ public sealed class LobbyManager : MonoBehaviour
     #endregion
 
     [SerializeField] GameObject lobbyList;
+    [SerializeField] EditPlayerName playerEdit;
     [SerializeField] LocalizedStringTable localTable;
     [SerializeField] float refreshLobbyListTimer = 5f;
 
@@ -48,7 +49,7 @@ public sealed class LobbyManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        playerName = EditPlayerName.Instance.GetPlayerName();
+        playerName = playerEdit.GetPlayerName();
         currentGameVersion = Application.version;
     }
 

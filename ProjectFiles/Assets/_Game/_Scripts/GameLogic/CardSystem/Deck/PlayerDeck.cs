@@ -81,7 +81,7 @@ public sealed class PlayerDeck : Deck
             Debug.LogError("Amount is negative!");
             return;
         }
-        if ((!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) || curDeckSize <= 0)
+        if ((!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.matchSettings.defaultCardsInHand) || curDeckSize <= 0)
             return;
 
         if (banForDrawLastGraveyardCard && Random.Range(0, 100) > (100 - chanceToSkipRestrictOnGetLastDestroyedCard))
@@ -90,7 +90,7 @@ public sealed class PlayerDeck : Deck
         for (int i = 0; i < amount; i++)
         {
             if (curDeckSize == 0) break;
-            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) break;
+            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.matchSettings.defaultCardsInHand) break;
 
             Card card = GetRandomCard();
             DrawCardInHand(card);

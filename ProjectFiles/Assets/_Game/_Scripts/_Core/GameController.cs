@@ -18,9 +18,9 @@ public sealed class GameController : MonoBehaviour
     public Board board;
     public ManaBottle playerManaBottle, enemyManaBottle;
 
-
     [HideInInspector] public Enemy enemy;
-    [HideInInspector] public MatchSettings settings;
+    [HideInInspector] public GameSettingsModel gameSettings;
+    [HideInInspector] public MatchSettings matchSettings;
     [HideInInspector] public MatchStates states;
     [HideInInspector] public GlobalCardCollection globalCards;
     [HideInInspector] public SecondTimer secTimer;
@@ -40,8 +40,7 @@ public sealed class GameController : MonoBehaviour
         }
     }
 
-
-    public void CreateDemostrationGame() 
+    public void CreateDemostrationGame()
     {
         CreateGame(false, true);
         isDemonstration = true;
@@ -55,9 +54,9 @@ public sealed class GameController : MonoBehaviour
         if (isDemonstration && !isMatchAiVsAi)
             states.EndDemonstrationGame();
 
-        settings = new MatchSettings(8, 8, 1.25f, 
-            winSequence, firstMoveZero, 
-            startMana, startManaForEvenPlayer, manaPerTurn, maxMana, manaForDestoryEnemy, 
+        matchSettings = new MatchSettings(8, 8, 1.25f,
+            winSequence, firstMoveZero,
+            startMana, startManaForEvenPlayer, manaPerTurn, maxMana, manaForDestoryEnemy,
             startCards, defaultCardsInHand);
 
         states.CreateGame(isNetMatch, isMatchAiVsAi);
@@ -66,8 +65,10 @@ public sealed class GameController : MonoBehaviour
     public void CreateNetSync()
     {
         if (!NetworkManager.Singleton.IsServer) return;
-
+        Debug.LogError("ISSERVER");
         netMatch = Instantiate(netSyncPrefab).GetComponent<NetMatchSync>();
         netMatch.gameObject.GetComponent<NetworkObject>().Spawn();
     }
+
+    public void UpdateGameSettings(GameSettingsModel newSettings) => gameSettings = newSettings;
 }

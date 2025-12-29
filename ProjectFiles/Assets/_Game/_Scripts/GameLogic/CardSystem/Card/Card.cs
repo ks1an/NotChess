@@ -14,8 +14,8 @@ public enum CardAttackStrong
 [RequireComponent(typeof(CardVisual))]
 public class Card : MonoBehaviour
 {
-    [SerializeField] public string originalCardName;
-    [field: SerializeField, TextArea] public string originalDescription;
+    public string originalCardName;
+    [field: TextArea] public string originalDescription;
     public int ID { get; private set; }
 
     public string DisplayName { get; private set; }
@@ -36,6 +36,7 @@ public class Card : MonoBehaviour
     public PlayerCardHand Hand { get; private set; }
 
     protected List<Vector2Int> availableMoves = new();
+    bool showOnlyOriginalName;
 
     public virtual void OnValidate()
     {
@@ -45,8 +46,19 @@ public class Card : MonoBehaviour
     }
 
     #region Sets
+    void TryBlockSetDisplayNameByLocals(bool b)
+    {
+        showOnlyOriginalName = b;
+        if (b)
+        {
+            DisplayName = originalCardName;
+            UpdateCardUI();
+        }
+    }
+
     public void SetDisplayNameOfCard(string value)
     {
+        if(showOnlyOriginalName) return;
         DisplayName = value;
         UpdateCardUI();
     }
@@ -62,10 +74,13 @@ public class Card : MonoBehaviour
     {
         CardUI = GetComponent<CardVisual>();
         UpdateCardUI();
-        ID = GetID();
+    
         Hand = PlayerDeck.Instance.hand;
         if (Hand.CardsInHand.Contains(this))
             CardUI.CreateCardInHandLogic();
+
+        TryBlockSetDisplayNameByLocals(GameController.Instance.gameSettings.DontTranslateNameOfCard.Value);
+        GameController.Instance.gameSettings.DontTranslateNameOfCard.OnChanged += TryBlockSetDisplayNameByLocals;
     }
 
     void UpdateCardUI()
@@ -85,16 +100,20 @@ public class Card : MonoBehaviour
     }
     protected virtual void OnCursorDown() { }
 
-    void OnMouseUp()
+
+    public void DoOnMouseUp(bool withoutAction = false)
     {
-        OnCursorUp();
+        if (!withoutAction)
+            DoActionOnMouseUp();
+
         if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
         {
             Hand.ResetCurrentSelectCard(this);
         }
+
         CardUI.MouseExitFromCard(gameObject);
     }
-    protected virtual void OnCursorUp() { }
+    protected virtual void DoActionOnMouseUp() { }
 
     public virtual void UseCard(List<Vector2Int> moves, bool isSynced) { }
 
@@ -120,6 +139,8 @@ public class Card : MonoBehaviour
     private void OnDestroy()
     {
         transform.DOKill();
+
+        GameController.Instance.gameSettings.DontTranslateNameOfCard.OnChanged -= TryBlockSetDisplayNameByLocals;
     }
 }
 

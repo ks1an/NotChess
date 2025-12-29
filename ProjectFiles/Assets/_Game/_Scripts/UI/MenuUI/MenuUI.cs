@@ -1,17 +1,31 @@
+using TMPro;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.UI;
 
-public sealed class MenuUI : MonoBehaviour
+public partial class MenuUI : MonoBehaviour
 {
     [SerializeField] LocalizedStringTable localTable;
     [SerializeField] Button lobbyListBttn, matchmakingBttn, singleplay;
+    [SerializeField] TabMenu tabMenu;
+    //[SerializeField] MenuBook menuBook;
 
     void Awake()
     {
+        SetActiveTabMenu(false);
+        /*menuBook.OnBackClosed += () => 
+        {
+            menuBook.ClosedFront();
+            menuBook.gameObject.transform.DOLocalMoveX(100, 2f)
+            .OnComplete(() => { menuBook.gameObject.SetActive(false); });
+            SetActiveMainMenuUI(true);
+        };
+        menuBook.gameObject.SetActive(false);*/
+
         GameController.Instance.CreateDemostrationGame();
+
         singleplay.onClick.AddListener(() => GameController.Instance.CreateGame(false));
         if (UnityServices.State == ServicesInitializationState.Initialized && AuthenticationService.Instance.IsAuthorized)
         {
@@ -38,4 +52,50 @@ public sealed class MenuUI : MonoBehaviour
         localTable, "TryExitFromApp",
         false, true, () => ModalViewWindowController.Instance.TryCloseModalViewWindow(), Application.Quit
         );
+
+    /*public void OpenBookMenu_SettingsPage()
+    {
+        if (!menuBook.gameObject.activeSelf)
+        {
+            SetActiveMainMenuUI(false);
+            menuBook.gameObject.transform.DOKill();
+            menuBook.gameObject.SetActive(true);
+            menuBook.gameObject.transform.DOMoveX(0.5f, 0.35f);
+            menuBook.OpenPage(4);
+        }
+    }*/
+
+    public void SetActiveTabMenu(bool enableTab)
+    {
+        if (enableTab)
+        {
+            tabMenu.gameObject.SetActive(enableTab);
+        }
+        else if(tabMenu.gameObject.activeSelf)
+        {
+            tabMenu.DisableAllTab();
+        }
+
+        SetActiveMainMenuUI(!enableTab);
+    }
+
+    public void SetActiveMainMenuUI(bool b)
+    {
+        lobbyListBttn.gameObject.SetActive(b);
+        matchmakingBttn.gameObject.SetActive(b);
+        singleplay.gameObject.SetActive(b);
+        gameTitle.gameObject.SetActive(b);
+        leaveBttn.gameObject.SetActive(b);
+        settingsBttn.gameObject.SetActive(b);
+        playerName.gameObject.SetActive(b);
+        //menuBook.gameObject.SetActive(false);
+    }
+}
+
+
+//SetActive 
+public partial class MenuUI
+{
+    [SerializeField] TextMeshProUGUI gameTitle;
+    [SerializeField] Button leaveBttn, settingsBttn, playerName;
 }

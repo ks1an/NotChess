@@ -23,7 +23,7 @@ public class DistantRelativeCard : Card
         }
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
@@ -45,7 +45,7 @@ public class DistantRelativeCard : Card
                     null,
                     out TurnTimerSubscriber sub
                     );
-                GameController.Instance.states.UseCard(GetID(), moves);
+                GameController.Instance.states.move.UseCard(GetID(), moves);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
@@ -61,7 +61,7 @@ public class DistantRelativeCard : Card
                 null,
                 out TurnTimerSubscriber sub
                 );
-            GameController.Instance.states.UseCard(GetID(), moves);
+            GameController.Instance.states.move.UseCard(GetID(), moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
     }

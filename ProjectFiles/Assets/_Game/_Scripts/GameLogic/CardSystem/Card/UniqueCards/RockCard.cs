@@ -24,7 +24,7 @@ public sealed class RockCard : Card
 
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
@@ -43,7 +43,7 @@ public sealed class RockCard : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.UseCard(ID, moves);
+            GameController.Instance.states.move.UseCard(ID, moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else

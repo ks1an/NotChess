@@ -22,7 +22,7 @@ public sealed class PiecesController : MonoBehaviour
         zeroPrefab = match.player.zeroPrefab;
         crossPrefab = match.player.crossPrefab;
         upValueWhileSelectingPiece = match.player.upValueWhileSelectingPiece;
-        pieces = new Piece[match.settings.tileCountX, match.settings.tileCountY];
+        pieces = new Piece[match.matchSettings.tileCountX, match.matchSettings.tileCountY];
     }
 
     public Piece GeneratePiece(Team type)
@@ -44,7 +44,7 @@ public sealed class PiecesController : MonoBehaviour
     {
         pieces[x, y].currentX = x;
         pieces[x, y].currentY = y;
-        match.states.SetUnitPos(x, y, tilesController.GetTileCenter(x, y), instantly);
+        match.states.move.SetUnitPos(x, y, tilesController.GetTileCenter(x, y), instantly);
     }
 
     public void MoveTo(int originalX, int originalY, int x, int y)
@@ -52,7 +52,7 @@ public sealed class PiecesController : MonoBehaviour
         Piece curPiece = pieces[originalX, originalY];
 
         if (pieces[x, y] != null && curPiece != null)
-            match.states.TryDestroyUnit(x, y, true, curPiece.team);
+            match.states.move.TryDestroyUnit(x, y, true, curPiece.team);
 
         pieces[x, y] = curPiece;
         pieces[originalX, originalY] = null;
@@ -80,10 +80,10 @@ public sealed class PiecesController : MonoBehaviour
             return;
 
         currentlySelectingPiece = pieces[hitPos.x, hitPos.y];
-        availableMoves = currentlySelectingPiece.GetAvailableMoves(ref pieces, match.settings.tileCountX, match.settings.tileCountY);
+        availableMoves = currentlySelectingPiece.GetAvailableMoves(ref pieces, match.matchSettings.tileCountX, match.matchSettings.tileCountY);
 
         Vector3 tileCenter = tilesController.GetTileCenter(hitPos.x, hitPos.y);
-        match.states.SetUnitPos(hitPos.x, hitPos.y, new Vector3(tileCenter.x, upValueWhileSelectingPiece, tileCenter.z));
+        match.states.move.SetUnitPos(hitPos.x, hitPos.y, new Vector3(tileCenter.x, upValueWhileSelectingPiece, tileCenter.z));
 
         tilesController.HighlighTiles(availableMoves);
     }
@@ -94,10 +94,10 @@ public sealed class PiecesController : MonoBehaviour
 
         if (ContainsValidMove(ref availableMoves, new Vector2(hitPos.x, hitPos.y)))
         {
-            match.states.MoveUnit(previousPos.x, previousPos.y, hitPos.x, hitPos.y);
+            match.states.move.MoveUnit(previousPos.x, previousPos.y, hitPos.x, hitPos.y);
         }
         else
-            match.states.SetUnitPos(previousPos.x, previousPos.y, tilesController.GetTileCenter(previousPos.x, previousPos.y));
+            match.states.move.SetUnitPos(previousPos.x, previousPos.y, tilesController.GetTileCenter(previousPos.x, previousPos.y));
 
         currentlySelectingPiece = null;
         if(match.states.lastWinTeam == Team.None)

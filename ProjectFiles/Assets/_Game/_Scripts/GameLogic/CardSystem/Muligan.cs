@@ -13,8 +13,8 @@ public sealed class Muligan
         buttonMuliganObj = muliganBttnObj;
         wasUsedCard = false;
         countOfUsed = 0;
-        maxMuligan = GameController.Instance.settings.startCards;
-        startCardsCount = GameController.Instance.settings.startCards;
+        maxMuligan = GameController.Instance.matchSettings.startCards;
+        startCardsCount = GameController.Instance.matchSettings.startCards;
         this.localTable = localTable;
     }
 

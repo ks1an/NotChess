@@ -12,6 +12,8 @@ public partial class GlobalVolumePostEffect : MonoBehaviour
         volume = GetComponent<Volume>();
         volume.profile.TryGet(out vignette);
         volume.profile.TryGet(out chromeAbb);
+
+        vignette.rounded.value = isRoundedVignetteFocus;
     }
 
     void Update()
@@ -45,7 +47,6 @@ partial class GlobalVolumePostEffect
                 return;
             }
             vigneteProcces = true;
-            vignette.rounded.value = isRoundedVignetteFocus;
             vignette.intensity.value = animCurveVignetteFocus.Evaluate(timeVignetteFocus);
         }
         else if (vigneteProcces)
@@ -55,7 +56,6 @@ partial class GlobalVolumePostEffect
             {
                 timeVignetteFocus = animCurveVignetteFocus.keys[0].time;
                 vigneteProcces = false;
-                vignette.rounded.value = false;
             }
             vignette.intensity.value = animCurveVignetteFocus.Evaluate(timeVignetteFocus);
         }

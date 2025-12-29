@@ -6,9 +6,6 @@ using UnityEngine.UI;
 
 public sealed class EditPlayerName : MonoBehaviour
 {
-    public static EditPlayerName Instance { get; private set; }
-
-
     public event EventHandler OnNameChanged;
 
 
@@ -20,8 +17,6 @@ public sealed class EditPlayerName : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
-
         GetComponent<Button>().onClick.AddListener(() =>
         {
             ModalInputWindow.Instance.Show("Set player name", "0<Name length<=20", () => { },

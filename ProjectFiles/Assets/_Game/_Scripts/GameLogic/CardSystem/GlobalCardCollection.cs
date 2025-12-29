@@ -6,6 +6,7 @@ using UnityEngine;
 public sealed class GlobalCardCollection : MonoBehaviour
 {
     [field: SerializeField] public Dictionary<int, Card> GlobalCardsDictionary { get; private set; } = new();
+
     [field: SerializeField] List<Card> cards;
 
     public void CreateGlobalCards()

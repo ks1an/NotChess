@@ -63,7 +63,7 @@ public sealed class EnemyDeck : Deck
             Debug.LogError("Amount is negative!");
             return;
         }
-        if ((!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) || curDeckSize <= 0)
+        if ((!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.matchSettings.defaultCardsInHand) || curDeckSize <= 0)
             return;
 
         for (int i = 0; i < amount; i++)
@@ -72,7 +72,7 @@ public sealed class EnemyDeck : Deck
             deckView.Remove();
             curDeckSize--;
             if (curDeckSize == 0) break;
-            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.settings.defaultCardsInHand) break;
+            if (!ignoreCardLimit && hand.CardsInHand.Count == GameController.Instance.matchSettings.defaultCardsInHand) break;
         }
     }
 

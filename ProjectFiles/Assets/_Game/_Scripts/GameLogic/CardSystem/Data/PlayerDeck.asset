@@ -24,4 +24,4 @@ MonoBehaviour:
   - {fileID: 3448242410765194852, guid: d4ba186ec01febe4d882ee111bea3e55, type: 3}
   - {fileID: 271522993271443470, guid: 2861d28c24fd65243acfc1683225de55, type: 3}
   - {fileID: 6225908422702042889, guid: 4d2fccf961dbd764ca171a881b04eda3, type: 3}
-  cardBack: {fileID: 1227872481659094142, guid: cf9eac3735dc87a4598b99eaf515a999, type: 3}
+  cardBack: {fileID: 1227872481659094142, guid: 466aa1ff118a3a447afea4fdbb8fb88c, type: 3}

@@ -19,9 +19,9 @@ public sealed class TilesController : MonoBehaviour
     {
         match = GameController.Instance;
 
-        tileCountX = match.settings.tileCountX;
-        tileCountY = match.settings.tileCountY;
-        tileSize = match.settings.tileSize;
+        tileCountX = match.matchSettings.tileCountX;
+        tileCountY = match.matchSettings.tileCountY;
+        tileSize = match.matchSettings.tileSize;
         offset = new();
     }
 

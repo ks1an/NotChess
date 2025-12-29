@@ -25,7 +25,7 @@ public class PickpocketCard : Card
 
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost &&
             EnemyDeck.Instance.hand.CurrentSelectCardIndex > -1)
@@ -52,7 +52,7 @@ public class PickpocketCard : Card
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
 
-                GameController.Instance.states.UseCard(ID, targetCards);
+                GameController.Instance.states.move.UseCard(ID, targetCards);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
@@ -70,7 +70,7 @@ public class PickpocketCard : Card
             PlayerDeck.Instance.DrawCardInHand(GameController.Instance.globalCards.
                 GlobalCardsDictionary.ElementAt(Random.Range(0, GameController.Instance.globalCards.GlobalCardsDictionary.Count)).Value);
             EnemyDeck.Instance.DestroyCardInHand(EnemyDeck.Instance.hand.CardsInHand[targetCards[0][0]]);
-            GameController.Instance.states.UseCard(ID, targetCards);
+            GameController.Instance.states.move.UseCard(ID, targetCards);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
     }

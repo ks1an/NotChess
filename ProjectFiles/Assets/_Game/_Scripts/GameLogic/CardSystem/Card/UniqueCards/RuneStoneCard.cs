@@ -26,7 +26,7 @@ public sealed class RuneStoneCard : Card
         }
     }
 
-    protected override void OnCursorUp()
+    protected override void DoActionOnMouseUp()
     {
         if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
         {
@@ -45,7 +45,7 @@ public sealed class RuneStoneCard : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.UseCard(ID, moves);
+            GameController.Instance.states.move.UseCard(ID, moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else
@@ -64,7 +64,7 @@ public sealed class RuneStoneCard : Card
             {
                 if (!_isSynced)
                 {
-                    GameController.Instance.states.TryDestroyUnit(t.Tile.coord.x, t.Tile.coord.y,
+                    GameController.Instance.states.move.TryDestroyUnit(t.Tile.coord.x, t.Tile.coord.y,
                         false, GameController.Instance.player.GetLocalPlayerTeam());
                 }
 
