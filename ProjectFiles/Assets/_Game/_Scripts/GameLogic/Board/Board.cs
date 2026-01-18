@@ -71,19 +71,23 @@ public partial class Board : MonoBehaviour
         if (waitToSkipMouseDown)
         {
             if (Input.GetMouseButtonUp(0))
+            {
                 waitToSkipMouseDown = false;
+                mouseDowned = false;
+            }
+            return;
+        }
+        if (modalWindow.activeSelf)
+        {
+            if (mouseDowned)
+                waitToSkipMouseDown = true;
             return;
         }
 
         Ray ray = curCamera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit info, 50, LayerMask.GetMask("Tile", "Hover", "Highlight")))
+        if (PlayerDeck.Instance.hand.CurrentHoverCard == null &&
+            Physics.Raycast(ray, out RaycastHit info, 50, LayerMask.GetMask("Tile", "Hover", "Highlight")))
         {
-            if (modalWindow.activeSelf)
-            {
-                if (mouseDowned)
-                    waitToSkipMouseDown = true;
-                return;
-            }
             Vector2Int hitPos = tilesController.GetTileIndex(info.transform.gameObject);
             HoverTile(hitPos);
 
@@ -93,8 +97,13 @@ public partial class Board : MonoBehaviour
                 List<Vector2Int> availabe = PlayerDeck.Instance.hand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
                 tilesController.HighlighTiles(availabe);
                 tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
-                if(Input.GetMouseButtonUp(0))
+                UnselectHoverHighlightTile(hitPos);
+                if (Input.GetMouseButtonUp(0))
+                {
+                    tilesController.RemoveHighlightTiles(availabe);
                     PlayerDeck.Instance.hand.CurrentSelectCard.DoOnMouseUp();
+                }
+
                 return;
             }
             #endregion
@@ -136,7 +145,7 @@ public partial class Board : MonoBehaviour
             {
                 List<Vector2Int> availabe = PlayerDeck.Instance.hand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, -1, -1);
                 tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
-                if(Input.GetMouseButtonUp(0))
+                if (Input.GetMouseButtonUp(0))
                     PlayerDeck.Instance.hand.CurrentSelectCard.DoOnMouseUp();
             }
 
@@ -148,12 +157,9 @@ public partial class Board : MonoBehaviour
                 tilesController.RemoveHighlightTiles(piecesController.availableMoves);
             }
         }
-
-        if (Input.GetMouseButtonUp(0))
-            mouseDowned = false;
     }
 
-    public void HoverTile(Vector2Int hoverPos)
+    void HoverTile(Vector2Int hoverPos)
     {
         if (curHoverTile == -Vector2Int.one)
         {
@@ -163,13 +169,18 @@ public partial class Board : MonoBehaviour
 
         if (curHoverTile != hoverPos)
         {
-            tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = piecesController.ContainsValidMove(ref piecesController.availableMoves, curHoverTile) ?
+            tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = tilesController.IsHighlighTile(tilesController.tiles[curHoverTile.x, curHoverTile.y].coord) ?
                LayerMask.NameToLayer("Highlight") : LayerMask.NameToLayer("Tile");
 
             curHoverTile = hoverPos;
-            tilesController.tiles[hoverPos.x, hoverPos.y].gameObject.layer = LayerMask.NameToLayer("Hover");
-
+            tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = LayerMask.NameToLayer("Hover");
         }
+    }
+
+    void UnselectHoverHighlightTile(Vector2Int hoverPos)
+    {
+        if (tilesController.IsHighlighTile(curHoverTile))
+            tilesController.tiles[hoverPos.x, hoverPos.y].gameObject.layer = LayerMask.NameToLayer("Highlight");
     }
 
     #region OnGameStates
@@ -346,7 +357,12 @@ public partial class Board : MonoBehaviour
     }
 
     void OnSetSettings() => SetDefaultBoardSettings();
-    void OnGameStart() => isGameStart = true;
+    void OnGameStart()
+    {
+        if (mouseDowned)
+            waitToSkipMouseDown = true;
+        isGameStart = true;
+    }
 
     void OnGameEnd(int arg1, int arg2, Team team)
     {

@@ -9,6 +9,7 @@ public class PickpocketCard : Card
     public override void Init()
     {
         base.Init();
+
         enemyCardFromHandWasSelected = false;
     }
 
@@ -52,12 +53,12 @@ public class PickpocketCard : Card
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
 
-                GameController.Instance.states.move.UseCard(ID, targetCards);
+                GameController.Instance.states.move.UseCard(GetID(), targetCards);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
             {
-                GameController.Instance.netMatch.cardSync.Player_DrawCardInHandRpc(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]].ID);
+                GameController.Instance.netMatch.cardSync.Player_DrawCardInHandRpc(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]].GetID());
                 PlayerDeck.Instance.DestroyCardInHand(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]]);
                 Destroy(gameObject);
             }
@@ -67,10 +68,11 @@ public class PickpocketCard : Card
                     {
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
+            //BECAUSE BOT DOESNT HAVE CARDS WE USE RANDOM:
             PlayerDeck.Instance.DrawCardInHand(GameController.Instance.globalCards.
                 GlobalCardsDictionary.ElementAt(Random.Range(0, GameController.Instance.globalCards.GlobalCardsDictionary.Count)).Value);
             EnemyDeck.Instance.DestroyCardInHand(EnemyDeck.Instance.hand.CardsInHand[targetCards[0][0]]);
-            GameController.Instance.states.move.UseCard(ID, targetCards);
+            GameController.Instance.states.move.UseCard(GetID(), targetCards);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
     }

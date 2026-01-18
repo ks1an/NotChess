@@ -3,6 +3,7 @@ using UnityEngine;
 public class CardsView : MonoBehaviour
 {
     [SerializeField] CardShopView cardTemplate;
+    [SerializeField] GameObject deckTitle;
     [SerializeField] Transform container;
 
     private void OnEnable()
@@ -12,6 +13,7 @@ public class CardsView : MonoBehaviour
         {
             CardShopView cardView = GameObject.Instantiate(cardTemplate, container);
             cardView.SetCardData(cardData);
+
             cardView.gameObject.SetActive(true);
         }
     }
@@ -20,7 +22,7 @@ public class CardsView : MonoBehaviour
     {
         foreach (Transform child in container)
         {
-            if (cardTemplate.transform == child) continue;
+            if (cardTemplate.transform == child || deckTitle.transform == child) continue;
             Destroy(child.gameObject);
         }
     }

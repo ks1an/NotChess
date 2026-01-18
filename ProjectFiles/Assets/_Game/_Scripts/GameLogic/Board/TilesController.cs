@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public sealed class TilesController : MonoBehaviour
@@ -103,12 +104,19 @@ public sealed class TilesController : MonoBehaviour
     #endregion
 
     #region HighLight
+    public bool IsHighlighTile(Vector2Int tile)
+    {
+        return highlightTiles.Contains(tile);
+    }
+
     public void HighlighTiles(List<Vector2Int> availableMoves)
     {
         for (int i = 0; i < availableMoves.Count; i++)
         {
+            if (highlightTiles.Contains(tiles[availableMoves[i].x, availableMoves[i].y].coord)) continue;
+
             tiles[availableMoves[i].x, availableMoves[i].y].gameObject.layer = LayerMask.NameToLayer("Highlight");
-            highlightTiles.Add(new Vector2Int(availableMoves[i].x, availableMoves[i].y));
+            highlightTiles.Add(tiles[availableMoves[i].x, availableMoves[i].y].coord);
         }
     }
 
@@ -116,10 +124,11 @@ public sealed class TilesController : MonoBehaviour
     {
         for (int i = 0; i < needRemoveHighlightTiles.Count; i++)
         {
+            if (!highlightTiles.Contains(needRemoveHighlightTiles[i])) continue;
+
             tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("Tile");
-            highlightTiles.Remove(new Vector2Int(needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y));
+            highlightTiles.Remove(tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y].coord);
         }
-        needRemoveHighlightTiles.Clear();
     }
 
     public void RemoveAllHighlightExcludeCurrentOnes(List<Vector2Int> currentHighlightTiles)

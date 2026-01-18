@@ -39,6 +39,7 @@ public sealed class EntryPoint : MonoBehaviour
 
     void OnDisable()
     {
+        PlayerDeck.Instance.cardCollectionFromSave.LoadDataFromJson();
         WaitingWindowController.Instance.Hide();
     }
 }

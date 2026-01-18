@@ -40,7 +40,7 @@ public sealed class SacrificeCard : Card
                 false, GameController.Instance.player.GetLocalPlayerTeam());
             GameController.Instance.player.IncreaseMana(manaToAdd);
 
-            GameController.Instance.states.move.UseCard(ID, moves);
+            GameController.Instance.states.move.UseCard(GetID(), moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else

@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b6efe374c57ea64688d343b59e8989f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalCardName: Meteor rain
+  originalCardName: Meteor Rain
   originalDescription: <b>Five random</b> meteorites <b><#ff0000>destroy</color>
     units</b>
   <ManaCost>k__BackingField: 4
@@ -263,7 +263,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Meteor rain
+      value: Meteor Rain
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

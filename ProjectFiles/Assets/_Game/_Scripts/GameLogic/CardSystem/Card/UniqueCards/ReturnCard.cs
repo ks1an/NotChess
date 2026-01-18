@@ -36,7 +36,7 @@ public sealed class ReturnCard : Card
         if (!isSynced)
         {
             PlayerDeck.Instance.DrawLastFromGraveyard();
-            GameController.Instance.states.move.UseCard(ID, moves);
+            GameController.Instance.states.move.UseCard(GetID(), moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else

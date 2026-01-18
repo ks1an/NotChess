@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7c7f10004d481a4d8ad574a7ba1b460, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalCardName: Forbidden shield
+  originalCardName: Forbidden Shield
   originalDescription: <#005500>Prevents <b>put a unit</b></color> from being placed
     on a cell for <b>one round</b>
   <ManaCost>k__BackingField: 3
@@ -240,7 +240,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Forbidden shield
+      value: Forbidden Shield
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

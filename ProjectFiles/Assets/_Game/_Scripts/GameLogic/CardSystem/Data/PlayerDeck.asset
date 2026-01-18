@@ -12,16 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f45ff2647695c2f4380e102c1221d54a, type: 3}
   m_Name: PlayerDeck
   m_EditorClassIdentifier: 
-  <CardsInCollection>k__BackingField:
-  - {fileID: 1892108300101702296, guid: e31598b8f203e6a4ab2715a4c11bac4f, type: 3}
-  - {fileID: 3890863732558626456, guid: 25abea6f8f6479b4e95661f5142ac23a, type: 3}
-  - {fileID: 510541827946207621, guid: d0593010e7083154ab61f53b41a80116, type: 3}
-  - {fileID: 660062721288275999, guid: 2f35c4b7a0c9ddf4b9ad7cd759373b85, type: 3}
-  - {fileID: 1666185600731207230, guid: f50a275b6351c6943aa33a0a562f34c9, type: 3}
-  - {fileID: 1634816504681716270, guid: b5c33b0a5d113664b8992f5d6a959756, type: 3}
-  - {fileID: 5323299898323647108, guid: d081d17b28edf3a419484e97cc10226e, type: 3}
-  - {fileID: -6072306200835679900, guid: dcf590a685004574b98f8656d504f3f7, type: 3}
-  - {fileID: 3448242410765194852, guid: d4ba186ec01febe4d882ee111bea3e55, type: 3}
-  - {fileID: 271522993271443470, guid: 2861d28c24fd65243acfc1683225de55, type: 3}
-  - {fileID: 6225908422702042889, guid: 4d2fccf961dbd764ca171a881b04eda3, type: 3}
+  <CardsInCollection>k__BackingField: []
   cardBack: {fileID: 1227872481659094142, guid: 466aa1ff118a3a447afea4fdbb8fb88c, type: 3}

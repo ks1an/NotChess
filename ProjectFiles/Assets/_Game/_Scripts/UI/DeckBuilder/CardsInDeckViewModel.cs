@@ -8,32 +8,70 @@ public sealed class CardsInDeckViewModel : MonoBehaviour
     [SerializeField] Transform container;
     [SerializeField] TextMeshProUGUI avgManaText, countInDeck;
 
-    List<Card> cardsInDeckViewModel = new();
+    List<CardInDeckView> cardsInDeckViewModel = new();
+
+    public void AddCard(Card cardData)
+    {
+        int sumManaCost = cardData.ManaCost;
+        for (int i = 0; i < cardsInDeckViewModel.Count; i++)
+        {
+            if (cardsInDeckViewModel[i].cardData.GetType() == cardData.GetType())
+                return;
+            sumManaCost += cardsInDeckViewModel[i].cardData.ManaCost;
+        }
+
+        CardInDeckView cardView = GameObject.Instantiate(cardTemplate, container);
+        cardsInDeckViewModel.Add(cardView);
+        cardView.SetCardData(cardData, 1);
+        cardView.gameObject.SetActive(true);
+
+        countInDeck.text = $"<b>{cardsInDeckViewModel.Count}</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
+        avgManaText.text = $"<b><color=#43A5BE>{sumManaCost / cardsInDeckViewModel.Count}</b></color> \n avg. mana";
+    }
+
+    public void RemoveCard(Card cardData)
+    {
+        int sumManaCost = 0;
+        for (int i = 0; i < cardsInDeckViewModel.Count; i++)
+        {
+            sumManaCost += cardsInDeckViewModel[i].cardData.ManaCost;
+            if (cardsInDeckViewModel[i].cardData.GetType() == cardData.GetType())
+            {
+                sumManaCost -= cardsInDeckViewModel[i].cardData.ManaCost;
+                Destroy(cardsInDeckViewModel[i].gameObject);
+                cardsInDeckViewModel.Remove(cardsInDeckViewModel[i]);
+            }
+        }
+
+        if (cardsInDeckViewModel.Count > 0)
+        {
+            countInDeck.text = $"<b>{cardsInDeckViewModel.Count}</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
+            avgManaText.text = $"<b><color=#43A5BE>{sumManaCost / cardsInDeckViewModel.Count}</b></color> \n avg. mana";
+        }
+        else
+        {
+            countInDeck.text = $"<b>0</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
+            avgManaText.text = $"<b><color=#43A5BE>0</b></color> \n avg. mana";
+        }
+    }
+
+    public void SaveDeck()
+    {
+        PlayerDeck.Instance.cardCollectionFromSave.ClearCollection();
+        for(int i = 0;i < cardsInDeckViewModel.Count; i++)
+        {
+            PlayerDeck.Instance.cardCollectionFromSave.AddCardToCollection(cardsInDeckViewModel[i].cardData);
+        }
+        PlayerDeck.Instance.cardCollectionFromSave.SaveDataToJson();
+    }
 
     private void OnEnable()
     {
         cardTemplate.gameObject.SetActive(false);
-        int sumManaCost = 0;
-        foreach (Card cardData in GameController.Instance.globalCards.GlobalCardsDictionary.Values)
+        foreach (Card cardData in PlayerDeck.Instance.cardCollectionFromSave.CardsInCollection)
         {
-            CardInDeckView cardView = GameObject.Instantiate(cardTemplate, container);
-
-            cardsInDeckViewModel.Add(cardData);
-            int countInDeckViewModel = 0;
-            for(int i = 0; i < cardsInDeckViewModel.Count; i++)
-            {
-                if (cardsInDeckViewModel[i].GetType() == cardData.GetType())
-                    countInDeckViewModel++;
-            }
-
-            cardView.SetCardData(cardData, countInDeckViewModel);
-            cardView.gameObject.SetActive(true);
-
-            sumManaCost += cardData.ManaCost;
+            AddCard(cardData);
         }
-
-        countInDeck.text = $"<b>{cardsInDeckViewModel.Count}</b> /30 \n cards in deck";
-        avgManaText.text = $"<b><color=#43A5BE>{sumManaCost / cardsInDeckViewModel.Count}</b></color> \n avg. mana";
     }
 
     private void OnDisable()

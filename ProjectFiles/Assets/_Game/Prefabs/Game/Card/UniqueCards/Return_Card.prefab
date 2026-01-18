@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdee66a18d5375246b2e7c21e3d1b83c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalCardName: Return card
+  originalCardName: Return
   originalDescription: <b><#118a7e>Returns</color></b> the <b>last used card</b>
     to your hand
   <ManaCost>k__BackingField: 1
@@ -233,7 +233,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Return card
+      value: Return
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public partial class MenuUI : MonoBehaviour
 {
     [SerializeField] LocalizedStringTable localTable;
-    [SerializeField] Button lobbyListBttn, matchmakingBttn, singleplay;
+    [SerializeField] Button lobbyListBttn, matchmakingBttn, singleplay, myDeckBttn;
     [SerializeField] TabMenu tabMenu;
     //[SerializeField] MenuBook menuBook;
 
@@ -88,6 +88,7 @@ public partial class MenuUI : MonoBehaviour
         leaveBttn.gameObject.SetActive(b);
         settingsBttn.gameObject.SetActive(b);
         playerName.gameObject.SetActive(b);
+        myDeckBttn.gameObject.SetActive(b);
         //menuBook.gameObject.SetActive(false);
     }
 }

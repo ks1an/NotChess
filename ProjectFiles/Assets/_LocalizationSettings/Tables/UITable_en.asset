@@ -30,6 +30,10 @@ MonoBehaviour:
     m_Localized: MatchMaking
     m_Metadata:
       m_Items: []
+  - m_Id: 41927960618942464
+    m_Localized: My Deck
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

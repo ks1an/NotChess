@@ -3,7 +3,11 @@ using UnityEngine;
 
 public abstract class Deck : MonoBehaviour
 {
-    [SerializeField] public CardCollection cardCollection;
+    [HideInInspector] public List<Card> cardsInDeck;
+
+    public int DeckSize { get => maxDeckSize; set { DeckSize = maxDeckSize; } }
+
+    [SerializeField] public CardCollection cardCollectionFromSave;
     [SerializeField, Range(0, 100)] protected int chanceToSkipRestrictOnGetLastDestroyedCard, maxDeckSize, curDeckSize;
     [SerializeField] protected StackView gravejardView, deckView;
 
@@ -12,7 +16,7 @@ public abstract class Deck : MonoBehaviour
 
     public abstract void SetDefaultSettings();
 
-    public abstract void AddToDeck(int count, bool isDefSet = false);
+    public abstract void AddToDeckView(int count, bool isDefSet = false);
 
     //DRAW
     public abstract void DrawHandRandomFromDeck(int amount, bool ignoreCardLimit = false);
@@ -27,9 +31,9 @@ public abstract class Deck : MonoBehaviour
     protected Card GetRandomCard()
     {
         List<Card> collectionWithoutBlock = new();
-        for (int i = 0; i < cardCollection.CardsInCollection.Count; i++)
+        for (int i = 0; i < cardsInDeck.Count; i++)
         {
-            Card potentionalCard = cardCollection.CardsInCollection[i];
+            Card potentionalCard = cardsInDeck[i];
             int ID = potentionalCard.GetID();
 
             if (banForDrawLastIssuedCard)
@@ -51,7 +55,8 @@ public abstract class Deck : MonoBehaviour
             lastIssuedCardID = card.GetID();
             return card;
         }
-        card = cardCollection.CardsInCollection[Random.Range(0, cardCollection.CardsInCollection.Count)];
+        Debug.LogError(cardsInDeck.Count);
+        card = cardsInDeck[Random.Range(0, cardsInDeck.Count)];
         lastIssuedCardID = card.GetID();
         return card;
     }

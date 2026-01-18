@@ -54,7 +54,7 @@ public partial class CardSystemSync : NetworkBehaviour
 
 
     [Rpc(SendTo.NotMe)]
-    public void Enemy_AddToDeckRpc(int count) => enemyDeck.AddToDeck(count);
+    public void Enemy_AddToDeckRpc(int count) => enemyDeck.AddToDeckView(count);
     [Rpc(SendTo.NotMe)]
     public void Enemy_AddToGraveyardRpc(int count) => enemyDeck.AddToGraveyardMirror(count);
 

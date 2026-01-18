@@ -16,7 +16,17 @@ public class Card : MonoBehaviour
 {
     public string originalCardName;
     [field: TextArea] public string originalDescription;
-    public int ID { get; private set; }
+    public int ID
+    {
+        get
+        {
+            return GetID();
+        }
+        set
+        {
+            ID = GetID();
+        }
+    }
 
     public string DisplayName { get; private set; }
     public string DisplayDescription { get; private set; }
@@ -72,6 +82,7 @@ public class Card : MonoBehaviour
 
     public virtual void Init()
     {
+        GetID();
         CardUI = GetComponent<CardVisual>();
         UpdateCardUI();
     

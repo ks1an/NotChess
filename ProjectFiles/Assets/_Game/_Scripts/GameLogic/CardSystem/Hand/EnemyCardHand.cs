@@ -26,6 +26,9 @@ public class EnemyCardHand : HandObject
 
         card.transform.DOComplete();
         card.transform.DOMoveY(card.transform.position.y + objSelectUpDistance * multipleDirect, 0.1f);
+
+        if (!toUp)
+            StartCoroutine(UpdateObjPos(0));
     }
 
 

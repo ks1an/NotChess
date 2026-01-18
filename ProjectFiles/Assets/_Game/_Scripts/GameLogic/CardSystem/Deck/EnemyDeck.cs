@@ -17,10 +17,10 @@ public sealed class EnemyDeck : Deck
     public override void SetDefaultSettings()
     {
         DestroyAllCard();
-        AddToDeck(maxDeckSize, true);
+        AddToDeckView(maxDeckSize, true);
     }
 
-    public override void AddToDeck(int count, bool isDefSet = false)
+    public override void AddToDeckView(int count, bool isDefSet = false)
     {
         if (count < 0)
         {
@@ -34,7 +34,7 @@ public sealed class EnemyDeck : Deck
             curDeckSize++;
             cardAdded++;
         }
-        deckView.Add(cardCollection.cardBack, cardAdded);
+        deckView.Add(cardCollectionFromSave.cardBack, cardAdded);
     }
 
     public void AddToGraveyardMirror(int count)
@@ -44,7 +44,7 @@ public sealed class EnemyDeck : Deck
             Debug.LogError("Trying add to player graveyard negative count of cards");
             return;
         }
-        gravejardView.Add(cardCollection.cardBack, count);
+        gravejardView.Add(cardCollectionFromSave.cardBack, count);
     }
 
     public void DrawCardInHand(GameObject card)
@@ -68,7 +68,7 @@ public sealed class EnemyDeck : Deck
 
         for (int i = 0; i < amount; i++)
         {
-            DrawCardInHand(cardCollection.cardBack);
+            DrawCardInHand(cardCollectionFromSave.cardBack);
             deckView.Remove();
             curDeckSize--;
             if (curDeckSize == 0) break;
@@ -80,7 +80,7 @@ public sealed class EnemyDeck : Deck
     {
         if (gravejardView.GetCountInStack() < 1) return;
         gravejardView.Remove();
-        DrawCardInHand(cardCollection.cardBack);
+        DrawCardInHand(cardCollectionFromSave.cardBack);
     }
 
     public override void DestroyAllCard()
@@ -100,10 +100,10 @@ public sealed class EnemyDeck : Deck
     public void DestroyAllCardsIn(bool needToAddInGraveyard = true)
     {
         if (needToAddInGraveyard)
-            gravejardView.Add(cardCollection.cardBack, hand.CardsInHand.Count);
+            gravejardView.Add(cardCollectionFromSave.cardBack, hand.CardsInHand.Count);
         hand.RemoveAllCards();
     }
 
-    public GameObject GetCardBack() { return cardCollection.cardBack; }
+    public GameObject GetCardBack() { return cardCollectionFromSave.cardBack; }
     public GameObject GetRandomCardFromHand() { return hand.CardsInHand[Random.Range(0, hand.CardsInHand.Count)]; }
 }

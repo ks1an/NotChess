@@ -60,7 +60,7 @@ public sealed class MeteorRainCard : Card
                         break;
                     }
             }
-            GameController.Instance.states.move.UseCard(ID, alreadyAttacked);
+            GameController.Instance.states.move.UseCard(GetID(), alreadyAttacked);
             Board.Instance.tilesController.RemoveHighlightTiles(moves);
             moves = alreadyAttacked;
         }

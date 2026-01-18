@@ -45,7 +45,7 @@ public sealed class RuneStoneCard : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.move.UseCard(ID, moves);
+            GameController.Instance.states.move.UseCard(GetID(), moves);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }
         else

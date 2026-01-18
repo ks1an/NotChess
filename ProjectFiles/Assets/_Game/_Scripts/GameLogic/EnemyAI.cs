@@ -519,7 +519,7 @@ public sealed class EnemyAI : MonoBehaviour
         if (isMoving)
         {
             Debug.LogError($"Critical error! Enemy AI could not find an available move.\n Early end of move. My team: {myTeam}");
-            EndEnemyTurn(() => { });
+            EndEnemyTurn(() => { states.GameEnd(GameController.Instance.player.GetLocalPlayerTeam(), 0, 0); });
         }
     }
 

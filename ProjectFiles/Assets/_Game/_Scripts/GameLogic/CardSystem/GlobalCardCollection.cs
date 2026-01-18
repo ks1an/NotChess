@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
 public sealed class GlobalCardCollection : MonoBehaviour
 {
     [field: SerializeField] public Dictionary<int, Card> GlobalCardsDictionary { get; private set; } = new();
+    [field: SerializeField] public List<GameObject> GlobalCardBacks { get; private set; } = new();
 
     [field: SerializeField] List<Card> cards;
 

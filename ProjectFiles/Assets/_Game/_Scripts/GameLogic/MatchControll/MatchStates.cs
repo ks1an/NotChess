@@ -138,7 +138,8 @@ public class MatchStates : MonoBehaviour
 
     public void TeamMoved(int x, int y, Team team)
     {
-        turnCount += 1;
+        turnCount++;
+
         List<Vector2Int> winTiles = board.CheckWin(x, y);
         if (winTiles.Count == game.matchSettings.piecesWinSequence)
         {
@@ -161,7 +162,7 @@ public class MatchStates : MonoBehaviour
     }
 
     #region AfterPlay(End)
-    void GameEnd(Team winTeam, int x, int y)
+    public void GameEnd(Team winTeam, int x, int y)
     {
         isGameStarted = false;
         EnvironmentManager.Instance.DoBoardFlickeringLight(3);

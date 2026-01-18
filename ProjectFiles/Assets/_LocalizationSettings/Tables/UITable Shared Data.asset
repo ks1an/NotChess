@@ -27,6 +27,10 @@ MonoBehaviour:
     m_Key: Menu_MatchMakingButton
     m_Metadata:
       m_Items: []
+  - m_Id: 41927960618942464
+    m_Key: Menu_MyDeckButton
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

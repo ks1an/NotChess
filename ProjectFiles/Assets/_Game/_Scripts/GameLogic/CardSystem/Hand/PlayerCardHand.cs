@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerCardHand : HandObject
 {
     public Card CurrentSelectCard { get; private set; }
+    public Card CurrentHoverCard { get; private set; }
     public List<Card> CardsInHand { get; private set; } = new();
     [SerializeField] protected float objSelectUpDistance = 0.25f;
 
@@ -35,7 +36,12 @@ public class PlayerCardHand : HandObject
         else
             StartCoroutine(UpdateObjPos(objUpdatePosTime / 4));
 
-        card.transform.DOMoveY(card.transform.position.y + objSelectUpDistance * multipleDirect, 0.1f);
+        if (toUp && liftSlightly)
+            CurrentHoverCard = card;
+        else
+            CurrentHoverCard = null;
+
+            card.transform.DOMoveY(card.transform.position.y + objSelectUpDistance * multipleDirect, 0.1f);
 
         if (GameController.Instance.states.isNetMatch)
             GameController.Instance.netMatch.cardSync.Enemy_CardHandUpDownMoveRpc(CardsInHand.IndexOf(card), toUp, liftSlightly);

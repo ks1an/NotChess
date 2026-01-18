@@ -66,8 +66,8 @@ public class SpyCard : Card
             NotificationPanelConroller.Instance.ShowNotification
                 (
                 GameController.Instance.globalCards.GetImortantWordsFromDescriptionOfCard(
-                    PlayerDeck.Instance.cardCollection.CardsInCollection[
-                        Random.Range(0, PlayerDeck.Instance.cardCollection.CardsInCollection.Count)].GetID()), () => { }
+                    PlayerDeck.Instance.cardCollectionFromSave.CardsInCollection[
+                        Random.Range(0, PlayerDeck.Instance.cardCollectionFromSave.CardsInCollection.Count)].GetID()), () => { }
                 );
 
             GameController.Instance.states.move.UseCard(GetID(), targetCards);

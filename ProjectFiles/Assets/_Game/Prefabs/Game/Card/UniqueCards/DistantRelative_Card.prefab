@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a61aacf219f95b43af5de8541b5a23e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalCardName: Distant relative
+  originalCardName: Distant Relative
   originalDescription: You <b>instantly gain</b> <b><#118a7e>1</color></b> mana points.
     <color="red">You'll have</color> <b><#118a7e>1</color></b> mana points <b>back</b>
     by <b><color="red>your</color> next turn</b>
@@ -257,7 +257,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Distant relative
+      value: Distant Relative
       objectReference: {fileID: 0}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

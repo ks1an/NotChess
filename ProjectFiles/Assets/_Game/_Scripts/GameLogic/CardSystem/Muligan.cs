@@ -45,7 +45,7 @@ public sealed class Muligan
         PlayerDeck.Instance.DrawHandRandomFromDeck(needToDraw, true);
 
         PlayerDeck.Instance.AddToGraveyard(1);
-        PlayerDeck.Instance.AddToDeck(needToDraw - 1);
+        PlayerDeck.Instance.AddToDeckView(needToDraw - 1);
 
         if (countOfUsed == maxMuligan)
             HideMuliganButton();

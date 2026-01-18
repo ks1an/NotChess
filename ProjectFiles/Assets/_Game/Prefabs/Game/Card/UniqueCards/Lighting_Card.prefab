@@ -104,7 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49a65fdfff23cc94ebff1516d5221f67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originalCardName: Lighting bolt
+  originalCardName: Lighting Bolt
   originalDescription: Hits the cell. <b><#ff0000>Destroyes</color> the unit</b> 
     on that cell.
   <ManaCost>k__BackingField: 5
@@ -249,7 +249,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 5139351190195597667, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Lighting bolt
+      value: Lighting Bolt
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text

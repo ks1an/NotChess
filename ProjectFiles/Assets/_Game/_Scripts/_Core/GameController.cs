@@ -65,7 +65,6 @@ public sealed class GameController : MonoBehaviour
     public void CreateNetSync()
     {
         if (!NetworkManager.Singleton.IsServer) return;
-        Debug.LogError("ISSERVER");
         netMatch = Instantiate(netSyncPrefab).GetComponent<NetMatchSync>();
         netMatch.gameObject.GetComponent<NetworkObject>().Spawn();
     }
