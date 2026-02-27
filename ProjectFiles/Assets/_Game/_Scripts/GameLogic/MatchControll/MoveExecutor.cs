@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,7 +36,8 @@ public partial class MoveExecutor : MonoBehaviour
 
             net.cardSync.UseCardRpc(cardID, movesX, movesY);
         }
-        BoardUI.Singleton.muligan.OnUsedCard();
+        if(BoardUI.Singleton != null)
+            BoardUI.Singleton.muligan.OnUsedCard();
     }
 }
 

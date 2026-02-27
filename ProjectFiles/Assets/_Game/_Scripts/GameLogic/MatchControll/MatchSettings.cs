@@ -2,7 +2,7 @@
 public sealed class MatchSettings
 {
     //Board
-    public int tileCountX;
+    public int tileCountX; 
     public int tileCountY;
     public float tileSize;
 

@@ -8,20 +8,9 @@ public sealed class Tile : MonoBehaviour
     public TileStatsComponent Stats;
     public TileStats StatsView;
 
-    void SetDef()
-    {
-        Stats?.RemoveAllBuffs();
-        TileStats stats = new()
-        {
-            CanAttackTile = true,
-            CanLeaveFromTile = true,
-            CanPutOnTile = true,
-            DefendClass = 0
-        };
-        Stats = new TileStatsComponent(stats, UpdateStatsView, this);
-    }
 
-    void UpdateStatsView(TileStats newStats) => StatsView = newStats;
+    public void ResetStats(bool removeCriticalBuffs = false) => Stats?.RemoveAllBuffs(removeCriticalBuffs);
+
 
     public bool TryGetAroundDefend(int attackClass)
     {
@@ -46,14 +35,27 @@ public sealed class Tile : MonoBehaviour
         return false;
     }
 
+    void UpdateStatsView(TileStats newStats) => StatsView = newStats;
+
+    void OnGameStarted() => ResetStats(true);
+
     void OnEnable()
     {
-        GameController.Instance.states.OnGameStarted += SetDef;
+        TileStats stats = new()
+        {
+            CanAttackTile = true,
+            CanLeaveFromTile = true,
+            CanPutOnTile = true,
+            DefendClass = 0
+        };
+        Stats = new TileStatsComponent(stats, UpdateStatsView, this);
+
+        GameController.Instance.states.OnGameStarted += OnGameStarted;
     }
 
     void OnDisable()
     {
-        GameController.Instance.states.OnGameStarted -= SetDef;
+        GameController.Instance.states.OnGameStarted -= OnGameStarted;
     }
 }
 

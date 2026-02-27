@@ -21,6 +21,12 @@ public class TileStatsComponent : IBuffable
         doOnUpdateStats?.Invoke(CurrentStats);
     }
 
+    public bool IsUnderBuffs()
+    {
+        if (buffs.Count > 0) return true;
+        return false;
+    }
+
     #region Buff
     public void AddBuff(IBuff buff)
     {
@@ -68,13 +74,16 @@ public class TileStatsComponent : IBuffable
         doOnUpdateStats?.Invoke(CurrentStats);
     }
 
-    public void RemoveAllBuffs()
+    public void RemoveAllBuffs(bool resetCriticalBuffs)
     {
         foreach (var buff in buffs.ToList())
         {
+            if (!resetCriticalBuffs && buff.IsCriticalBuff) continue;
+
             buffs.Remove(buff);
             buff.DoOnRemoveBuff();
         }
+
         ApplyBuffs();
     }
     #endregion

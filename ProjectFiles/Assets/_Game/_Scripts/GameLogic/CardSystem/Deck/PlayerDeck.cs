@@ -158,16 +158,20 @@ public sealed class PlayerDeck : Deck
         if (isNet)
             netCard.Enemy_DestroyAllRpc();
     }
-    public void DestroyCardInHand(Card card)
+    public void DestroyCardInHand(Card card, bool needToGravejard = true)
     {
-        lastGraveyardCardID = card.GetID();
+        if (needToGravejard)
+        {
+            lastGraveyardCardID = card.GetID();
+            gravejardView.Add(cardCollectionFromSave.cardBack);
+        }
+
         card.transform.DOComplete();
         Destroy(card.gameObject);
         hand.RemoveCard(card);
-        gravejardView.Add(cardCollectionFromSave.cardBack);
 
         if (isNet)
-            netCard.Enemy_DestroyCardRpc();
+            netCard.Enemy_DestroyCardRpc(needToGravejard);
     }
 
     public void DestroyAllCardsInHand(bool needToAddInGraveyard = true)

@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.74999994, y: 0.74999994, z: 0.74999994}
+  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5743025005558010016}
@@ -67,7 +67,7 @@ SortingGroup:
   m_GameObject: {fileID: 5201084852685327064}
   m_Enabled: 1
   m_SortingLayerID: 393561293
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &8784089165866406751
@@ -105,8 +105,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: Meteor Rain
-  originalDescription: <b>Five random</b> meteorites <b><#ff0000>destroy</color>
-    units</b>
+  originalDescription: <color=#ff0000><b>Destroys</b> units</color> with <b>5</b>
+    random meteorites
   <ManaCost>k__BackingField: 4
   <Image>k__BackingField: {fileID: 21300000, guid: 1b6514af306826940b659daf6ac1dc02, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
@@ -315,11 +315,11 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <b>Five random</b> meteorites <b><#ff0000>destroy</color> units</b>
+      value: <color=#ff0000><b>Destroys</b> units</color> with <b>5</b> random meteorites
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 1.6
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x

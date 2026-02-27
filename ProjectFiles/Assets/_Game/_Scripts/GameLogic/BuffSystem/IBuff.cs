@@ -8,6 +8,7 @@ public interface IBuff
     public int CountStacks { get; set; }
     public bool CanEffectStack { get; set; }
     public bool CanDurationStack { get; set; }
+    public bool IsCriticalBuff { get; set; }
 
     IBuffableStats ApplyBuff(IBuffableStats baseStats, IBuffable owner);
     void DoOnAddBuff();

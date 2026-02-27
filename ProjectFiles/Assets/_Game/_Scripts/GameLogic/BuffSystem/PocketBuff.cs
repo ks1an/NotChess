@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class PocketBuff : IBuff
 {
@@ -31,17 +30,19 @@ public class PocketBuff : IBuff
         }
         set => canDurationStack = value;
     }
+    public bool IsCriticalBuff { get { return isCriticalBuff; } set { IsCriticalBuff = isCriticalBuff; } }
 
     public List<IBuff> buffs;
     int countStacks;
-    bool canEffectStack, canDurationStack;
+    bool canEffectStack, canDurationStack, isCriticalBuff;
 
-    public PocketBuff(bool canEffectStack, bool canDurationStack, List<IBuff> buffs)
+    public PocketBuff(bool canEffectStack, bool canDurationStack, List<IBuff> buffs, bool isCriticalBuff = false)
     {
         countStacks = 0;
         this.canEffectStack = canEffectStack;
         this.canDurationStack = canDurationStack;
         this.buffs = buffs;
+        this.isCriticalBuff = isCriticalBuff;
     }
 
     public IBuffableStats ApplyBuff(IBuffableStats baseStats, IBuffable owner)
@@ -97,9 +98,9 @@ public class PocketBuff : IBuff
 
     bool CheckCompatibility(PocketBuff pocket)
     {
-        if(pocket.buffs.Count != buffs.Count) return false;
+        if (pocket.buffs.Count != buffs.Count) return false;
         bool b = true;
-        for(int i = 0; i < buffs.Count; i++)
+        for (int i = 0; i < buffs.Count; i++)
         {
             if (buffs[i] != pocket.buffs[i]) b = false;
         }

@@ -30,8 +30,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.74999994, y: 0.74999994, z: 0.75}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3351530861171957621}
   - {fileID: 6558307154150380955}
@@ -67,7 +67,7 @@ SortingGroup:
   m_GameObject: {fileID: 5201084852685327064}
   m_Enabled: 1
   m_SortingLayerID: 393561293
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &8852499382935469920
@@ -105,8 +105,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: CastleWalls
-  originalDescription: <b><#005500>Prevents attacking</b></color> a cell for <b>1
-    round</b>
+  originalDescription: <color=#005500><b>Prevents attacking</b></color> a cell for
+    <b>1 round</b>.
   <ManaCost>k__BackingField: 2
   <Image>k__BackingField: {fileID: 21300000, guid: e58da450313ff544c9a57e51cbe39100, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8, b: 0.5686275, a: 1}
@@ -212,7 +212,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <b><#005500>Prevents attacking</b></color> a cell for <b>1 round</b>
+      value: <color=#005500><b>Prevents attacking</b></color> a cell for <b>1 round</b>.
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

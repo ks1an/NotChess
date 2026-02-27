@@ -32,7 +32,7 @@ public partial class CardSystemSync : NetworkBehaviour
     public void ShowSpyInfoAboutCardRpc(int cardID)
     {
         NotificationPanelConroller.Instance.ShowNotification(
-            GameController.Instance.globalCards.GetImortantWordsFromDescriptionOfCard(cardID), () => { });
+            GameController.Instance.globalCards.GetImortantWordsFromDescription(cardID), () => { });
     }
 }
 
@@ -47,7 +47,7 @@ public partial class CardSystemSync : NetworkBehaviour
     [Rpc(SendTo.NotMe)]
     public void Enemy_DestroyAllRpc() => enemyDeck.DestroyAllCard();
     [Rpc(SendTo.NotMe)]
-    public void Enemy_DestroyCardRpc() => enemyDeck.DestroyCardInHand(enemyDeck.GetRandomCardFromHand());
+    public void Enemy_DestroyCardRpc(bool needToGravejard) => enemyDeck.DestroyCardInHand(enemyDeck.GetRandomCardFromHand(), needToGravejard);
 
     [Rpc(SendTo.NotMe)]
     public void Enemy_DestroyAllCardsInHandRpc(bool b) => enemyDeck.DestroyAllCardsIn(b);

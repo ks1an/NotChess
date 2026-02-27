@@ -120,13 +120,20 @@ public sealed class EnemyAI : MonoBehaviour
     #region EstimateCost
     IEnumerator EstimateCostOfTilesAndDoMove()
     {
+        if (!Board.Instance.landOnBoardReady)
+        {
+            WaitForSeconds waiting = new(1f);
+            while (!Board.Instance.landOnBoardReady)
+                yield return waiting;
+        }
+
         EstimateCostLines();
         EstimateCostIndividualTiles();
 
         int delay = tilesCost.Values.Max();
         if (delay > 10)
             delay = 10;
-        yield return new WaitForSeconds(mathOp.GetSafeRandom(minDelayBeforeDoMove, delay / 5));
+        yield return new WaitForSeconds(mathOp.GetSafeRandom(minDelayBeforeDoMove, delay / 5) + 0.15f);
 
         DoMove();
     }

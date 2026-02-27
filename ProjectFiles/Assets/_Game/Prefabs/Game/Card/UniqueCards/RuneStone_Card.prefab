@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.74999994, y: 0.74999994, z: 0.74999994}
+  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 9127807817105961390}
@@ -67,7 +67,7 @@ SortingGroup:
   m_GameObject: {fileID: 5201084852685327064}
   m_Enabled: 1
   m_SortingLayerID: 393561293
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &8852499382935469920
@@ -105,9 +105,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: Rune Stone
-  originalDescription: Hits the cell <b>with a delay</b> of one round. <b><#ff0000>Destroys
-    the</color> object</b> on this cell and blocks the staging and attack in this
-    cell
+  originalDescription: 'Hits the cell with a <b>1-round delay</b>.
+
+    <color=#ff0000><b>Destroys</b>
+    the unit</color> and <b>blocks</b> placement/attack on it'
   <ManaCost>k__BackingField: 4
   <Image>k__BackingField: {fileID: 21300000, guid: 11a516be237cccb44a310e6fa09306e5, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
@@ -119,7 +120,7 @@ MonoBehaviour:
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
   visualEffectOnTile: {fileID: 11400000, guid: 8cc9eab1de95b0548be988df2c32b9bc, type: 2}
   waitTurns: 2
-  runeDurationTurn: 2
+  duration: 0
 --- !u!1001 &3608924737054765903
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -329,9 +330,10 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: Hits the cell <b>with a delay</b> of one round. <b><#ff0000>Destroys
-        the</color> object</b> on this cell and blocks the staging and attack in
-        this cell
+      value: 'Hits the cell with a <b>1-round delay</b>.
+
+        <color=#ff0000><b>Destroys</b>
+        the unit</color> and <b>blocks</b> placement/attack on it'
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

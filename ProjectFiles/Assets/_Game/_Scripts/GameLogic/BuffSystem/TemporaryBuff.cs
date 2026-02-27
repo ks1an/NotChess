@@ -1,7 +1,7 @@
 using System;
-using UnityEngine;
 public class TemporaryBuff : IBuff
 {
+    //Affects stats initially, unlike Deffered. Pay attention to coreBuff.
     public event Action OnBuffAdded;
     public event Action OnBuffRemoved;
     public event Action OnBuffTicked;
@@ -29,20 +29,23 @@ public class TemporaryBuff : IBuff
         }
         set => CanDurationStack = coreBuff.CanDurationStack;
     }
+    public bool IsCriticalBuff { get { return isCriticalBuff; } set { IsCriticalBuff = isCriticalBuff; } }
 
     public readonly IBuff coreBuff;
     readonly int lifeTurns;
+    readonly bool isCriticalBuff;
     readonly TurnTimer timer;
     IBuffable owner;
     TurnTimerSubscriber subscriberInTimer;
 
-    public TemporaryBuff(IBuffable owner, IBuff coreBuff, int lifeTurns)
+    public TemporaryBuff(IBuffable owner, IBuff coreBuff, int lifeTurns, bool isCriticalBuff = false)
     {
         subscriberInTimer = null;
         this.owner = owner;
         this.coreBuff = coreBuff;
         this.lifeTurns = lifeTurns;
         timer = TurnTimer.GetInstance();
+        this.isCriticalBuff = isCriticalBuff;
     }
 
     public IBuffableStats ApplyBuff(IBuffableStats baseStats, IBuffable owner)
@@ -54,7 +57,10 @@ public class TemporaryBuff : IBuff
         return newStats;
     }
 
-    void OnLifeTurnsEnd() => owner.RemoveBuff(this);
+    void OnLifeTurnsEnd()
+    {
+        owner.RemoveBuff(this);
+    }
 
 
     public void DoOnAddBuff() { coreBuff.DoOnAddBuff(); OnBuffAdded?.Invoke(); }

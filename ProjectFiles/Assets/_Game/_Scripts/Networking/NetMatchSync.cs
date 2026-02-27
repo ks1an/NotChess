@@ -7,6 +7,7 @@ public class NetMatchSync : NetworkBehaviour
     [SerializeField] LocalizedStringTable localTable;
     [HideInInspector] public CardSystemSync cardSync;
     [HideInInspector] public UnitSystemSync unitSync;
+    [HideInInspector] public LandSync landSync;
     MatchStates states;
 
     bool preStartCalled;
@@ -21,6 +22,8 @@ public class NetMatchSync : NetworkBehaviour
             cardSync = gameObject.AddComponent<CardSystemSync>();
         if (unitSync == null)
             unitSync = gameObject.AddComponent<UnitSystemSync>();
+        if(landSync == null)
+            landSync = gameObject.AddComponent<LandSync>();
     }
 
     #region BeforePlay

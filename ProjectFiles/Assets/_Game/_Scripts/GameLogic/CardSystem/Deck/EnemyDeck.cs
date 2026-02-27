@@ -91,10 +91,11 @@ public sealed class EnemyDeck : Deck
         curDeckSize = 0;
     }
 
-    public void DestroyCardInHand(GameObject card)
+    public void DestroyCardInHand(GameObject card, bool needGravejard = true)
     {
         hand.RemoveCard(card);
-        gravejardView.Add(card);
+        if(needGravejard)
+            gravejardView.Add(card);
     }
 
     public void DestroyAllCardsIn(bool needToAddInGraveyard = true)

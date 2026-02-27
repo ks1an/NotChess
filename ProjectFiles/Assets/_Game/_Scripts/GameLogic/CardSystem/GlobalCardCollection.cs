@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ public sealed class GlobalCardCollection : MonoBehaviour
         }
     }
 
-    public string GetImortantWordsFromDescriptionOfCard(int cardID)
+    public string GetImortantWordsFromDescription(int cardID)
     {
         string descriptionWords = GetInfoAboutCard(cardID, false, false, true)["Describe"];
         string importantWords = "";
@@ -38,6 +39,28 @@ public sealed class GlobalCardCollection : MonoBehaviour
         }
 
         return importantWords;
+    }
+
+    public string GetImortantWordsFromDescription(string description)
+    {
+
+        StringBuilder importantWords = new StringBuilder();
+
+        // Паттерн ищет: <b> в любом месте, затем всё до следующего </b>
+        // включая возможные теги цвета внутри или снаружи
+        string pattern = @"(<color[^>]*>)?<b>.*?</b>(</color>)?";
+        MatchCollection matches = Regex.Matches(description, pattern, RegexOptions.Singleline);
+
+        foreach (Match match in matches)
+        {
+            string fragment = match.Value.Trim();
+            if (!string.IsNullOrEmpty(fragment))
+            {
+                importantWords.Append(fragment + " ");
+            }
+        }
+
+        return importantWords.ToString().Trim();
     }
 
     public Dictionary<string, string> GetInfoAboutCard(int cardID,

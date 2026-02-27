@@ -59,7 +59,7 @@ public class PickpocketCard : Card
             else
             {
                 GameController.Instance.netMatch.cardSync.Player_DrawCardInHandRpc(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]].GetID());
-                PlayerDeck.Instance.DestroyCardInHand(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]]);
+                PlayerDeck.Instance.DestroyCardInHand(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]], false);
                 Destroy(gameObject);
             }
         else
@@ -71,7 +71,7 @@ public class PickpocketCard : Card
             //BECAUSE BOT DOESNT HAVE CARDS WE USE RANDOM:
             PlayerDeck.Instance.DrawCardInHand(GameController.Instance.globalCards.
                 GlobalCardsDictionary.ElementAt(Random.Range(0, GameController.Instance.globalCards.GlobalCardsDictionary.Count)).Value);
-            EnemyDeck.Instance.DestroyCardInHand(EnemyDeck.Instance.hand.CardsInHand[targetCards[0][0]]);
+            EnemyDeck.Instance.DestroyCardInHand(EnemyDeck.Instance.hand.CardsInHand[targetCards[0][0]], false);
             GameController.Instance.states.move.UseCard(GetID(), targetCards);
             PlayerDeck.Instance.DestroyCardInHand(this);
         }

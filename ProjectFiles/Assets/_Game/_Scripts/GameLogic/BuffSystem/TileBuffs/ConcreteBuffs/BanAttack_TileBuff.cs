@@ -30,15 +30,17 @@ public class BanAttack_TileBuff : IBuff
         }
         set => canDurationStack = value;
     }
+    public bool IsCriticalBuff { get { return isCriticalBuff; } set { IsCriticalBuff = isCriticalBuff; } }
 
     int countStacks;
-    bool canEffectStack, canDurationStack;
+    bool canEffectStack, canDurationStack, isCriticalBuff;
 
-    public BanAttack_TileBuff(bool canEffectStack, bool canDurationStack)
+    public BanAttack_TileBuff(bool canEffectStack, bool canDurationStack, bool isCriticalBuff = false)
     {
         countStacks = 0;
         this.canEffectStack = canEffectStack;
         this.canDurationStack = canDurationStack;
+        this.isCriticalBuff = isCriticalBuff;
     }
 
     public IBuffableStats ApplyBuff(IBuffableStats baseStats, IBuffable owner)

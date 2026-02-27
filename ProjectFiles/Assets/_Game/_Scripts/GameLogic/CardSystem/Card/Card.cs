@@ -16,17 +16,6 @@ public class Card : MonoBehaviour
 {
     public string originalCardName;
     [field: TextArea] public string originalDescription;
-    public int ID
-    {
-        get
-        {
-            return GetID();
-        }
-        set
-        {
-            ID = GetID();
-        }
-    }
 
     public string DisplayName { get; private set; }
     public string DisplayDescription { get; private set; }
@@ -46,6 +35,8 @@ public class Card : MonoBehaviour
     public PlayerCardHand Hand { get; private set; }
 
     protected List<Vector2Int> availableMoves = new();
+    protected int ID;
+    protected bool cardUsedForLandscape;
     bool showOnlyOriginalName;
 
     public virtual void OnValidate()
@@ -75,9 +66,11 @@ public class Card : MonoBehaviour
 
     public void SetDisplayDescriptionOfCard(string value)
     {
-        DisplayDescription = value;
+        DisplayDescription = GameController.Instance.globalCards.GetImortantWordsFromDescription(value);
         UpdateCardUI();
     }
+
+    public void SetCardUsingForLandscape(bool b) => cardUsedForLandscape = b;
     #endregion
 
     public virtual void Init()

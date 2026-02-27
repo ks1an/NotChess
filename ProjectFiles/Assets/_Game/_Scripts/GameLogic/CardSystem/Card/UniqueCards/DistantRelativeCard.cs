@@ -68,15 +68,12 @@ public class DistantRelativeCard : Card
 
     void DoAfterTurnsRepayDebt()
     {
-        Debug.Log("DoAfterTurnsRepayDebt");
         if (GameController.Instance.player.GetCurrentMana() >= amountGetMana)
         {
-            Debug.Log("-");
             GameController.Instance.player.DeacreaseMana(amountLostMana);
         }
         else
         {
-            Debug.Log("StartNew");
             TurnTimer.GetInstance().StartTimer(
                 afterTurnsRepayDebt,
                 DoAfterTurnsRepayDebt,

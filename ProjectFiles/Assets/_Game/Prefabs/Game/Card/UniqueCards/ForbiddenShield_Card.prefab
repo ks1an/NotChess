@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.74999994, y: 0.74999994, z: 0.74999994}
+  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 9127807817105961390}
@@ -67,7 +67,7 @@ SortingGroup:
   m_GameObject: {fileID: 5201084852685327064}
   m_Enabled: 1
   m_SortingLayerID: 393561293
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &8852499382935469920
@@ -105,9 +105,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: Forbidden Shield
-  originalDescription: <#005500>Prevents <b>put a unit</b></color> from being placed
-    on a cell for <b>one round</b>
-  <ManaCost>k__BackingField: 3
+  originalDescription: <color=#005500><b>Prevents placing</b> a unit</color> on a
+    cell for <b>1 round</b>.
+  <ManaCost>k__BackingField: 2
   <Image>k__BackingField: {fileID: 21300000, guid: 21fb40abd35a28e46b1a11d16986c9c3, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8000001, b: 0.5686275, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
@@ -248,7 +248,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
@@ -292,8 +292,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <#005500>Prevents <b>put a unit</b></color> from being placed on a cell
-        for <b>one round</b>
+      value: <color=#005500><b>Prevents placing</b> a unit</color> on a cell for
+        <b>1 round</b>.
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(TilesController), typeof(PiecesController))]
+[RequireComponent(typeof(TilesController), typeof(PiecesController), typeof(BoardLandscapeGenerator))]
 public partial class Board : MonoBehaviour
 {
     public static Board Instance;
@@ -10,6 +10,9 @@ public partial class Board : MonoBehaviour
 
     public TilesController tilesController;
     public PiecesController piecesController;
+    [HideInInspector] public BoardLandscapeGenerator landscapeGenerator;
+    [HideInInspector] public InteractLandscapeGenerator interactLandscapeGenerator;
+    [HideInInspector] public bool landOnBoardReady;
 
     GameController match;
     MatchSettings settings;
@@ -17,7 +20,6 @@ public partial class Board : MonoBehaviour
 
     Camera curCamera;
     Vector2Int curHoverTile;
-    bool isBoardReady;
     bool isGameStart;
     bool isPlayerControl;
 
@@ -30,6 +32,8 @@ public partial class Board : MonoBehaviour
 
         DontDestroyOnLoad(this);
         match = GameController.Instance;
+        landscapeGenerator = GetComponent<BoardLandscapeGenerator>();
+        interactLandscapeGenerator = GetComponent<InteractLandscapeGenerator>();
     }
 
     public void GenerateBoard()
@@ -51,13 +55,24 @@ public partial class Board : MonoBehaviour
         piecesController.SetSettings(); //Second
 
         isPlayerControl = !match.states.isDemonstrationMatchAiVsAi;
-        isBoardReady = true;
         onBoardGenerated?.Invoke();
     }
 
+    public void GenerateLandscape()
+    {
+        if (match.states.isNetMatch)
+        {
+            if (match.netMatch.IsServer) landscapeGenerator.GenerateRandomLandscape();
+        }
+        else
+            landscapeGenerator.GenerateRandomLandscape();
+    }
+
+    public void SetLandReady(bool b) => landOnBoardReady = b;
+
     void Update()
     {
-        if (!isGameStart || !isBoardReady || !isPlayerControl)
+        if (!isGameStart || !landOnBoardReady || !isPlayerControl)
             return;
 
         if (!curCamera)
@@ -86,7 +101,7 @@ public partial class Board : MonoBehaviour
 
         Ray ray = curCamera.ScreenPointToRay(Input.mousePosition);
         if (PlayerDeck.Instance.hand.CurrentHoverCard == null &&
-            Physics.Raycast(ray, out RaycastHit info, 50, LayerMask.GetMask("Tile", "Hover", "Highlight")))
+            Physics.Raycast(ray, out RaycastHit info, 50, LayerMask.GetMask("Tile", "Hover", "Highlight", "TileAccentDark", "TileAccentLight")))
         {
             Vector2Int hitPos = tilesController.GetTileIndex(info.transform.gameObject);
             HoverTile(hitPos);
@@ -94,7 +109,9 @@ public partial class Board : MonoBehaviour
             #region CardMove
             if (PlayerDeck.Instance.hand.CurrentSelectCard != null)
             {
-                List<Vector2Int> availabe = PlayerDeck.Instance.hand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
+                List<Vector2Int> availabe = new();
+                if (!tilesController.IsDarkAccentTile(hitPos))
+                    availabe = PlayerDeck.Instance.hand.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
                 tilesController.HighlighTiles(availabe);
                 tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
                 UnselectHoverHighlightTile(hitPos);
@@ -135,8 +152,16 @@ public partial class Board : MonoBehaviour
         {
             if (curHoverTile != -Vector2Int.one)
             {
-                tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = piecesController.ContainsValidMove(ref piecesController.availableMoves, curHoverTile) ?
-                    LayerMask.NameToLayer("Highlight") : LayerMask.NameToLayer("Tile");
+                var tile = tilesController.tiles[curHoverTile.x, curHoverTile.y];
+
+                if (tilesController.IsHighlighTile(tile.coord))
+                    tile.gameObject.layer = LayerMask.NameToLayer("Highlight");
+                else if (tilesController.IsDarkAccentTile(tile.coord))
+                    tile.gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
+                else if (tilesController.IsLightAccentTile(tile.coord))
+                    tile.gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
+                else
+                    tile.gameObject.layer = LayerMask.NameToLayer("Tile");
 
                 curHoverTile = -Vector2Int.one;
             }
@@ -169,8 +194,16 @@ public partial class Board : MonoBehaviour
 
         if (curHoverTile != hoverPos)
         {
-            tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = tilesController.IsHighlighTile(tilesController.tiles[curHoverTile.x, curHoverTile.y].coord) ?
-               LayerMask.NameToLayer("Highlight") : LayerMask.NameToLayer("Tile");
+            var tile = tilesController.tiles[curHoverTile.x, curHoverTile.y];
+
+            if (tilesController.IsHighlighTile(tile.coord))
+                tile.gameObject.layer = LayerMask.NameToLayer("Highlight");
+            else if (tilesController.IsDarkAccentTile(tile.coord))
+                tile.gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
+            else if (tilesController.IsLightAccentTile(tile.coord))
+                tile.gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
+            else
+                tile.gameObject.layer = LayerMask.NameToLayer("Tile");
 
             curHoverTile = hoverPos;
             tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = LayerMask.NameToLayer("Hover");
@@ -328,6 +361,7 @@ public partial class Board : MonoBehaviour
     {
         piecesController.currentlySelectingPiece = null;
         tilesController.RemoveAllHighlight();
+        tilesController.RemoveAllAccent();
         piecesController.availableMoves = new List<Vector2Int>();
 
         for (int x = 0; x < match.matchSettings.tileCountX; x++)
@@ -344,7 +378,7 @@ public partial class Board : MonoBehaviour
     public void DestroyBoard()
     {
         isGameStart = false;
-        isBoardReady = false;
+        SetLandReady(false);
 
         match.states.OnSetSettings -= OnSetSettings;
         match.states.OnGameStarted -= OnGameStart;

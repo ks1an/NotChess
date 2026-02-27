@@ -5,7 +5,7 @@ public sealed class RuneStoneCard : Card
 {
     [Header("On used")]
     [field: SerializeField] InstanceGameobject_SO_VB visualEffectOnTile;
-    [SerializeField] int waitTurns, runeDurationTurn;
+    [SerializeField] int waitTurns, duration;
     bool _isSynced;
 
     public override void Init()
@@ -40,7 +40,7 @@ public sealed class RuneStoneCard : Card
     {
         _isSynced = false;
         Tile tile = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y];
-        var tBuff = new DefferedActionBuff(tile.Stats,waitTurns, DoAfterWaitTurns);
+        var tBuff = new DefferedActionBuff(tile.Stats, waitTurns, DoAfterWaitTurns);
         tile.Stats.AddBuff(tBuff);
 
         if (!isSynced)
@@ -75,7 +75,7 @@ public sealed class RuneStoneCard : Card
                 };
                 var buffsOnTilePocket = new PocketBuff(false, false, buffsOnTile);
                 new VisualGameobjectBuffBehaviour(buffsOnTilePocket, visualEffectOnTile, t.Tile.tileCenter);
-                var tileBuff = new TemporaryBuff(target, buffsOnTilePocket, runeDurationTurn);
+                var tileBuff = new TemporaryBuff(target, buffsOnTilePocket, duration);
                 target.AddBuff(tileBuff);
             }
         }

@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: _CardIconsAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: e58da450313ff544c9a57e51cbe39100, type: 3}
+    - {fileID: 2800000, guid: 0e8751619ca3bfd4b9d495b01c0352b0, type: 3}
+    - {fileID: 2800000, guid: f71f9f0588ab96848a0eb65f8ab54381, type: 3}
+    - {fileID: 2800000, guid: 21fb40abd35a28e46b1a11d16986c9c3, type: 3}
+    - {fileID: 2800000, guid: 11a516be237cccb44a310e6fa09306e5, type: 3}
+    - {fileID: 2800000, guid: 586c07ae0105fb94485ca7726505d31b, type: 3}
+    - {fileID: 2800000, guid: 8aa312c8349b98845a6c35827c0e7e20, type: 3}
+    - {fileID: 2800000, guid: c254574599570b340a405f891e7fb43c, type: 3}
+    - {fileID: 2800000, guid: 60ea1fc4a185e6346918434b348c9531, type: 3}
+    - {fileID: 2800000, guid: b795c1757fdb3ee4ea73205a4f35f2f4, type: 3}
+    - {fileID: 2800000, guid: 231bff6bf0b18004792e3c1c1e2a3185, type: 3}
+    - {fileID: 2800000, guid: 1b6514af306826940b659daf6ac1dc02, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - e58da450313ff544c9a57e51cbe39100: 21300000
+    - 0e8751619ca3bfd4b9d495b01c0352b0: 21300000
+    - 60ea1fc4a185e6346918434b348c9531: 21300000
+    - f71f9f0588ab96848a0eb65f8ab54381: 21300000
+    - c254574599570b340a405f891e7fb43c: 21300000
+    - b795c1757fdb3ee4ea73205a4f35f2f4: 21300000
+    - 8aa312c8349b98845a6c35827c0e7e20: 21300000
+    - 231bff6bf0b18004792e3c1c1e2a3185: 21300000
+    - 21fb40abd35a28e46b1a11d16986c9c3: 21300000
+    - 586c07ae0105fb94485ca7726505d31b: 21300000
+    - 11a516be237cccb44a310e6fa09306e5: 21300000
+    - 1b6514af306826940b659daf6ac1dc02: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: e58da450313ff544c9a57e51cbe39100, type: 3}
+  - {fileID: 21300000, guid: 0e8751619ca3bfd4b9d495b01c0352b0, type: 3}
+  - {fileID: 21300000, guid: 60ea1fc4a185e6346918434b348c9531, type: 3}
+  - {fileID: 21300000, guid: f71f9f0588ab96848a0eb65f8ab54381, type: 3}
+  - {fileID: 21300000, guid: c254574599570b340a405f891e7fb43c, type: 3}
+  - {fileID: 21300000, guid: b795c1757fdb3ee4ea73205a4f35f2f4, type: 3}
+  - {fileID: 21300000, guid: 8aa312c8349b98845a6c35827c0e7e20, type: 3}
+  - {fileID: 21300000, guid: 231bff6bf0b18004792e3c1c1e2a3185, type: 3}
+  - {fileID: 21300000, guid: 21fb40abd35a28e46b1a11d16986c9c3, type: 3}
+  - {fileID: 21300000, guid: 586c07ae0105fb94485ca7726505d31b, type: 3}
+  - {fileID: 21300000, guid: 11a516be237cccb44a310e6fa09306e5, type: 3}
+  - {fileID: 21300000, guid: 1b6514af306826940b659daf6ac1dc02, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - castleWalls
+  - clockwise-rotation
+  - Necromancer_25
+  - drink-me
+  - Necromancer_13
+  - robber-hand
+  - mountaintop
+  - spy
+  - Druid_5
+  - lightning-branches
+  - Illustration2-sheet
+  - three-burning-balls
+  m_RenderDataMap: {}
+  m_Tag: _CardIconsAtlas
+  m_IsVariant: 0

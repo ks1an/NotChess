@@ -103,12 +103,12 @@ MonoBehaviour:
     m_Key: RuneStoneCardDescribe
     m_Metadata:
       m_Items: []
-  - m_Id: 42711061917941760
-    m_Key: New Entry
+  - m_Id: 47109135167733760
+    m_Key: ReloadCardName
     m_Metadata:
       m_Items: []
-  - m_Id: 42717871219490816
-    m_Key: New Entry 1
+  - m_Id: 47109241111658496
+    m_Key: ReloadCardDescribe
     m_Metadata:
       m_Items: []
   m_Metadata:

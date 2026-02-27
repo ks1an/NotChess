@@ -8,14 +8,14 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - BoardVFX
   - Water
   - UI
   - Tile
   - Hover
   - Highlight
-  - 
-  - 
+  - TileAccentDark
+  - TileAccentLight
   - 
   - 
   - 
@@ -40,6 +40,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: BoardVFX
+    uniqueID: 1737032919
     locked: 0
   - name: Card
     uniqueID: 393561293

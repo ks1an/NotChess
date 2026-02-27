@@ -16,7 +16,8 @@ MonoBehaviour:
   m_RenderingLayerNames:
   - Default
   - UI
-  m_ValidRenderingLayers: 3
+  - VisualEffects
+  m_ValidRenderingLayers: 7
   lightLayerName0: 
   lightLayerName1: 
   lightLayerName2: 

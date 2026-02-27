@@ -133,6 +133,7 @@ public class MatchStates : MonoBehaviour
 
         isGameStarted = true;
         OnGameStarted?.Invoke();
+        board.GenerateLandscape();
     }
     #endregion
 
@@ -158,6 +159,14 @@ public class MatchStates : MonoBehaviour
         }
 
         isMoveOfZero = !isMoveOfZero;
+        if (isNetMatch)
+        {
+            if (GameController.Instance.netMatch.IsServer)
+                board.interactLandscapeGenerator.TryGenerateInteractLandscape();
+        }
+        else
+            board.interactLandscapeGenerator.TryGenerateInteractLandscape();
+
         OnTurnEnded?.Invoke(x, y, team);
     }
 

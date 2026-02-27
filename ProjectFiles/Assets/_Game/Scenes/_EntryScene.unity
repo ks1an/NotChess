@@ -1697,7 +1697,7 @@ Transform:
   m_GameObject: {fileID: 861371251}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalPosition: {x: -0.25, y: 0, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2607,7 +2607,7 @@ GameObject:
   - component: {fileID: 1471207462}
   - component: {fileID: 1471207463}
   m_Layer: 0
-  m_Name: SplineHand
+  m_Name: CurveSplineHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2676,7 +2676,7 @@ MonoBehaviour:
           w: -0.5468354
     - Position:
         x: 0
-        y: 1
+        y: 0.75
         z: 0
       TangentIn:
         x: 0
@@ -2706,10 +2706,10 @@ MonoBehaviour:
         z: 0.50990194
       Rotation:
         value:
-          x: 0.44829786
-          y: -0.54683536
+          x: 0.44829747
+          y: -0.5468354
           z: 0.5468354
-          w: -0.44829792
+          w: -0.4482983
     m_MetaData:
     - Mode: 3
       Tension: 0.5
@@ -3001,6 +3001,7 @@ MonoBehaviour:
   - {fileID: 3448242410765194852, guid: d4ba186ec01febe4d882ee111bea3e55, type: 3}
   - {fileID: 271522993271443470, guid: 2861d28c24fd65243acfc1683225de55, type: 3}
   - {fileID: 6225908422702042889, guid: 4d2fccf961dbd764ca171a881b04eda3, type: 3}
+  - {fileID: 4126798842685100063, guid: db5d2ec463fc76448bb44fdf67a62577, type: 3}
 --- !u!114 &1558030911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4064,6 +4065,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tilesController: {fileID: 1429830491836193385}
   piecesController: {fileID: 3871391997030235642}
+  landscapeGenerator: {fileID: 0}
+  interactLandscapeGenerator: {fileID: 0}
+  landOnBoardReady: 0
 --- !u!4 &963382833656907909
 Transform:
   m_ObjectHideFlags: 0
@@ -4286,6 +4290,8 @@ GameObject:
   - component: {fileID: 118879387617261696}
   - component: {fileID: 1429830491836193385}
   - component: {fileID: 3871391997030235642}
+  - component: {fileID: 4122843225070535007}
+  - component: {fileID: 4122843225070535008}
   m_Layer: 0
   m_Name: ==Board==
   m_TagString: Untagged
@@ -4293,6 +4299,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &4122843225070535007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4122843225070535006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46243d7bc6fe8054ca65b5208fbbefdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  landscapeObjects:
+  - {fileID: 3976832877996770544, guid: c2dc3d345842f494fb60611a7e8f6188, type: 3}
+  - {fileID: 2437461032792112955, guid: 4bf554e7f5dd3f34dabdbcd823a08d7b, type: 3}
+--- !u!114 &4122843225070535008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4122843225070535006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 723d36ab1a36ed84da4b08421ad0499b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  landscapeObjects:
+  - {fileID: 7951715563019752600, guid: daab33b56a0f23b4fbab346f580ecfb7, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

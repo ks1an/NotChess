@@ -6,13 +6,17 @@ public class VisualGameobjectBuffBehaviour : VisualBuffBehaviour
     readonly InstanceGameobject_SO_VB Effect;
     GameobjectVisualEffect obj;
     Vector3 posForVFX;
+    readonly bool withoutSounds;
+    readonly float spawnDurationMultiple;
 
     public VisualGameobjectBuffBehaviour(IBuff buff,
-        InstanceGameobject_SO_VB effect, Vector3 posForVFX)
+        InstanceGameobject_SO_VB effect, Vector3 posForVFX, bool withoutSounds = false, float spawnDurationMultiple = 1f)
         : base(buff)
     {
         Effect = effect;
         this.posForVFX = posForVFX;
+        this.withoutSounds = withoutSounds;
+        this.spawnDurationMultiple = spawnDurationMultiple;
     }
 
     protected override void DoOnAdded()
@@ -26,12 +30,12 @@ public class VisualGameobjectBuffBehaviour : VisualBuffBehaviour
 
         if (Effect.doRndYRotOnSpawn)
             obj.gameObject.transform.DORotate(obj.gameObject.transform.rotation.eulerAngles +
-                new Vector3(0, Random.Range(0, 360)), Effect.spawnDuration);
+                new Vector3(0, Random.Range(0, 360)), Effect.spawnDuration * spawnDurationMultiple);
         if (Effect.hightOnSpawn != 0)
-            obj.gameObject.transform.DOMoveY(posForVFX.y - Effect.hightOnSpawn, Effect.spawnDuration);
+            obj.gameObject.transform.DOMoveY(posForVFX.y - Effect.hightOnSpawn, Effect.spawnDuration * spawnDurationMultiple);
 
         obj.DoOnSpawn();
-        if (Effect.audioClipsOnAdded.Length > 0)
+        if (Effect.audioClipsOnAdded.Length > 0 && !withoutSounds)
             GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
     }
@@ -40,7 +44,7 @@ public class VisualGameobjectBuffBehaviour : VisualBuffBehaviour
     {
         base.DoOnRemoved();
 
-        if (Effect.audioClipsOnRemoved.Length > 0)
+        if (Effect.audioClipsOnRemoved.Length > 0 && !withoutSounds)
             GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
         obj.DoOnRemoved();
@@ -50,7 +54,7 @@ public class VisualGameobjectBuffBehaviour : VisualBuffBehaviour
     {
         base.DoOnTurned();
 
-        if (Effect.audioClipsOnTurned.Length > 0)
+        if (Effect.audioClipsOnTurned.Length > 0 && !withoutSounds)
             GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
         obj.DoOnTurned();

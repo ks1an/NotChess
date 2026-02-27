@@ -42,6 +42,90 @@ MonoBehaviour:
       restoreCamera: 0
       offset: {x: 0, y: 0, z: 0, w: 0}
       cameraFieldOfView: 52.6
+--- !u!114 &-8164937569638209356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: AccentTileDark
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: AccentTileDark
+    Event: 500
+    filterSettings:
+      RenderQueueType: 1
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 512
+      PassNames: []
+    overrideMaterial: {fileID: 2100000, guid: 9349063890c7e1542bc9cb43b78141d4, type: 2}
+    overrideMaterialPassIndex: 0
+    overrideShader: {fileID: 0}
+    overrideShaderPassIndex: 0
+    overrideMode: 1
+    overrideDepthState: 1
+    depthCompareFunction: 2
+    enableWrite: 1
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
+--- !u!114 &-3357844809840072927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: AccentTile2
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: AccentTile2
+    Event: 500
+    filterSettings:
+      RenderQueueType: 1
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 1024
+      PassNames: []
+    overrideMaterial: {fileID: 2100000, guid: 930bf56f637600146ac9338c697a9a39, type: 2}
+    overrideMaterialPassIndex: 0
+    overrideShader: {fileID: 0}
+    overrideShaderPassIndex: 0
+    overrideMode: 1
+    overrideDepthState: 1
+    depthCompareFunction: 2
+    enableWrite: 1
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
 --- !u!114 &-1141970780739394221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -106,7 +190,9 @@ MonoBehaviour:
   - {fileID: -1141970780739394221}
   - {fileID: 131726338137885686}
   - {fileID: 7529021884316408272}
-  m_RendererFeatureMap: bcfdeb8a9627b6886555df5fb636804947a28399d65d491353252716a0e726f0f68b451868fcd301d059d26883757c68
+  - {fileID: -8164937569638209356}
+  - {fileID: -3357844809840072927}
+  m_RendererFeatureMap: bcfdeb8a9627b6886555df5fb636804947a28399d65d491353252716a0e726f0f68b451868fcd301d059d26883757c68b42879448a50b08e21e797a2ef8966d1
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -163,7 +249,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: Card
-    Event: 550
+    Event: 500
     filterSettings:
       RenderQueueType: 1
       LayerMask:
@@ -174,9 +260,9 @@ MonoBehaviour:
     overrideMaterialPassIndex: 0
     overrideShader: {fileID: 0}
     overrideShaderPassIndex: 0
-    overrideMode: 1
+    overrideMode: 0
     overrideDepthState: 1
-    depthCompareFunction: 8
+    depthCompareFunction: 0
     enableWrite: 1
     stencilSettings:
       overrideStencilState: 0
@@ -265,17 +351,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
-  m_Name: Effect
+  m_Name: BoardEffect
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: Effect
+    passTag: BoardEffect
     Event: 1000
     filterSettings:
-      RenderQueueType: 1
+      RenderQueueType: 0
       LayerMask:
         serializedVersion: 2
-        m_Bits: 2
+        m_Bits: 8
       PassNames: []
     overrideMaterial: {fileID: 0}
     overrideMaterialPassIndex: 0
@@ -283,8 +369,8 @@ MonoBehaviour:
     overrideShaderPassIndex: 0
     overrideMode: 0
     overrideDepthState: 1
-    depthCompareFunction: 4
-    enableWrite: 0
+    depthCompareFunction: 6
+    enableWrite: 1
     stencilSettings:
       overrideStencilState: 0
       stencilReference: 0

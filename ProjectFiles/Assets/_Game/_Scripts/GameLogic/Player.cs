@@ -7,6 +7,7 @@ public sealed class Player : MonoBehaviour
     public Material tileFirstMaterial, tileSecondMaterial;
     public Material crossMaterial, zeroMaterial;
     public GameObject crossPrefab, zeroPrefab;
+
     //material for available moves
     //material for hover tiles
 

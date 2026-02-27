@@ -23,7 +23,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 3105161265152
-    m_Localized: <#005500>Prevents attacking</b></color> a cell for <b>1 round</b>
+    m_Localized: <color=#005500><b>Prevents attacking</b></color> a cell for <b>1
+      round</b>.
     m_Metadata:
       m_Items: []
   - m_Id: 10614102081536
@@ -31,8 +32,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 10719232311296
-    m_Localized: <b><#005500>Prevents put a unit</b></color> from being placed on
-      a cell for <b>one round</b>
+    m_Localized: <color=#005500><b>Prevents placing a unit</b></color> on a cell
+      for <b>1 round</b>.
     m_Metadata:
       m_Items: []
   - m_Id: 12367849635840
@@ -40,8 +41,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 12482651930624
-    m_Localized: Hits the cell. <b><#ff0000>Destroyes</color> the unit</b>  on that
-      cell.
+    m_Localized: <color=#ff0000><b>Destroys the unit</b></color> on the hit cell.
     m_Metadata:
       m_Items: []
   - m_Id: 13996447547392
@@ -49,7 +49,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 14078613962752
-    m_Localized: <b>Five random</b> meteorites <b><#ff0000>destroy</color> units</b>
+    m_Localized: <color=#ff0000><b>Destroys units</b></color> with <b>5</b> random
+      meteorites.
     m_Metadata:
       m_Items: []
   - m_Id: 15076115922944
@@ -57,8 +58,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 15315635847168
-    m_Localized: "<b><#118a7e>Returns</color></b> the <b>last used card</b> to your
-      hand. \n<b>Able to return this card</b>"
+    m_Localized: <color=#118a7e><b>Returns the last used card</b></color> to your
+      hand.
     m_Metadata:
       m_Items: []
   - m_Id: 16798607523840
@@ -66,9 +67,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 16966333546496
-    m_Localized: "<#005500><b>Prevents</b></color> a unit from being <b><#005500>placed</b>
-      on a cell</color> for <b>two rounds</b>. \nCan only be\r\nused <b>on a free
-      cell</b>"
+    m_Localized: <color=#005500><b>Prevents placing a unit</b></color> on this cell
+      for <b>2 rounds</b>.
     m_Metadata:
       m_Items: []
   - m_Id: 19123539591168
@@ -76,8 +76,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 19262060675072
-    m_Localized: "You <b><color=\"red\">sacrifice</color></b> your <color=\"red\">unit</color>
-      \r\nand <b>gain <#0000FF>1</b> mana</color> in return"
+    m_Localized: <b><color=red>Sacrifice your unit</color></b> to gain <color=#0000FF><b>1</b>
+      mana</color>.
     m_Metadata:
       m_Items: []
   - m_Id: 1551844968579072
@@ -85,8 +85,8 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1551935880118272
-    m_Localized: <b>Steals</b> the chosen card <b>from your opponent's hand</b> and
-      places it in your hand.
+    m_Localized: <color=#800080><b>Steals the chosen card</b></color> from opponent's
+      hand to yours.
     m_Metadata:
       m_Items: []
   - m_Id: 2567380905050112
@@ -94,13 +94,12 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2567498580443136
-    m_Localized: <b>Provides information</b> about the selected enemy card.
+    m_Localized: <color=#4B0082><b>Tells you about the selected opponent's card.</b></color>
     m_Metadata:
       m_Items: []
   - m_Id: 7247470494564352
-    m_Localized: You <b>instantly gain</b> <b><#118a7e>1</color></b> mana points.
-      You'll have <b><#118a7e>1</color></b> mana points <b>back</b> by <b><color="red>your</color>
-      next turn</b>
+    m_Localized: "Instantly <b>gain</b> <color=#118a7e>1</color> mana.\r\n <s>You
+      will give</s> <b>Get <color=#118a7e>1</color> mana back</b> next turn."
     m_Metadata:
       m_Items: []
   - m_Id: 7247461267095552
@@ -112,8 +111,18 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 10621701248860160
-    m_Localized: Hits the cell <b>with a delay</b> of one round. <b><#ff0000>Destroys
-      the</color> object</b> on this cell and blocks the staging and attack in this
+    m_Localized: 'Hits the cell with a <b>1-round delay</b>.
+
+      <color=#ff0000><b>Destroys
+      the unit</b></color> and <b>blocks</b> placement/attack on it.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47109135167733760
+    m_Localized: Reload
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47109241111658496
+    m_Localized: <color=#4B0082><b>Resets all effects</b></color> applied to the
       cell
     m_Metadata:
       m_Items: []
