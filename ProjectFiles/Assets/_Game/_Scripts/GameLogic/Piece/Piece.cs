@@ -24,7 +24,7 @@ public class Piece : MonoBehaviour
         if (force)
             transform.position = targetPos;
         else
-            transform.DOMove(targetPos, durationSetPos);
+            transform.DOMove(targetPos, durationSetPos).SetEase(Ease.InOutBack);
     }
 
     public List<Vector2Int> GetAvailableMoves(ref Piece[,] board, int countX, int countY)

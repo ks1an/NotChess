@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Splines.ExtrusionShapes;
 
 public class ManaRock : InteractLandscapeObject
 {
@@ -60,23 +59,22 @@ public class ManaRock : InteractLandscapeObject
 
     private void DoAfterLiving(IBuffable buffable)
     {
-        int amount = 0;
         int playerTeamAmount = 0;
         foreach (Vector2Int coordTile in myWorkZone)
             if (Board.Instance.piecesController.pieces[coordTile.x, coordTile.y] != null)
             {
-                amount++;
                 if (Board.Instance.piecesController.pieces[coordTile.x, coordTile.y].team ==
                     GameController.Instance.player.GetLocalPlayerTeam())
                     playerTeamAmount++;
             }
 
-        if (amount == myWorkZone.Count)
+        if (playerTeamAmount == myWorkZone.Count)
         {
-            if (amount == playerTeamAmount)
-                GameController.Instance.player.IncreaseMana(giveManaIfCaptureOnesTeam);
-            else
-                GameController.Instance.player.IncreaseMana((int)(giveManaIfCaptureOnesTeam / 2));
+            GameController.Instance.player.IncreaseMana(giveManaIfCaptureOnesTeam);
+        }
+        else if (playerTeamAmount == myWorkZone.Count / 2)
+        {
+            GameController.Instance.player.IncreaseMana((int)(giveManaIfCaptureOnesTeam / 2));
         }
 
         Board.Instance.tilesController.RemoveAccentTiles(myWorkZone, false);
@@ -110,7 +108,7 @@ public class ManaRock : InteractLandscapeObject
             workspace.y = tileY + i;
             if (workspace.x > 0 && workspace.x < GameController.Instance.matchSettings.tileCountX &&
                 workspace.y > 0 && workspace.y < GameController.Instance.matchSettings.tileCountY &&
-                Board.Instance.piecesController.pieces[workspace.x, workspace.y] != null) 
+                Board.Instance.piecesController.pieces[workspace.x, workspace.y] != null)
                 return null;
         }
 

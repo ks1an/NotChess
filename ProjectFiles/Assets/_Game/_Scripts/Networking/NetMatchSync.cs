@@ -63,19 +63,19 @@ public class NetMatchSync : NetworkBehaviour
         if (NetworkManager.ConnectedClientsIds[0] == NetworkManager.LocalClientId) //HostTeam
         {
             if (states.isMoveOfZero)
-                GameController.Instance.player.SetPlayerTeam(Team.Zero);
+                GameController.Instance.player.SetTeam(Team.Zero);
             else
-                GameController.Instance.player.SetPlayerTeam(Team.Cross);
+                GameController.Instance.player.SetTeam(Team.Cross);
         }
         else if (NetworkManager.ConnectedClientsIds[1] == NetworkManager.LocalClientId)
         {
             if (states.isMoveOfZero)
-                GameController.Instance.player.SetPlayerTeam(Team.Cross);
+                GameController.Instance.player.SetTeam(Team.Cross);
             else
-                GameController.Instance.player.SetPlayerTeam(Team.Zero);
+                GameController.Instance.player.SetTeam(Team.Zero);
         }
         else
-            GameController.Instance.player.SetPlayerTeam(Team.None);
+            GameController.Instance.player.SetTeam(Team.None);
         #endregion
 
         readyPlayers = 0;

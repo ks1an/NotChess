@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Localization;
 
@@ -28,7 +30,7 @@ public class MatchStates : MonoBehaviour
     [SerializeField] LocalizedStringTable localTable;
 
     GameController game;
-    EnemyAI enemyBot;
+    List<EnemyAI> enemyBots = new();
 
     #region BeforePlay
     public void CreateGame(bool isNetMatch, bool isDemontrationMatchAiVsAi)
@@ -58,10 +60,13 @@ public class MatchStates : MonoBehaviour
 
     void OnSceneLoaded()
     {
-        game.enemy = new();
+        enemyBots.Clear();
         if (!isNetMatch)
         {
-            enemyBot = Instantiate(game.botPrefab).GetComponent<EnemyAI>();
+            enemyBots.Add(Instantiate(game.botPrefab).GetComponent<EnemyAI>());
+            if (isDemonstrationMatchAiVsAi)
+                enemyBots.Add(Instantiate(game.botPrefab).GetComponent<EnemyAI>());
+
             Board.onBoardGenerated += GameStart;
             PreStart();
         }
@@ -87,19 +92,31 @@ public class MatchStates : MonoBehaviour
 
         if (isDemonstrationMatchAiVsAi)
         {
-            enemyBot.LoadEnemy(isMoveOfZero ? Team.Zero : Team.Cross);
-            game.player.SetPlayerTeam(Team.None);
+            enemyBots[0].LoadEnemy(isMoveOfZero ? Team.Zero : Team.Cross, game.player);
+            enemyBots[1].LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero, game.enemy);
         }
-        else if (!isNetMatch)
+        else
         {
-            game.player.SetPlayerTeam(isMoveOfZero ? Team.Zero : Team.Cross);
-            enemyBot.LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero);
+            if (!isNetMatch)
+            {
+                game.player.SetTeam(isMoveOfZero ? Team.Zero : Team.Cross);
+                enemyBots[0].LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero, game.enemy);
+            }
+            PlayerDeck.Instance.SetCardCollection(game.player.cardCollection);
         }
 
-        if (game.player.GetLocalPlayerTeam() == Team.Zero)
-            game.enemy.SetTeam(Team.Cross);
-        else if (game.player.GetLocalPlayerTeam() == Team.Cross)
-            game.enemy.SetTeam(Team.Zero);
+        if (enemyBots.Count > 0)
+            foreach (var enemy in enemyBots)
+            {
+                var newCollection = Instantiate(enemy.dataBase.CardsCollection);
+                newCollection.cardBack = GameController.Instance.globalCards.GlobalCardBacks[UnityEngine.Random.Range(0, GameController.Instance.globalCards.GlobalCardBacks.Count)];
+
+                if (enemy.sensor.myTeam == game.player.GetLocalPlayerTeam())
+                    PlayerDeck.Instance.SetCardCollection(newCollection);
+                else
+                    EnemyDeck.Instance.SetCardCollection(newCollection);
+            }
+
 
         OnSetSettings?.Invoke();
     }
@@ -108,7 +125,8 @@ public class MatchStates : MonoBehaviour
     {
         if (!isNetMatch)
         {
-            enemyBot.EndEnemyTurn(() => { });
+            foreach (var enemy in enemyBots)
+                enemy.EndEnemyTurn(() => { });
         }
 
         SetSettings();
@@ -118,18 +136,16 @@ public class MatchStates : MonoBehaviour
 
     public void GameStart()
     {
-        PlayerDeck.Instance.SetDefaultSettings();
-        EnemyDeck.Instance.SetDefaultSettings();
+        game.player.deck.SetDefaultSettings();
+        game.enemy.deck.SetDefaultSettings();
         WaitingWindowController.Instance.Hide();
 
         turnCount = 0;
-        if (game.player.GetLocalPlayerTeam() != Team.None)
-        {
-            game.player.SetStartMana();
-            game.enemy.SetStartMana();
-            PlayerDeck.Instance.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
-            EnemyDeck.Instance.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
-        }
+
+        game.player.SetStartMana();
+        game.enemy.SetStartMana();
+        game.player.deck.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
+        game.enemy.deck.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
 
         isGameStarted = true;
         OnGameStarted?.Invoke();
@@ -137,7 +153,7 @@ public class MatchStates : MonoBehaviour
     }
     #endregion
 
-    public void TeamMoved(int x, int y, Team team)
+    public void TeamMoved(int x, int y, Team whoMoved)
     {
         turnCount++;
 
@@ -145,18 +161,29 @@ public class MatchStates : MonoBehaviour
         if (winTiles.Count == game.matchSettings.piecesWinSequence)
         {
             board.tilesController.HighlighTiles(winTiles);
-            GameEnd(team, x, y);
+            GameEnd(whoMoved, x, y);
             return;
         }
 
         if (game.player.GetLocalPlayerTeam() != Team.None)
         {
-            if (PlayerDeck.Instance.hand.CardsInHand.Count < game.matchSettings.defaultCardsInHand)
-                PlayerDeck.Instance.DrawHandRandomFromDeck(game.matchSettings.defaultCardsInHand);
+            if (PlayerCardHand.Instance.CardsInHand.Count < game.matchSettings.defaultCardsInHand)
+                game.player.deck.DrawHandRandomFromDeck(game.matchSettings.defaultCardsInHand);
 
-            if (game.player.GetLocalPlayerTeam() != team && turnCount > game.matchSettings.piecesWinSequence)
+            if (game.player.GetLocalPlayerTeam() != whoMoved && turnCount > game.matchSettings.piecesWinSequence)
                 game.player.IncreaseMana(game.matchSettings.manaPerTurn);
         }
+
+        if (!isNetMatch)
+        {
+            foreach (var enemy in enemyBots)
+                if (enemy.myEntity.GetLocalPlayerTeam() != whoMoved && turnCount > game.matchSettings.piecesWinSequence)
+                    enemy.myEntity.IncreaseMana(game.matchSettings.manaPerTurn);
+
+            if (EnemyDeck.Instance.hand.CardGameobjectsInHand.Count < game.matchSettings.defaultCardsInHand)
+                game.enemy.deck.DrawHandRandomFromDeck(game.matchSettings.defaultCardsInHand);
+        }
+
 
         isMoveOfZero = !isMoveOfZero;
         if (isNetMatch)
@@ -167,7 +194,7 @@ public class MatchStates : MonoBehaviour
         else
             board.interactLandscapeGenerator.TryGenerateInteractLandscape();
 
-        OnTurnEnded?.Invoke(x, y, team);
+        OnTurnEnded?.Invoke(x, y, whoMoved);
     }
 
     #region AfterPlay(End)
@@ -184,7 +211,9 @@ public class MatchStates : MonoBehaviour
                 return;
             }
 
-            enemyBot.StopEnemy();
+            foreach (var enemy in enemyBots)
+                enemy.StopEnemy();
+
             RevengeOffer();
             OnGameWin?.Invoke(x, y, winTeam);
         }
@@ -244,7 +273,8 @@ public class MatchStates : MonoBehaviour
         if (!isNetMatch)
         {
             Board.onBoardGenerated -= GameStart;
-            enemyBot.StopEnemy();
+            foreach (var enemy in enemyBots)
+                enemy.StopEnemy();
         }
         else
             game.netMatch.LeaveNetMatch();
@@ -260,7 +290,8 @@ public class MatchStates : MonoBehaviour
 
     public void EndDemonstrationGame()
     {
-        enemyBot.StopEnemy();
+        foreach (var enemy in enemyBots)
+            enemy.StopEnemy();
 
         Board.onBoardGenerated -= GameStart;
         board.DestroyBoard();

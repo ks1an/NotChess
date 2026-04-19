@@ -71,7 +71,7 @@ partial class GlobalVolumePostEffect
     float timeChromeAbb;
     bool needChromeAbb, chromeAbbProcces;
 
-    public void SetNeedChromeAbb(bool b) => needChromeAbb = b;
+    public void SetNeedChromeAbb(bool b) { needChromeAbb = b;}
 
     void UpdateChromeAbb()
     {

@@ -20,7 +20,8 @@ public class ManaBottle : MonoBehaviour
             manaTxt.text = curMana.ToString();
 
         liquid.gameObject.SetActive(true);
-        liquid.SetFillAmount(curMana, 0.1f);
+        DeacreaseMana(maxMana);
+        IncreaseMana(curMana);
     }
 
     public void DeacreaseMana(int value)

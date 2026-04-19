@@ -4,9 +4,9 @@ using UnityEngine;
 public sealed class SacrificeCard : Card
 {
     [SerializeField] int manaToAdd;
-    public override void Init()
+    public override void Init(Team teamWhoHave)
     {
-        base.Init();
+        base.Init(teamWhoHave);
     }
 
     protected override void OnCursorDown()
@@ -33,19 +33,30 @@ public sealed class SacrificeCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
+        if (!cardInited) Debug.LogError("Card NOT inited but used " + originalCardName);
 
         if (!isSynced)
         {
             GameController.Instance.states.move.TryDestroyUnit(moves[0].x, moves[0].y,
-                false, GameController.Instance.player.GetLocalPlayerTeam());
-            GameController.Instance.player.IncreaseMana(manaToAdd);
+                false, teamWhoHave);
 
-            GameController.Instance.states.move.UseCard(GetID(), moves);
-            PlayerDeck.Instance.DestroyCardInHand(this);
+            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
+            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            {
+                GameController.Instance.player.IncreaseMana(manaToAdd);
+                PlayerDeck.Instance.DestroyCardInHand(this);
+            }
+            else
+            {
+                GameController.Instance.enemy.IncreaseMana(manaToAdd);
+                //TODO: Effectively removes a random card of the type. Creates ambiguity for the player. Needs to be changed.
+                EnemyCardHand hand = EnemyDeck.Instance.hand;
+                EnemyDeck.Instance.DestroyCardInHand(hand.CardGameobjectsInHand[hand.GetIndexOfCardInHandByType(this)], true);
+            }
         }
         else
         {
-            Destroy(gameObject);
+            KillCard();
         }
     }
 

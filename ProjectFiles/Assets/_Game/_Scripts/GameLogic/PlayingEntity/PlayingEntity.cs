@@ -1,45 +1,49 @@
+using System;
 using UnityEngine;
 
-public sealed class Player : MonoBehaviour
+public class PlayingEntity : MonoBehaviour 
 {
+    public event Action <Team> OnTeamChanged;
+    public event Action<int> OnCurrentManaChaged;
+
     [Header("Board")]
     public float upValueWhileSelectingPiece;
     public Material tileFirstMaterial, tileSecondMaterial;
     public Material crossMaterial, zeroMaterial;
     public GameObject crossPrefab, zeroPrefab;
-
     //material for available moves
     //material for hover tiles
 
     [Header("Stats")]
-    Team localPlayerTeam = Team.None;
-    int currentMana;
-    int maxMana;
+    protected Team localTeam = Team.None;
+    protected int currentMana, maxMana;
 
-    void Awake()
-    {
-        DontDestroyOnLoad(this);
-    }
+    [HideInInspector] public Deck deck;
+    [HideInInspector] public HandObject hand;
 
-    public void SetPlayerTeam(Team type) => localPlayerTeam = type;
-
-    public void SetStartMana()
+    #region Set
+    public virtual void SetStartMana()
     {
         var settings = GameController.Instance.matchSettings;
-        if (localPlayerTeam != Team.None)
+        if (localTeam != Team.None)
         {
             maxMana = settings.maxMana;
             currentMana = settings.startMana;
-            IncreaseMana(((settings.firtsMoveZero == (localPlayerTeam == Team.Cross)) 
-                && localPlayerTeam != Team.None) ?
+            IncreaseMana(((settings.firtsMoveZero == (localTeam == Team.Cross))
+                && localTeam != Team.None) ?
                     settings.startManaForEvenPlayer : 0);
-
-            GameController.Instance.playerManaBottle.SetSettings(currentMana, maxMana);
         }
     }
 
-    #region +-Mana
-    public void IncreaseMana(int value)
+    public virtual void SetTeam(Team team)
+    {
+        localTeam = team;
+        OnTeamChanged?.Invoke(localTeam);
+    }
+    #endregion
+
+    #region +- mana
+    public virtual void IncreaseMana(int value)
     {
         if (value < 0)
         {
@@ -49,14 +53,10 @@ public sealed class Player : MonoBehaviour
         currentMana += value;
         if (currentMana > maxMana)
             currentMana = maxMana;
-
-        if (GameController.Instance.states.isNetMatch)
-            GameController.Instance.netMatch.OnPlayerManaChangeRpc(value);
-
-        GameController.Instance.playerManaBottle.IncreaseMana(value);
+        OnCurrentManaChaged?.Invoke(currentMana);
     }
 
-    public void DeacreaseMana(int value)
+    public virtual void DeacreaseMana(int value)
     {
         if (value < 0)
         {
@@ -67,20 +67,16 @@ public sealed class Player : MonoBehaviour
         currentMana -= value;
         if (currentMana < 0)
             currentMana = 0;
-
-        if(GameController.Instance.states.isNetMatch)
-            GameController.Instance.netMatch.OnPlayerManaChangeRpc(value * -1);
-
-        GameController.Instance.playerManaBottle.DeacreaseMana(value);
+        OnCurrentManaChaged?.Invoke(currentMana);
     }
     #endregion
 
     #region Get
-    public Team GetLocalPlayerTeam() { return localPlayerTeam; }
+    public Team GetLocalPlayerTeam() { return localTeam; }
     public bool IsMyTurnOrNot()
     {
-        if ((GameController.Instance.states.isMoveOfZero && localPlayerTeam == Team.Zero)
-            || (!GameController.Instance.states.isMoveOfZero && localPlayerTeam == Team.Cross))
+        if ((GameController.Instance.states.isMoveOfZero && localTeam == Team.Zero)
+            || (!GameController.Instance.states.isMoveOfZero && localTeam == Team.Cross))
             return true;
         else
             return false;

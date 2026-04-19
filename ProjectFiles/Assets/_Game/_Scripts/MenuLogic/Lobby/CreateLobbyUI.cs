@@ -56,6 +56,7 @@ public sealed class CreateLobbyUI : MonoBehaviour
             isPrivate = !isPrivate;
             UpdateText();
         });
+        publicPrivateButton.interactable = false;
 
         maxPlayersButton.onClick.AddListener(() =>
         {

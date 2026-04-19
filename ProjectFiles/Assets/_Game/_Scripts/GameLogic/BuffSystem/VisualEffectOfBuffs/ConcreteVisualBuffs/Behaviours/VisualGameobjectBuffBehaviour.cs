@@ -36,7 +36,7 @@ public class VisualGameobjectBuffBehaviour : VisualBuffBehaviour
 
         obj.DoOnSpawn();
         if (Effect.audioClipsOnAdded.Length > 0 && !withoutSounds)
-            GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
+            GameSound.Instance.PlayRandomSound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
     }
 
@@ -45,7 +45,7 @@ public class VisualGameobjectBuffBehaviour : VisualBuffBehaviour
         base.DoOnRemoved();
 
         if (Effect.audioClipsOnRemoved.Length > 0 && !withoutSounds)
-            GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
+            GameSound.Instance.PlayRandomSound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
         obj.DoOnRemoved();
     }
@@ -55,7 +55,7 @@ public class VisualGameobjectBuffBehaviour : VisualBuffBehaviour
         base.DoOnTurned();
 
         if (Effect.audioClipsOnTurned.Length > 0 && !withoutSounds)
-            GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
+            GameSound.Instance.PlayRandomSound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
         obj.DoOnTurned();
     }

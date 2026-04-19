@@ -5,9 +5,9 @@ public class DistantRelativeCard : Card
 {
     [SerializeField, Min(0)] int amountGetMana, amountLostMana, afterTurnsRepayDebt;
 
-    public override void Init()
+    public override void Init(Team teamWhoHave)
     {
-        base.Init();
+        base.Init(teamWhoHave);
     }
 
     #region OnDrag
@@ -35,6 +35,8 @@ public class DistantRelativeCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
+        if (!cardInited) Debug.LogError("Card NOT inited but used " + originalCardName);
+
         if (GameController.Instance.states.isNetMatch)
             if (!isSynced)
             {
@@ -45,42 +47,63 @@ public class DistantRelativeCard : Card
                     null,
                     out TurnTimerSubscriber sub
                     );
-                GameController.Instance.states.move.UseCard(GetID(), moves);
+                GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
             {
-                Destroy(gameObject);
+                KillCard();
             }
         else
         {
-            GameController.Instance.player.IncreaseMana(amountGetMana);
             TurnTimer.GetInstance().StartTimer(
                 afterTurnsRepayDebt,
                 DoAfterTurnsRepayDebt,
                 null,
                 out TurnTimerSubscriber sub
                 );
-            GameController.Instance.states.move.UseCard(GetID(), moves);
-            PlayerDeck.Instance.DestroyCardInHand(this);
+            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
+
+            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            {
+                GameController.Instance.player.IncreaseMana(amountGetMana);
+                PlayerDeck.Instance.DestroyCardInHand(this);
+            }
+            else
+            {
+                GameController.Instance.enemy.IncreaseMana(amountGetMana);
+                //TODO: Effectively removes a random card of the type. Creates ambiguity for the player. Needs to be changed.
+                EnemyCardHand hand = EnemyDeck.Instance.hand;
+                EnemyDeck.Instance.DestroyCardInHand(hand.CardGameobjectsInHand[hand.GetIndexOfCardInHandByType(this)], true);
+            }
         }
     }
 
     void DoAfterTurnsRepayDebt()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= amountGetMana)
+        if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
         {
-            GameController.Instance.player.DeacreaseMana(amountLostMana);
+            if (GameController.Instance.player.GetCurrentMana() >= amountGetMana)
+            {
+                GameController.Instance.player.DeacreaseMana(amountLostMana);
+                return;
+            }
         }
         else
         {
-            TurnTimer.GetInstance().StartTimer(
-                afterTurnsRepayDebt,
-                DoAfterTurnsRepayDebt,
-                null,
-                out TurnTimerSubscriber sub
-                );
+            if (GameController.Instance.enemy.GetCurrentMana() >= amountGetMana)
+            {
+                GameController.Instance.enemy.DeacreaseMana(amountLostMana);
+                return;
+            }
         }
+
+        TurnTimer.GetInstance().StartTimer(
+        afterTurnsRepayDebt,
+        DoAfterTurnsRepayDebt,
+        null,
+        out TurnTimerSubscriber sub
+        );
     }
 
     #region AvailableMoves

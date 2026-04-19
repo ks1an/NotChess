@@ -12,6 +12,13 @@ public class HandObject : MonoBehaviour
     protected bool isDealing;
     protected List<GameObject> handObjects = new();
 
+    public SplineContainer GetSpline() { return splineContainer; }
+    public IEnumerator SetSpline(SplineContainer splineContainer)
+    {
+        this.splineContainer = splineContainer;
+        yield return StartCoroutine(UpdateObjPos(objUpdatePosTime));
+    }
+
     //ADD
     protected IEnumerator AddObj(GameObject obj)
     {
@@ -80,11 +87,14 @@ public class HandObject : MonoBehaviour
             }
             float pos = firtsCardPos + i * objSpacing + additionalSpacing;
 
-
             Vector3 splinePos = spline.EvaluatePosition(pos);
             Vector3 forward = spline.EvaluateTangent(pos);
             Vector3 up = spline.EvaluateUpVector(pos);
             Quaternion rot = Quaternion.LookRotation(-up, Vector3.Cross(-up, forward).normalized);
+            if (i % 2 == 0)
+                splinePos = new Vector3(splinePos.x, splinePos.y, splinePos.z + 0.05f);
+
+
             objTransform.DOMove(splinePos + transform.position, duration);
             objTransform.DOLocalRotate(rot.eulerAngles, duration);
         }

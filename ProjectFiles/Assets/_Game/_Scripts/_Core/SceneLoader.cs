@@ -1,35 +1,45 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public sealed class SceneLoader : MonoBehaviour
 {
-    public static SceneLoader Instance;
+    public const string menuScene = "MenuScene";
+    public const string boardScene = "BoardScene";
 
-    public event Action OnSomeSceneStartLoading;
-    public event Action OnMenuSceneLoaded;
-    public event Action OnBoardSceneLoaded;
+    public static SceneLoader Instance { get; private set; }
 
-    [SerializeField] string menuScene;
-    [SerializeField] string boardScene;
+    public event System.Action OnSomeSceneStartLoading;
+    public event System.Action OnMenuSceneLoaded;
+    public event System.Action OnBoardSceneLoaded;
 
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
-        {         
+        {
             Instance = this;
-            SceneManager.sceneLoaded += OnSomeSceneLoaded;
             DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSomeSceneLoaded;
+        }
+        else
+        {
+            Destroy(gameObject);
+            Debug.LogError("SceneLoader > 0 in scene. Destroying duplicate.");
         }
     }
 
-    //Public methods
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSomeSceneLoaded;
+    }
+
+    public bool IsBoardScene() { return boardScene == SceneManager.GetActiveScene().name; }
+    public bool IsMenuScene() { return menuScene == SceneManager.GetActiveScene().name; }
+
     public void LoadMenuScene(bool async) => ChangeScene(menuScene, async);
     public void LoadBoardScene(bool async) => ChangeScene(boardScene, async);
 
 
-    //Private methods
-    void ChangeScene(string sceneName, bool async)
+    private void ChangeScene(string sceneName, bool async)
     {
         OnSomeSceneStartLoading?.Invoke();
 
@@ -39,16 +49,11 @@ public sealed class SceneLoader : MonoBehaviour
             SceneManager.LoadScene(sceneName);
     }
 
-    void OnSomeSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void OnSomeSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == menuScene)
             OnMenuSceneLoaded?.Invoke();
         else if (scene.name == boardScene)
             OnBoardSceneLoaded?.Invoke();
-    }
-
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSomeSceneLoaded;
     }
 }

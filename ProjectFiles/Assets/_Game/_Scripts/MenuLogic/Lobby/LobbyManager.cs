@@ -49,7 +49,7 @@ public sealed class LobbyManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        playerName = playerEdit.GetPlayerName();
+        playerName = GameController.Instance.gameSettings.PlayerName.Value;
         currentGameVersion = Application.version;
     }
 
@@ -264,13 +264,14 @@ public sealed class LobbyManager : MonoBehaviour
         {
             try
             {
-                UpdatePlayerOptions options = new();
-
-                options.Data = new Dictionary<string, PlayerDataObject>() {
-                    {
-                        KEY_PLAYER_NAME, new PlayerDataObject(
-                            visibility: PlayerDataObject.VisibilityOptions.Public,
-                            value: playerName)
+                UpdatePlayerOptions options = new()
+                {
+                    Data = new Dictionary<string, PlayerDataObject>() {
+                        {
+                            KEY_PLAYER_NAME, new PlayerDataObject(
+                                visibility: PlayerDataObject.VisibilityOptions.Public,
+                                value: playerName)
+                        }
                     }
                 };
 
@@ -281,9 +282,9 @@ public sealed class LobbyManager : MonoBehaviour
 
                 OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
             }
-            catch (LobbyServiceException)
+            catch (LobbyServiceException e)
             {
-                //Debug.Log(e);
+                Debug.LogError(e);
             }
         }
     }

@@ -11,7 +11,7 @@ public partial class CardSystemSync : NetworkBehaviour
     }
 
     [Rpc(SendTo.NotMe)]
-    public void UseCardRpc(int cardId, int[] movesX, int[] movesY)
+    public void UseCardRpc(int cardId, int[] movesX, int[] movesY, int teamWhoUsed)
     {
         GameController.Instance.globalCards.GlobalCardsDictionary.TryGetValue(cardId, out Card card);
         if (card != null)
@@ -22,6 +22,7 @@ public partial class CardSystemSync : NetworkBehaviour
             for (int i = 0; i < movesX.Length; i++)
                 moves.Add(new Vector2Int(movesX[i], movesY[i]));
 
+            cardInScene.Init((Team)teamWhoUsed);
             cardInScene.UseCard(moves, true);
         }
         else
@@ -47,19 +48,21 @@ public partial class CardSystemSync : NetworkBehaviour
     [Rpc(SendTo.NotMe)]
     public void Enemy_DestroyAllRpc() => enemyDeck.DestroyAllCard();
     [Rpc(SendTo.NotMe)]
-    public void Enemy_DestroyCardRpc(bool needToGravejard) => enemyDeck.DestroyCardInHand(enemyDeck.GetRandomCardFromHand(), needToGravejard);
+    public void Enemy_DestroyCardRpc(int cardIndex, bool needToGravejard) => 
+        enemyDeck.DestroyCardInHand(EnemyDeck.Instance.hand.CardGameobjectsInHand[cardIndex], needToGravejard);
 
     [Rpc(SendTo.NotMe)]
     public void Enemy_DestroyAllCardsInHandRpc(bool b) => enemyDeck.DestroyAllCardsIn(b);
 
-
     [Rpc(SendTo.NotMe)]
-    public void Enemy_AddToDeckRpc(int count) => enemyDeck.AddToDeckView(count);
+    public void Enemy_AddToDeckRpc(int[] cardsIdAdded, bool needShuffle) => enemyDeck.AddCardsToDeck(cardsIdAdded, needShuffle);
+    [Rpc(SendTo.NotMe)]
+    public void Enemy_AddToDeckViewRpc(int count) => enemyDeck.AddToDeckView(count);    
     [Rpc(SendTo.NotMe)]
     public void Enemy_AddToGraveyardRpc(int count) => enemyDeck.AddToGraveyardMirror(count);
 
-    [Rpc(SendTo.NotMe)]
-    public void Enemy_DrawHandRandomFromDeckRpc(int count, bool ignoreCardsLimit) => enemyDeck.DrawHandRandomFromDeck(count, ignoreCardsLimit);
+    [Rpc(SendTo.NotMe)]//TODO: NeedChange
+    public void Enemy_DrawHandFromDeckRpc(int[] cardsIDs, bool ignoreCardsLimit) => enemyDeck.DrawHandFromDeck(cardsIDs, ignoreCardsLimit);
 
     [Rpc(SendTo.NotMe)]
     public void Enemy_DrawLastFromGraveyardRpc() => enemyDeck.DrawLastFromGraveyard();

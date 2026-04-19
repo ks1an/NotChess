@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1653144727963334559
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5970998366973346297}
+  - component: {fileID: 6098973816318859430}
+  m_Layer: 0
+  m_Name: EnemyDefault
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5970998366973346297
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653144727963334559}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6098973816318859430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653144727963334559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a67d248119e0e814e8756d05b7fa1bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  upValueWhileSelectingPiece: 0.25
+  tileFirstMaterial: {fileID: 2100000, guid: 2ae122b477971bb44a80b92678821ab3, type: 2}
+  tileSecondMaterial: {fileID: 2100000, guid: 819f33e97450f7648b451ffed5bc5900, type: 2}
+  crossMaterial: {fileID: 2100000, guid: 4cc83d7c11e451a44bf3c14962261c98, type: 2}
+  zeroMaterial: {fileID: 2100000, guid: 8d9be944b14dad04ba8a06cd94d8cf4e, type: 2}
+  crossPrefab: {fileID: 5302499569041276220, guid: e3310910b73893b42b642f3757750872, type: 3}
+  zeroPrefab: {fileID: 394406838127215403, guid: 898a08e456cea444197c317902d05409, type: 3}

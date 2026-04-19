@@ -6,9 +6,9 @@ public class PickpocketCard : Card
 {
     bool enemyCardFromHandWasSelected;
 
-    public override void Init()
+    public override void Init(Team teamWhoHave)
     {
-        base.Init();
+        base.Init(teamWhoHave);
 
         enemyCardFromHandWasSelected = false;
     }
@@ -39,6 +39,8 @@ public class PickpocketCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
+        if (!cardInited) Debug.LogError("Card NOT inited but used " + originalCardName);
+
         if (!enemyCardFromHandWasSelected && !isSynced)
         {
             Hand.ResetCurrentSelectCard(this);
@@ -53,14 +55,14 @@ public class PickpocketCard : Card
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
 
-                GameController.Instance.states.move.UseCard(GetID(), targetCards);
+                GameController.Instance.states.move.UseCard(GetID(), targetCards, teamWhoHave);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
             {
-                GameController.Instance.netMatch.cardSync.Player_DrawCardInHandRpc(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]].GetID());
-                PlayerDeck.Instance.DestroyCardInHand(PlayerDeck.Instance.hand.CardsInHand[moves[0][0]], false);
-                Destroy(gameObject);
+                GameController.Instance.netMatch.cardSync.Player_DrawCardInHandRpc(PlayerCardHand.Instance.CardsInHand[moves[0][0]].GetID());
+                PlayerDeck.Instance.DestroyCardInHand(PlayerCardHand.Instance.CardsInHand[moves[0][0]], false);
+                KillCard();
             }
         else
         {
@@ -68,12 +70,20 @@ public class PickpocketCard : Card
                     {
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
-            //BECAUSE BOT DOESNT HAVE CARDS WE USE RANDOM:
-            PlayerDeck.Instance.DrawCardInHand(GameController.Instance.globalCards.
-                GlobalCardsDictionary.ElementAt(Random.Range(0, GameController.Instance.globalCards.GlobalCardsDictionary.Count)).Value);
-            EnemyDeck.Instance.DestroyCardInHand(EnemyDeck.Instance.hand.CardsInHand[targetCards[0][0]], false);
-            GameController.Instance.states.move.UseCard(GetID(), targetCards);
-            PlayerDeck.Instance.DestroyCardInHand(this);
+
+            GameObject cardInHandEnemy = EnemyDeck.Instance.hand.CardGameobjectsInHand[targetCards[0][0]];
+            PlayerDeck.Instance.DrawCardInHand(EnemyDeck.Instance.hand.cardsInHand[cardInHandEnemy]);
+            EnemyDeck.Instance.DestroyCardInHand(cardInHandEnemy);
+            GameController.Instance.states.move.UseCard(GetID(), targetCards, teamWhoHave);
+
+            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+                PlayerDeck.Instance.DestroyCardInHand(this);
+            else
+            {
+                //TODO: Effectively removes a random card of the type. Creates ambiguity for the player. Needs to be changed.
+                EnemyCardHand hand = EnemyDeck.Instance.hand;
+                EnemyDeck.Instance.DestroyCardInHand(hand.CardGameobjectsInHand[hand.GetIndexOfCardInHandByType(this)], true);
+            }
         }
     }
 }

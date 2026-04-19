@@ -22,7 +22,7 @@ public partial class MoveExecutor : MonoBehaviour
         }
     }
 
-    public void UseCard(int cardID, List<Vector2Int> moves)
+    public void UseCard(int cardID, List<Vector2Int> moves, Team teamWhoUsed)
     {
         if (match.isNetMatch)
         {
@@ -34,7 +34,7 @@ public partial class MoveExecutor : MonoBehaviour
                 movesY[i] = moves[i][1];
             }
 
-            net.cardSync.UseCardRpc(cardID, movesX, movesY);
+            net.cardSync.UseCardRpc(cardID, movesX, movesY, (int)teamWhoUsed);
         }
         if(BoardUI.Singleton != null)
             BoardUI.Singleton.muligan.OnUsedCard();
@@ -44,20 +44,20 @@ public partial class MoveExecutor : MonoBehaviour
 //Do UNITS
 public partial class MoveExecutor
 {
-    public void TryCreateUnitOnBoard(int x, int y, Team team)
+    public void TryCreateUnitOnBoard(int x, int y, Team teamWhoMoved)
     {
         if (board.piecesController.pieces[x, y] != null)
             return;
 
         if (match.isNetMatch)
         {
-            net.unitSync.CreateUnitOnBoardRpc(x, y, team);
+            net.unitSync.CreateUnitOnBoardRpc(x, y, teamWhoMoved);
             return;
         }
 
-        board.piecesController.pieces[x, y] = board.piecesController.GeneratePiece(team);
+        board.piecesController.pieces[x, y] = board.piecesController.GeneratePiece(teamWhoMoved);
         board.piecesController.SetPositionSinglePiece(x, y, true);
-        match.TeamMoved(x, y, team);
+        match.TeamMoved(x, y, teamWhoMoved);
     }
 
     public void TryDestroyUnit(int x, int y, bool destroyedByUnit, Team teamWhoDestroyed)
@@ -76,8 +76,13 @@ public partial class MoveExecutor
             }
             else
             {
-                if (destroyedByUnit && teamWhoDestroyed == GameController.Instance.player.GetLocalPlayerTeam())
-                    GameController.Instance.player.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
+                if (destroyedByUnit)
+                {
+                    if(teamWhoDestroyed == GameController.Instance.player.GetLocalPlayerTeam())
+                        GameController.Instance.player.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
+                    else
+                        GameController.Instance.enemy.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
+                }
 
                 Destroy(board.piecesController.pieces[x, y].gameObject);
             }

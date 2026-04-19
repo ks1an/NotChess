@@ -10,12 +10,13 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [SerializeField] CardsInDeckViewModel cardsViewModel;
     [SerializeField] TextMeshProUGUI nameCardTxt, describeTxt, manaCostTxt;
     [SerializeField] Image image, blackoutName, blackoutDescribe, manaCostFrame;
+    [SerializeField] CardShopInDeckIndicator inDeckIndicator;
 
     [Space(10), Header("Hower Anim")]
     [SerializeField] float durationTransFocusView;
     [SerializeField] Color notHowerImageColor, howerImageColor;
 
-    Card cardData;
+    public Card cardData;
     float startLocalY_forNameBlackoutAnim, startLocalY_forDescribeBlackoutAnim, startLocalY_forManaCostAnim;
 
     public void SetCardData(Card data)
@@ -30,6 +31,8 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         startLocalY_forDescribeBlackoutAnim = blackoutDescribe.rectTransform.localPosition.y;
         startLocalY_forManaCostAnim = manaCostFrame.rectTransform.localPosition.y;
 
+        inDeckIndicator.SetCard(cardData, cardsViewModel);
+        inDeckIndicator.gameObject.SetActive(false);
         string cardnameKey = cardData.originalCardName.Replace(" ", "");
         LocalizeStringEvent nameLocalize = nameCardTxt.gameObject.GetComponent<LocalizeStringEvent>();
         if (!GameController.Instance.gameSettings.DontTranslateNameOfCard.Value)
@@ -50,6 +53,11 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnClicked() => cardsViewModel.AddCard(cardData);
 
+    public void UpdateView(bool isInDeck)
+    {
+        inDeckIndicator.gameObject.SetActive(isInDeck);
+    }
+        
     public void OnPointerEnter(PointerEventData eventData)
     {
         blackoutName.rectTransform.DOKill(true);

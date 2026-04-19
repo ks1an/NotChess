@@ -7,6 +7,8 @@ public sealed class CardsInDeckViewModel : MonoBehaviour
     [SerializeField] CardInDeckView cardTemplate;
     [SerializeField] Transform container;
     [SerializeField] TextMeshProUGUI avgManaText, countInDeck;
+    [SerializeField] CardsView cardsView;
+    [SerializeField] DeckView deckView;
 
     List<CardInDeckView> cardsInDeckViewModel = new();
 
@@ -27,6 +29,7 @@ public sealed class CardsInDeckViewModel : MonoBehaviour
 
         countInDeck.text = $"<b>{cardsInDeckViewModel.Count}</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
         avgManaText.text = $"<b><color=#43A5BE>{sumManaCost / cardsInDeckViewModel.Count}</b></color> \n avg. mana";
+        cardsView.GetCard(cardData).UpdateView(true);
     }
 
     public void RemoveCard(Card cardData)
@@ -53,22 +56,25 @@ public sealed class CardsInDeckViewModel : MonoBehaviour
             countInDeck.text = $"<b>0</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
             avgManaText.text = $"<b><color=#43A5BE>0</b></color> \n avg. mana";
         }
+
+        cardsView.GetCard(cardData).UpdateView(false);
     }
 
     public void SaveDeck()
     {
-        PlayerDeck.Instance.cardCollectionFromSave.ClearCollection();
+        GameController.Instance.player.cardCollection.ClearCollection();
         for(int i = 0;i < cardsInDeckViewModel.Count; i++)
         {
-            PlayerDeck.Instance.cardCollectionFromSave.AddCardToCollection(cardsInDeckViewModel[i].cardData);
+            GameController.Instance.player.cardCollection.AddCardToCollection(cardsInDeckViewModel[i].cardData);
         }
-        PlayerDeck.Instance.cardCollectionFromSave.SaveDataToJson();
+        GameController.Instance.player.cardCollection.cardBack = deckView.deckIcon;
+        GameController.Instance.player.cardCollection.SaveDataToJson();
     }
 
-    private void OnEnable()
+    public void LoadCards()
     {
         cardTemplate.gameObject.SetActive(false);
-        foreach (Card cardData in PlayerDeck.Instance.cardCollectionFromSave.CardsInCollection)
+        foreach (Card cardData in GameController.Instance.player.cardCollection.CardsInCollection)
         {
             AddCard(cardData);
         }

@@ -1,13 +1,30 @@
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCardHand : HandObject
 {
+    public static PlayerCardHand Instance { get; private set; }
+    public event Action<Card> OnCardAddedInHand;
+    public event Action<Card> OnCardRemovedInHand;
+    public event Action OnAllCardsRemovedInHand;
+
     public Card CurrentSelectCard { get; private set; }
     public Card CurrentHoverCard { get; private set; }
     public List<Card> CardsInHand { get; private set; } = new();
     [SerializeField] protected float objSelectUpDistance = 0.25f;
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Debug.LogError("PlayerCardHand > 1 in scene");
+            Destroy(this);
+        }
+    }
 
     #region Select/Hover Card
     public void TrySetCurrentSelectCard(Card card)
@@ -51,6 +68,8 @@ public class PlayerCardHand : HandObject
     public void AddCard(Card card)
     {
         CardsInHand.Add(card);
+
+        OnCardAddedInHand?.Invoke(card);
         StartCoroutine(AddObj(card.gameObject));
     }
 
@@ -62,6 +81,7 @@ public class PlayerCardHand : HandObject
             CurrentSelectCard = null;
 
         CardsInHand.Remove(card);
+        OnCardRemovedInHand?.Invoke(card);
         StartCoroutine(RemoveObjectInHand(card.gameObject));
     }
 
@@ -70,8 +90,17 @@ public class PlayerCardHand : HandObject
         for (int i = 0; i < CardsInHand.Count; i++)
             CardsInHand[i].transform.DOKill();
 
-        CurrentSelectCard = null;
         CardsInHand.Clear();
         RemoveAllObjects();
+        OnAllCardsRemovedInHand?.Invoke();
+    }
+
+    public Card GetCardFromHand(Card cardType)
+    {
+        foreach(Card card in CardsInHand)
+        {
+            if(cardType.GetType() == card.GetType()) return card;
+        }
+        return null;
     }
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 102733287128978942}
   - component: {fileID: 7647873997620197160}
+  - component: {fileID: 1939949957385836131}
   m_Layer: 0
   m_Name: EnemyBot
   m_TagString: Untagged
@@ -41,26 +42,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 2824330033714672817}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 164469b508e2e564cbd5abe993241423, type: 3}
+  m_Script: {fileID: 11500000, guid: 9ff634afff432174cb6887e54a4f42f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minDelayBeforeDoMove: 0.85
-  chanceOfSkipTheMostValuableMove: 10
-  complexity: 0
-  valueIf_Enemy_VertOrHoriz: 1
-  valueIf_Friend_VertOrHoriz: 1
-  valueIf_Enemy_Diagonal: -3
-  valueIf_Friend_Diagonal: 2
-  valueIfBoardBorder: -1
-  valueForEach_Enemy_InTheLine: 1
-  valueIf_Enemy_lineCompleted_80_procent: 80
-  valueIf_Enemy_lineCompleted_60_procent: 55
-  valueIf_Enemy_lineCompleted_40_procent: 15
-  valueIf_Enemy_lineCompleted_20_procent: 3
-  ShiftCells_EnemyLine_ValueCoeffic: 1.1
-  valueForEach_Friend_InTheLine: 1
-  valueIf_Friend_lineCompleted_80_procent: 100
-  valueIf_Friend_lineCompleted_60_procent: 50
-  valueIf_Friend_lineCompleted_40_procent: 16
-  valueIf_Friend_lineCompleted_20_procent: 5
-  ShiftCells_FriendLine_ValueCoeffic: 1.5
+  myEntity: {fileID: 0}
+  CardsCollection: {fileID: 11400000, guid: 3b4a86c1f26dcb9448c10d3a7fdafb92, type: 2}
+  dataBase: {fileID: 11400000, guid: 8a3992507a40c7d488d0b081103bca7a, type: 2}
+--- !u!114 &1939949957385836131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2824330033714672817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb41cee7484130144839ab3525911c77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

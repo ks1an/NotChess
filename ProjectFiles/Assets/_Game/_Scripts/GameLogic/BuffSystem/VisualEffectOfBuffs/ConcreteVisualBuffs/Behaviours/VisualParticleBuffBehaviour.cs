@@ -45,7 +45,7 @@ public class VisualParticleBuffBehaviour : VisualBuffBehaviour
             }
 
             if (Effect.audioClipsOnAdded.Length > 0)
-                GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
+                GameSound.Instance.PlayRandomSound(Effect.audioClipsOnAdded, Effect.volume,
                     Effect.minPitch, Effect.maxPitch);
         }
     }
@@ -58,7 +58,7 @@ public class VisualParticleBuffBehaviour : VisualBuffBehaviour
         vfxParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
 
         if (Effect.audioClipsOnRemoved.Length > 0)
-            GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
+            GameSound.Instance.PlayRandomSound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
     }
 
@@ -67,7 +67,7 @@ public class VisualParticleBuffBehaviour : VisualBuffBehaviour
         base.DoOnTurned(); 
 
         if (Effect.audioClipsOnTurned.Length > 0)
-            GameSound.Instance.PlaySound(Effect.audioClipsOnAdded, Effect.volume,
+            GameSound.Instance.PlayRandomSound(Effect.audioClipsOnAdded, Effect.volume,
                 Effect.minPitch, Effect.maxPitch);
     }
 }

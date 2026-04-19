@@ -40,12 +40,16 @@ public sealed class Muligan
     void DoMuligan()
     {
         countOfUsed++;
-        int needToDraw = countOfUsed <= startCardsCount - 1 ? startCardsCount - countOfUsed : 1;
-        PlayerDeck.Instance.DestroyAllCardsInHand(false);
-        PlayerDeck.Instance.DrawHandRandomFromDeck(needToDraw, true);
+        int needToDraw = (countOfUsed <= (startCardsCount - 1)) ? (startCardsCount - countOfUsed) : 1;
 
+        Card[] cards = new Card[PlayerCardHand.Instance.CardsInHand.Count-1];
+        for(int i = 0; i < cards.Length; i++)
+            cards[i] = GameController.Instance.globalCards.GlobalCardsDictionary[PlayerCardHand.Instance.CardsInHand[i].GetID()];
+
+        PlayerDeck.Instance.DestroyAllCardsInHand(false);
+        PlayerDeck.Instance.AddCardsToDeck(cards);
         PlayerDeck.Instance.AddToGraveyard(1);
-        PlayerDeck.Instance.AddToDeckView(needToDraw - 1);
+        PlayerDeck.Instance.DrawHandRandomFromDeck(needToDraw, true);
 
         if (countOfUsed == maxMuligan)
             HideMuliganButton();

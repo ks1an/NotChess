@@ -1,25 +1,24 @@
 using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public sealed class HoverObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public sealed class HoverObject : MonoBehaviour
 {
     Action<GameObject> actionOnMouseEnter, actionOnMouseExit;
     Color highlihgtColor, standartColor;
 
     Material material;
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnMouseEnter()
     {
         actionOnMouseEnter?.Invoke(gameObject);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnMouseExit()
     {
         actionOnMouseExit?.Invoke(gameObject);
     }
 
-    public void SetSettigns(Action<GameObject> onMouseEnter, Action<GameObject> onMouseExit, 
+    public void SetSettigns(Action<GameObject> onMouseEnter, Action<GameObject> onMouseExit,
         bool needToHighlight = false, Color highlihgtColor = new Color())
     {
         if (needToHighlight)

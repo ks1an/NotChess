@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class GameSettingsViewModel
 {
     readonly GameSettingsModel _model;
@@ -10,28 +8,32 @@ public class GameSettingsViewModel
     public ReactiveProperty<int> AntiAlaising = new();
     public ReactiveProperty<int> VSync = new();
 
+    //Audio
+    public ReactiveProperty<float> MusicVolume = new();
+    public ReactiveProperty<float> EffectVolume = new();
+
     public GameSettingsViewModel(GameSettingsModel model)
     {
         _model = model;
 
         _model.DontTranslateNameOfCard.OnChanged += OnModelDontTranslateNameOfCardChanged;
-        DontTranslateNameOfCard.Value = _model.DontTranslateNameOfCard.Value;
 
         //GraphicSync
         _model.FullscreenMode.OnChanged += OnModelFullscreenModeChanged;
-        FullscreenMode.Value = _model.FullscreenMode.Value;
-
         _model.AntiAliasing.OnChanged += OnModelAntiAlaisingChanged;
-        AntiAlaising.Value = _model.AntiAliasing.Value;
-
         _model.VSync.OnChanged += OnModelVSyncChanged;
-        VSync.Value = _model.VSync.Value;
+
+        //Audio
+        _model.MusicVolume.OnChanged += OnModel_MusicVolume_Changed;
+        _model.EffectVolume.OnChanged += OnModel_EffectVolume_Changed;
+
+        OnResetToModel();
     }
 
     void OnModelDontTranslateNameOfCardChanged(bool b) => DontTranslateNameOfCard.Value = b;
     public void OnToggle_DontTranslateNameOfCard_Clicked(bool b) => DontTranslateNameOfCard.Value = b;
 
-    //GRAPHIC
+    #region GRAPHIC
     void OnModelFullscreenModeChanged(int val) => FullscreenMode.Value = val;
     public void OnDropdownChanged_FullscreenMode(int val) => FullscreenMode.Value = val;
 
@@ -40,6 +42,15 @@ public class GameSettingsViewModel
 
     void OnModelVSyncChanged(int val) => VSync.Value = val;
     public void OnDropdownChanged_VSync(int val) => VSync.Value = val;
+    #endregion
+
+    #region Audio
+    void OnModel_MusicVolume_Changed(float b) => MusicVolume.Value = b;
+    public void OnView_MusicVolume_Changed(float b) => MusicVolume.Value = b;
+
+    void OnModel_EffectVolume_Changed(float b) => EffectVolume.Value = b;
+    public void OnView_EffectVolume_Changed(float b) => EffectVolume.Value = b;
+    #endregion
 
     public void OnResetToModel()
     {
@@ -49,6 +60,10 @@ public class GameSettingsViewModel
         FullscreenMode.Value = _model.FullscreenMode.Value;
         AntiAlaising.Value = _model.AntiAliasing.Value;
         VSync.Value = _model.VSync.Value;
+
+        //Audio
+        MusicVolume.Value = _model.MusicVolume.Value;
+        EffectVolume.Value = _model.EffectVolume.Value;
     }
 
     public void OnApplyClicked()
@@ -61,6 +76,10 @@ public class GameSettingsViewModel
         _model.AntiAliasing.Value = AntiAlaising.Value;
         _model.VSync.Value = VSync.Value;
 
+        //Audio
+        _model.MusicVolume.Value = MusicVolume.Value;
+        _model.EffectVolume.Value = EffectVolume.Value;
+
         _model.ApplySettings();
     }
 
@@ -70,5 +89,8 @@ public class GameSettingsViewModel
         _model.FullscreenMode.OnChanged -= OnModelFullscreenModeChanged;
         _model.AntiAliasing.OnChanged -= OnModelAntiAlaisingChanged;
         _model.VSync.OnChanged -= OnModelVSyncChanged;
+
+        _model.MusicVolume.OnChanged -= OnModel_MusicVolume_Changed;
+        _model.EffectVolume.OnChanged -= OnModel_EffectVolume_Changed;
     }
 }

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1400054134811955269}
   - component: {fileID: 7983189136310224355}
   - component: {fileID: 7943362946765210743}
-  m_Layer: 1
+  m_Layer: 11
   m_Name: Scorch
   m_TagString: Untagged
   m_Icon: {fileID: 0}

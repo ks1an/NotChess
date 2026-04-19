@@ -20,11 +20,12 @@ public sealed class MatchSettings
     //Cards
     public int defaultCardsInHand;
     public int startCards;
+    public int maxDeck;
 
     public MatchSettings(int tileCountX, int tileCountY, float tileSize, 
         int piecesWinSequence, bool firtsMoveZero, 
         int startMana, int startManaForEvenPlayer, int manaPerTurn, int maxMana, int manaForDestroyEnemy, 
-        int startCards, int defaultCardsInHand)
+        int startCards, int defaultCardsInHand, int maxDeck)
     {
         this.tileCountX = tileCountX;
         this.tileCountY = tileCountY;
@@ -41,5 +42,6 @@ public sealed class MatchSettings
 
         this.startCards = startCards;
         this.defaultCardsInHand = defaultCardsInHand;
+        this.maxDeck = maxDeck;
     }
 }

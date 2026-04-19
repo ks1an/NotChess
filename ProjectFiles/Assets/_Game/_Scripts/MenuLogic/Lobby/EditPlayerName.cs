@@ -6,11 +6,7 @@ using UnityEngine.UI;
 
 public sealed class EditPlayerName : MonoBehaviour
 {
-    public event EventHandler OnNameChanged;
-
-
     [SerializeField] private TextMeshProUGUI playerNameText;
-
 
     private string playerName = "Player45510";
 
@@ -26,28 +22,26 @@ public sealed class EditPlayerName : MonoBehaviour
 
                 playerNameText.text = playerName;
 
-                OnNameChanged?.Invoke(this, EventArgs.Empty);
+                EditPlayerName_OnNameChanged();
             },
             20);
         });
-
+        playerName = GameController.Instance.gameSettings.PlayerName.Value;
         playerNameText.text = playerName;
-        OnNameChanged += EditPlayerName_OnNameChanged;
     }
 
-    void EditPlayerName_OnNameChanged(object sender, EventArgs e)
+    void EditPlayerName_OnNameChanged()
     {
+        GameController.Instance.gameSettings.PlayerName.Value = playerName;
+
         if(UnityServices.State == ServicesInitializationState.Initialized)
             LobbyManager.Instance.UpdatePlayerName(GetPlayerName());
+
+        GameController.Instance.gameSettings.SaveData();
     }
 
     public string GetPlayerName()
     {
         return playerName;
-    }
-
-    void OnDisable()
-    {
-        OnNameChanged -= EditPlayerName_OnNameChanged;
     }
 }

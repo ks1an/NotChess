@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public sealed class Tile : MonoBehaviour
@@ -57,6 +58,33 @@ public sealed class Tile : MonoBehaviour
     {
         GameController.Instance.states.OnGameStarted -= OnGameStarted;
     }
+
+#if UNITY_EDITOR
+    public TextMeshPro displayText;
+    public void SetScoreValueTxt(int score, bool needDisplay = false)
+    {
+        if (!needDisplay)
+        {
+            displayText.gameObject.SetActive(false);
+            return;
+        }
+        else
+        {
+            displayText.gameObject.SetActive(true);
+        }
+
+        Color c;
+
+        if (score < 0) c = Color.red;
+        else if (score == 0) c = new Color(50, 50, 50);
+        else if (score > 0 && score < 50) c = Color.green;
+        else c = Color.cyan;
+
+        c.a = 0.1f;
+        displayText.color = c;
+        displayText.text = score.ToString();
+    }
+#endif
 }
 
 public enum DefendClass

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -77,5 +78,25 @@ public sealed class GlobalCardCollection : MonoBehaviour
             infoAboutCard.Add("Describe", card.originalDescription);
 
         return infoAboutCard;
+    }
+
+    public Card GetCardPrefabByType(Card type)
+    {
+        foreach(Card card in GlobalCardsDictionary.Values)
+        {
+            if(type.GetType() == card.GetType())
+                return card;
+        }
+        return null;
+    }
+
+    public Card GetCardPrefabByType(Type type)
+    {
+        foreach (Card card in GlobalCardsDictionary.Values)
+        {
+            if (type == card.GetType())
+                return card;
+        }
+        return null;
     }
 }

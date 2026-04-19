@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5abc01cdfddac5946a8a7c389aa613f9, type: 3}
+  m_Name: DeffaultEnemySO
+  m_EditorClassIdentifier: 
+  CardsCollection: {fileID: 11400000, guid: 3b4a86c1f26dcb9448c10d3a7fdafb92, type: 2}
+  minDelayBeforeDoMove: 1
+  chanceOfSkipTheMostValuableMove: 10
+  complexity: 2
+  valueIf_Enemy_VertOrHoriz: 2
+  valueIf_Friend_VertOrHoriz: 1
+  valueIf_Enemy_Diagonal: -3
+  valueIf_Friend_Diagonal: 3
+  valueIfBoardBorder: -1
+  valueIfTileByEnemy: 1
+  valueIfTileByFriend: 1
+  valueForEach_Enemy_InTheLine: 4
+  valueIf_Enemy_lineCompleted_80_procent: 85
+  valueIf_Enemy_lineCompleted_60_procent: 55
+  valueIf_Enemy_lineCompleted_40_procent: 30
+  valueIf_Enemy_lineCompleted_20_procent: 10
+  ShiftCells_EnemyLine_ValueCoeffic: 1
+  valueForEach_Friend_InTheLine: 3
+  valueIf_Friend_lineCompleted_80_procent: 100
+  valueIf_Friend_lineCompleted_60_procent: 50
+  valueIf_Friend_lineCompleted_40_procent: 23
+  valueIf_Friend_lineCompleted_20_procent: 12
+  ShiftCells_FriendLine_ValueCoeffic: 1.25

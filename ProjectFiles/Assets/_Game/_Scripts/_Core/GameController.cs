@@ -12,13 +12,13 @@ public sealed class GameController : MonoBehaviour
 
     [Space(10)]
     public Player player;
+    public Enemy enemy;
     public GameObject botPrefab;
 
     [Header("Board")]
     public Board board;
     public ManaBottle playerManaBottle, enemyManaBottle;
 
-    [HideInInspector] public Enemy enemy;
     [HideInInspector] public GameSettingsModel gameSettings;
     [HideInInspector] public MatchSettings matchSettings;
     [HideInInspector] public MatchStates states;
@@ -36,6 +36,12 @@ public sealed class GameController : MonoBehaviour
             globalCards.CreateGlobalCards();
             states = GetComponent<MatchStates>();
             secTimer = gameObject.AddComponent<SecondTimer>();
+            player = GameObject.Instantiate(player.gameObject).GetComponent<Player>();
+            enemy = GameObject.Instantiate(enemy.gameObject).GetComponent<Enemy>();
+
+            var loader = new SettingsLoader();
+            loader.LoadSettings();
+
             DontDestroyOnLoad(this);
         }
     }
@@ -49,7 +55,7 @@ public sealed class GameController : MonoBehaviour
     public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false,
         int winSequence = 5, bool firstMoveZero = true,
         int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1,
-        int startCards = 6, int defaultCardsInHand = 5)
+        int startCards = 6, int defaultCardsInHand = 5, int maxDeck = 26)
     {
         if (isDemonstration && !isMatchAiVsAi)
             states.EndDemonstrationGame();
@@ -57,7 +63,7 @@ public sealed class GameController : MonoBehaviour
         matchSettings = new MatchSettings(8, 8, 1.25f,
             winSequence, firstMoveZero,
             startMana, startManaForEvenPlayer, manaPerTurn, maxMana, manaForDestoryEnemy,
-            startCards, defaultCardsInHand);
+            startCards, defaultCardsInHand, maxDeck);
 
         states.CreateGame(isNetMatch, isMatchAiVsAi);
     }
@@ -68,6 +74,6 @@ public sealed class GameController : MonoBehaviour
         netMatch = Instantiate(netSyncPrefab).GetComponent<NetMatchSync>();
         netMatch.gameObject.GetComponent<NetworkObject>().Spawn();
     }
-
+    
     public void UpdateGameSettings(GameSettingsModel newSettings) => gameSettings = newSettings;
 }

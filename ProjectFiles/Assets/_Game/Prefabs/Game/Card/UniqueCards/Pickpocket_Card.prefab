@@ -107,7 +107,7 @@ MonoBehaviour:
   originalCardName: Pickpocket
   originalDescription: <b><color=#800080>Steals</color> the chosen card</b> from
     opponent's hand to yours
-  <ManaCost>k__BackingField: 1
+  <ManaCost>k__BackingField: 2
   <Image>k__BackingField: {fileID: 21300000, guid: b795c1757fdb3ee4ea73205a4f35f2f4, type: 3}
   <ColorBorder>k__BackingField: {r: 0.57992166, g: 0.6395158, b: 0.6792453, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
@@ -269,7 +269,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7003219123512451758, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize

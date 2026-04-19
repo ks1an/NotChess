@@ -1,17 +1,23 @@
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyCardHand : HandObject
 {
+    public event Action<Card> OnCardAddedInHand;
+    public event Action<Card> OnCardRemovedInHand;
+    public event Action OnAllCardsRemovedInHand;
     public int CurrentSelectCardIndex { get; private set; }
-    public List<GameObject> CardsInHand { get; private set; } = new();
+    public List<GameObject> CardGameobjectsInHand { get; private set; } = new();
+    public Dictionary<GameObject, Card> cardsInHand = new();
+
 
     [SerializeField] float objSelectUpDistance = 0.25f;
     [SerializeField] bool needToHighlightOnHover;
     [SerializeField] Color highlightColor;
 
-    void SetCurrentSelectCard(GameObject cardInHand) => CurrentSelectCardIndex = CardsInHand.IndexOf(cardInHand);
+    void SetCurrentSelectCard(GameObject cardInHand) => CurrentSelectCardIndex = CardGameobjectsInHand.IndexOf(cardInHand);
 
     void ResetCurrentSelectCard(GameObject cardInHand) => CurrentSelectCardIndex = -1;
 
@@ -20,7 +26,7 @@ public class EnemyCardHand : HandObject
         if (isDealing || cardIndex < 0)
             return;
 
-        GameObject card = CardsInHand[cardIndex];
+        GameObject card = CardGameobjectsInHand[cardIndex];
         float multipleDirect = toUp ? 1 : -1;
         multipleDirect /= liftSlightly ? 2 : 1;
 
@@ -32,26 +38,53 @@ public class EnemyCardHand : HandObject
     }
 
 
-    public void AddCard(GameObject obj)
+    public void AddCard(GameObject obj, Card logic)
     {
-        CardsInHand.Add(obj);
+        CardGameobjectsInHand.Add(obj);
+        cardsInHand.Add(obj, logic);
+
         StartCoroutine(AddObj(obj));
         obj.AddComponent(typeof(BoxCollider));
         HoverObject cardInHand = obj.AddComponent<HoverObject>();
         cardInHand.SetSettigns(SetCurrentSelectCard, ResetCurrentSelectCard, needToHighlightOnHover, highlightColor);
-        obj.layer = LayerMask.NameToLayer("Card");
+        obj.layer = LayerMask.NameToLayer("EnemyCard");
+
+        OnCardAddedInHand?.Invoke(logic);
     }
 
     public void RemoveCard(GameObject obj)
     {
-        CardsInHand.Remove(obj);
+        Card c = cardsInHand.GetValueOrDefault(obj);
+        CardGameobjectsInHand.Remove(obj);
+        cardsInHand.Remove(obj);
+
         StartCoroutine(RemoveObjectInHand(obj));
+        OnCardRemovedInHand?.Invoke(c);
     }
 
     public void RemoveAllCards()
     {
         CurrentSelectCardIndex = -1;
-        CardsInHand.Clear();
+        CardGameobjectsInHand.Clear();
+        cardsInHand.Clear();
         RemoveAllObjects();
+        OnAllCardsRemovedInHand?.Invoke();
+    }
+
+    public Card GetCardFromHand(Card cardType)
+    {
+        foreach (var card in cardsInHand)
+        {
+            if (cardType.GetType() == card.Value.GetType()) return card.Value;
+        }
+        return null;
+    }
+    public int GetIndexOfCardInHandByType(Card cardType)
+    {
+        foreach (var card in cardsInHand)
+        {
+            if (cardType.GetType() == card.Value.GetType()) return CardGameobjectsInHand.IndexOf(card.Key);
+        }
+        return -1;
     }
 }

@@ -37,6 +37,8 @@ public class Card : MonoBehaviour
     protected List<Vector2Int> availableMoves = new();
     protected int ID;
     protected bool cardUsedForLandscape;
+    protected bool cardInited;
+    protected Team teamWhoHave;
     bool showOnlyOriginalName;
 
     public virtual void OnValidate()
@@ -59,7 +61,7 @@ public class Card : MonoBehaviour
 
     public void SetDisplayNameOfCard(string value)
     {
-        if(showOnlyOriginalName) return;
+        if (showOnlyOriginalName) return;
         DisplayName = value;
         UpdateCardUI();
     }
@@ -73,18 +75,19 @@ public class Card : MonoBehaviour
     public void SetCardUsingForLandscape(bool b) => cardUsedForLandscape = b;
     #endregion
 
-    public virtual void Init()
+    public virtual void Init(Team teamWhoHave)
     {
+        this.teamWhoHave = teamWhoHave;
         GetID();
         CardUI = GetComponent<CardVisual>();
         UpdateCardUI();
-    
-        Hand = PlayerDeck.Instance.hand;
+
+        Hand = PlayerCardHand.Instance;
         if (Hand.CardsInHand.Contains(this))
             CardUI.CreateCardInHandLogic();
 
         TryBlockSetDisplayNameByLocals(GameController.Instance.gameSettings.DontTranslateNameOfCard.Value);
-        GameController.Instance.gameSettings.DontTranslateNameOfCard.OnChanged += TryBlockSetDisplayNameByLocals;
+        cardInited = true;
     }
 
     void UpdateCardUI()
@@ -93,8 +96,12 @@ public class Card : MonoBehaviour
             CardUI.SetCardUI();
         else
         {
-            CardUI = GetComponent<CardVisual>();
-            CardUI.SetCardUI();
+            TryGetComponent<CardVisual>(out CardVisual CardUI);
+            this.CardUI = CardUI;
+            if (CardUI != null)
+                CardUI.SetCardUI();
+            else
+                Debug.Log("CardVisual is null: " + originalCardName);
         }
     }
 
@@ -110,7 +117,7 @@ public class Card : MonoBehaviour
         if (!withoutAction)
             DoActionOnMouseUp();
 
-        if (PlayerDeck.Instance.hand.CurrentSelectCard == this)
+        if (PlayerCardHand.Instance.CurrentSelectCard == this)
         {
             Hand.ResetCurrentSelectCard(this);
         }
@@ -119,7 +126,10 @@ public class Card : MonoBehaviour
     }
     protected virtual void DoActionOnMouseUp() { }
 
-    public virtual void UseCard(List<Vector2Int> moves, bool isSynced) { }
+    public virtual void UseCard(List<Vector2Int> moves, bool isSynced)
+    {
+
+    }
 
     public virtual List<Vector2Int> GetAvailableMoves(int maxX, int maxY, int hoverX, int hoverY)
     {
@@ -140,11 +150,16 @@ public class Card : MonoBehaviour
         return int.Parse(id);
     }
 
-    private void OnDestroy()
+    private void OnEnable()
     {
-        transform.DOKill();
+        GameController.Instance.gameSettings.DontTranslateNameOfCard.OnChanged += TryBlockSetDisplayNameByLocals;
+    }
 
+    public void KillCard()
+    {
         GameController.Instance.gameSettings.DontTranslateNameOfCard.OnChanged -= TryBlockSetDisplayNameByLocals;
+        transform.DOKill();
+        Destroy(gameObject);
     }
 }
 

@@ -16,9 +16,9 @@ public sealed class MeteorRainCard : Card
 
     List<Vector2Int> alreadyAttacked;
 
-    public override void Init()
+    public override void Init(Team teamWhoHave)
     {
-        base.Init();
+        base.Init(teamWhoHave);
     }
 
     #region OnDrag
@@ -47,6 +47,8 @@ public sealed class MeteorRainCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
+        if (!cardInited) Debug.LogError("Card NOT inited but used " + originalCardName);
+
         if (!isSynced)
         {
             alreadyAttacked = new();
@@ -60,7 +62,7 @@ public sealed class MeteorRainCard : Card
                         break;
                     }
             }
-            GameController.Instance.states.move.UseCard(GetID(), alreadyAttacked);
+            GameController.Instance.states.move.UseCard(GetID(), alreadyAttacked, teamWhoHave);
             Board.Instance.tilesController.RemoveHighlightTiles(moves);
             moves = alreadyAttacked;
         }
@@ -75,7 +77,7 @@ public sealed class MeteorRainCard : Card
                 if (!isSynced)
                 {
                     GameController.Instance.states.move.TryDestroyUnit(moves[i].x, moves[i].y,
-                        false, GameController.Instance.player.GetLocalPlayerTeam());
+                        false, teamWhoHave);
                 }
                 Tile tile = Board.Instance.tilesController.tiles[moves[i].x, moves[i].y];
                 //ScorchTemporaryBuff
@@ -86,9 +88,18 @@ public sealed class MeteorRainCard : Card
         }
 
         if (!isSynced)
-            PlayerDeck.Instance.DestroyCardInHand(this);
+        {
+            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+                PlayerDeck.Instance.DestroyCardInHand(this);
+            else
+            {
+                //TODO: Effectively removes a random card of the type. Creates ambiguity for the player. Needs to be changed.
+                EnemyCardHand hand = EnemyDeck.Instance.hand;
+                EnemyDeck.Instance.DestroyCardInHand(hand.CardGameobjectsInHand[hand.GetIndexOfCardInHandByType(this)], true);
+            }
+        }
         else
-            Destroy(gameObject);
+            KillCard();
     }
 
     #region AvailableMoves

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public sealed class TilesController : MonoBehaviour
@@ -51,7 +53,6 @@ public sealed class TilesController : MonoBehaviour
 
     Tile GenerateTile(float size, int x, int y, Material material)
     {
-
         GameObject tileObject = new(string.Format($"X: {x}, Y: {y}"));
         tileObject.transform.parent = tileContainer;
         tileObject.layer = LayerMask.NameToLayer("Tile");
@@ -80,6 +81,26 @@ public sealed class TilesController : MonoBehaviour
         tile.coord = new Vector2Int(x, y);
 
         tileObject.isStatic = true;
+
+#if UNITY_EDITOR
+        TextMeshPro textTile = new GameObject(string.Format($"TEXT. X: {x}, Y: {y}")).AddComponent<TextMeshPro>();
+        textTile.gameObject.transform.SetParent(tileObject.transform);
+        textTile.gameObject.transform.SetLocalPositionAndRotation(
+            new Vector3(-0.5f, 0.5f, -0.5f), Quaternion.Euler(90, 0, 0));
+        textTile.GetComponent<RectTransform>().sizeDelta = new Vector2(1, 1);
+        textTile.gameObject.layer = LayerMask.NameToLayer("Card");
+        textTile.text = "0";
+        textTile.color = new Color(50, 50, 50)
+        {
+            a = 100
+        };
+        textTile.enableAutoSizing = true;
+        textTile.fontSizeMin = 1;
+        textTile.alignment = TextAlignmentOptions.Center;
+        tile.displayText = textTile;
+        tile.displayText.gameObject.SetActive(false);
+#endif
+
 
         return tile;
     }

@@ -8,9 +8,9 @@ public sealed class ForbiddenShieldCard : Card
     [field: SerializeField] InstanceParticle_SO_VB visualEffectOnTile;
 
 
-    public override void Init()
+    public override void Init(Team teamWhoHave)
     {
-        base.Init();
+        base.Init(teamWhoHave);
     }
 
     #region OnDrag
@@ -38,6 +38,8 @@ public sealed class ForbiddenShieldCard : Card
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
+        if (!cardInited) Debug.LogError("Card NOT inited but used " + originalCardName);
+
         Tile tile = Board.Instance.tilesController.tiles[moves[0].x, moves[0].y];
 
         List<IBuff> buffsOnTile = new()
@@ -53,11 +55,18 @@ public sealed class ForbiddenShieldCard : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.move.UseCard(GetID(), moves);
-            PlayerDeck.Instance.DestroyCardInHand(this);
+            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
+            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+                PlayerDeck.Instance.DestroyCardInHand(this);
+            else
+            {
+                //TODO: Effectively removes a random card of the type. Creates ambiguity for the player. Needs to be changed.
+                EnemyCardHand hand = EnemyDeck.Instance.hand;
+                EnemyDeck.Instance.DestroyCardInHand(hand.CardGameobjectsInHand[hand.GetIndexOfCardInHandByType(this)], true);
+            }
         }
         else
-            Destroy(gameObject);
+            KillCard();
     }
 
     #region AvailableMoves

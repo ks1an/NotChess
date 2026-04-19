@@ -7,12 +7,17 @@ public abstract class Deck : MonoBehaviour
 
     public int DeckSize { get => maxDeckSize; set { DeckSize = maxDeckSize; } }
 
-    [SerializeField] public CardCollection cardCollectionFromSave;
+    [HideInInspector] public CardCollection cardCollection;
     [SerializeField, Range(0, 100)] protected int chanceToSkipRestrictOnGetLastDestroyedCard, maxDeckSize, curDeckSize;
     [SerializeField] protected StackView gravejardView, deckView;
 
     protected bool banForDrawLastIssuedCard, banForDrawLastGraveyardCard;
     protected int lastIssuedCardID, lastGraveyardCardID;
+
+    public void SetCardCollection(CardCollection newCollection)
+    {
+        cardCollection = newCollection;
+    }
 
     public abstract void SetDefaultSettings();
 
@@ -55,8 +60,7 @@ public abstract class Deck : MonoBehaviour
             lastIssuedCardID = card.GetID();
             return card;
         }
-        Debug.LogError(cardsInDeck.Count);
-        card = cardsInDeck[Random.Range(0, cardsInDeck.Count)];
+        card = cardsInDeck[0];
         lastIssuedCardID = card.GetID();
         return card;
     }
