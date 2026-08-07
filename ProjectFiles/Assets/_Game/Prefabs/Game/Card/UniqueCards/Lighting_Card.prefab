@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
+  m_LocalScale: {x: 0.84999996, y: 0.84999996, z: 0.84999996}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 816512729084796336}
@@ -84,6 +84,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: {fileID: 2908537036355821179}
   manaCostTxt: {fileID: 1026813138629430710}
+  graveTokensCostTxt: {fileID: 0}
   cardDescription: {fileID: 1992379511076512148}
   picture: {fileID: 9080530353811764651}
   border: {fileID: 2238352297555480457}
@@ -105,10 +106,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: Lighting Bolt
-  originalDescription: <color=#ff0000><b>Destroys</b> the unit</color> on the hit
-    cell
+  originalDescription: '<b>Lightning</b> strikes <color=red>a cell</color>, <b>destroying
+    a unit</b> on it.
+
+    Attack power: <b><color=orange>3</color></b>.'
   <ManaCost>k__BackingField: 5
-  <Image>k__BackingField: {fileID: 21300000, guid: 586c07ae0105fb94485ca7726505d31b, type: 3}
+  <GraveTokensCost>k__BackingField: 0
+  <Image>k__BackingField: {fileID: 21300000, guid: 30bb46c744ef8004caf64fe1038a5b26, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 0
@@ -234,7 +238,7 @@ PrefabInstance:
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 586c07ae0105fb94485ca7726505d31b, type: 3}
+      objectReference: {fileID: 21300000, guid: 30bb46c744ef8004caf64fe1038a5b26, type: 3}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -261,19 +265,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.3300604
+      value: 0.31806034
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.2969906
+      value: 0.2526266
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.029
+      value: -0.0597
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5284
+      value: 0.642
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.a
@@ -297,11 +301,14 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <color=#ff0000><b>Destroys</b> the unit</color> on the hit cell
+      value: '<b>Lightning</b> strikes <color=red>a cell</color>, <b>destroying a
+        unit</b> on it.
+
+        Attack power: <b><color=orange>3</color></b>.'
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 1.95
+      value: 1.35
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x

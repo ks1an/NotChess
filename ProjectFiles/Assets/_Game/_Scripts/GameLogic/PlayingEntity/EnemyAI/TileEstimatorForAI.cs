@@ -7,7 +7,7 @@ public sealed class TileEstimatorForAI : MonoBehaviour
 {
     EnemyAI_SO data;
     EnemyAI brain;
-    Piece[,] pieces;
+    PieceData[,] pieces;
 
     readonly MathOperations mathOp = MathOperations.GetInstance();
     Dictionary<Vector2Int, int> tilesCost = new();
@@ -55,7 +55,7 @@ public sealed class TileEstimatorForAI : MonoBehaviour
             delay = 10;
         yield return new WaitForSeconds(mathOp.GetSafeRandom(data.minDelayBeforeDoMove, delay / 5) + 0.15f);
 
-        brain.DoMove(tilesCost);
+        //brain.DoMove(/*tilesCost*/);
     }
 
     #region EstimateLines

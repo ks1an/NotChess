@@ -139,7 +139,10 @@ public partial class Board : MonoBehaviour
                 && tilesController.tiles[hitPos.x, hitPos.y].Stats.CurrentStats.CanPutOnTile)
             {
                 if (match.player.IsMyTurnOrNot())
-                    match.states.move.TryCreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam());
+                {
+                    PieceView prefId = match.player.GetLocalPlayerTeam() == Team.Zero ? match.player.zeroPawnPrefab : match.player.crossPawnPrefab;
+                    match.states.move.TryCreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam(), prefId);
+                }
 
                 return;
             }
@@ -376,7 +379,7 @@ public partial class Board : MonoBehaviour
             {
                 if (piecesController.pieces[x, y] != null)
                 {
-                    Destroy(piecesController.pieces[x, y].gameObject);
+                    Destroy(piecesController.pieces[x, y].view.gameObject);
                     piecesController.pieces[x, y] = null;
                 }
             }

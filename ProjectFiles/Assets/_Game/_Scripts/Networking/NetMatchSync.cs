@@ -109,6 +109,14 @@ public class NetMatchSync : NetworkBehaviour
         else
             GameController.Instance.enemy.DeacreaseMana(mana*-1);
     }
+    [Rpc(SendTo.NotMe)]
+    public void OnPlayerGraveCoinChangeRpc(int value, bool needIncrease)
+    {
+        if (needIncrease)
+            GameController.Instance.enemy.IncreaseGraveTokens(value);
+        else
+            GameController.Instance.enemy.DeacreaseGraveTokens(value);
+    }
 
     #region OnLeaved
     public void LeaveNetMatch()

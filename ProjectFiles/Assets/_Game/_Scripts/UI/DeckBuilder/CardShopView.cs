@@ -8,8 +8,8 @@ using UnityEngine.UI;
 public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] CardsInDeckViewModel cardsViewModel;
-    [SerializeField] TextMeshProUGUI nameCardTxt, describeTxt, manaCostTxt;
-    [SerializeField] Image image, blackoutName, blackoutDescribe, manaCostFrame;
+    [SerializeField] TextMeshProUGUI nameCardTxt, describeTxt, manaCostTxt, graveCoinCostTxt;
+    [SerializeField] Image image, blackoutName, blackoutDescribe, costFrame;
     [SerializeField] CardShopInDeckIndicator inDeckIndicator;
 
     [Space(10), Header("Hower Anim")]
@@ -24,12 +24,23 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         cardData = data;
 
         describeTxt.text = cardData.originalDescription;
+
         manaCostTxt.text = cardData.ManaCost.ToString();
+        graveCoinCostTxt.text = cardData.GraveTokensCost.ToString();
+
+        if(data.ManaCost == 0 && data.GraveTokensCost != 0)
+        {
+            manaCostTxt.gameObject.transform.parent.gameObject.SetActive(false);
+        }
+        else if (data.GraveTokensCost == 0)
+        {
+            graveCoinCostTxt.gameObject.transform.parent.gameObject.SetActive(false);
+        }
 
         image.sprite = cardData.Image;
         startLocalY_forNameBlackoutAnim = blackoutName.rectTransform.localPosition.y;
         startLocalY_forDescribeBlackoutAnim = blackoutDescribe.rectTransform.localPosition.y;
-        startLocalY_forManaCostAnim = manaCostFrame.rectTransform.localPosition.y;
+        startLocalY_forManaCostAnim = costFrame.rectTransform.localPosition.y;
 
         inDeckIndicator.SetCard(cardData, cardsViewModel);
         inDeckIndicator.gameObject.SetActive(false);
@@ -57,7 +68,7 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         inDeckIndicator.gameObject.SetActive(isInDeck);
     }
-        
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         blackoutName.rectTransform.DOKill(true);
@@ -68,8 +79,8 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         blackoutDescribe.rectTransform.DOLocalMoveY(startLocalY_forDescribeBlackoutAnim + 280f, durationTransFocusView)
             .SetEase(Ease.OutSine);
 
-        manaCostFrame.rectTransform.DOKill(true);
-        manaCostFrame.rectTransform.DOLocalMoveY(startLocalY_forManaCostAnim - 280f, durationTransFocusView / 2);
+        costFrame.rectTransform.DOKill(true);
+        costFrame.rectTransform.DOLocalMoveY(startLocalY_forManaCostAnim - 280f, durationTransFocusView / 2);
 
         image.DOColor(howerImageColor, durationTransFocusView).SetEase(Ease.InOutQuart);
     }
@@ -84,8 +95,8 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         blackoutDescribe.rectTransform.DOLocalMoveY(startLocalY_forDescribeBlackoutAnim, durationTransFocusView / 2)
             .SetEase(Ease.OutSine);
 
-        manaCostFrame.rectTransform.DOKill(true);
-        manaCostFrame.rectTransform.DOLocalMoveY(startLocalY_forManaCostAnim, durationTransFocusView);
+        costFrame.rectTransform.DOKill(true);
+        costFrame.rectTransform.DOLocalMoveY(startLocalY_forManaCostAnim, durationTransFocusView);
 
         image.DOColor(notHowerImageColor, durationTransFocusView);
     }

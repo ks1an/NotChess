@@ -18,6 +18,7 @@ public sealed class GameController : MonoBehaviour
     [Header("Board")]
     public Board board;
     public ManaBottle playerManaBottle, enemyManaBottle;
+    public StackView enemyGraveCoinView;
 
     [HideInInspector] public GameSettingsModel gameSettings;
     [HideInInspector] public MatchSettings matchSettings;
@@ -54,7 +55,8 @@ public sealed class GameController : MonoBehaviour
 
     public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false,
         int winSequence = 5, bool firstMoveZero = true,
-        int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1,
+        int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1, 
+        int maxGraveTokens = 10, int graveTokensForKill = 1,
         int startCards = 6, int defaultCardsInHand = 5, int maxDeck = 26)
     {
         if (isDemonstration && !isMatchAiVsAi)
@@ -63,6 +65,7 @@ public sealed class GameController : MonoBehaviour
         matchSettings = new MatchSettings(8, 8, 1.25f,
             winSequence, firstMoveZero,
             startMana, startManaForEvenPlayer, manaPerTurn, maxMana, manaForDestoryEnemy,
+            maxGraveTokens, graveTokensForKill,
             startCards, defaultCardsInHand, maxDeck);
 
         states.CreateGame(isNetMatch, isMatchAiVsAi);

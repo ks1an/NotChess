@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Localization;
 
@@ -15,6 +13,7 @@ public class MatchStates : MonoBehaviour
     [HideInInspector] public bool isDemonstrationMatchAiVsAi;
     [HideInInspector] public int turnCount;
     [HideInInspector] public Team lastWinTeam;
+    public PlayerMatchStats stats;
 
     #region Events
     public event Action OnGamePreStart;
@@ -48,6 +47,8 @@ public class MatchStates : MonoBehaviour
             move = gameObject.AddComponent<MoveExecutor>();
             move.SetSettings(this);
         }
+
+        stats = new();
 
         if (!isDemontrationMatchAiVsAi)
         {
@@ -83,6 +84,8 @@ public class MatchStates : MonoBehaviour
         board.GenerateBoard();
 
         OnGamePreStart?.Invoke();
+        if(!isDemonstrationMatchAiVsAi)
+        NotificationPanelConroller.Instance.ShowNotification($"Ряд из 5 юнитов = победа", () => { });
     }
 
     void SetSettings()
@@ -142,10 +145,11 @@ public class MatchStates : MonoBehaviour
 
         turnCount = 0;
 
-        game.player.SetStartMana();
-        game.enemy.SetStartMana();
+        game.player.SetStartManaAndGraveTokens();
         game.player.deck.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
-        game.enemy.deck.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
+        game.enemy.SetStartManaAndGraveTokens();
+        if (!isNetMatch)
+            game.enemy.deck.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
 
         isGameStarted = true;
         OnGameStarted?.Invoke();
@@ -195,6 +199,7 @@ public class MatchStates : MonoBehaviour
             board.interactLandscapeGenerator.TryGenerateInteractLandscape();
 
         OnTurnEnded?.Invoke(x, y, whoMoved);
+        stats.turnsCount++;
     }
 
     #region AfterPlay(End)
@@ -263,6 +268,7 @@ public class MatchStates : MonoBehaviour
                 false, false, confirmAction, declineAction
                 );
         }
+        ModalViewWindowController.Instance.ShowSubPannelInfo("Turns count", stats.turnsCount.ToString());
     }
 
     public void LeaveFromMatch() => OnLeaveFromMatchTrigger();

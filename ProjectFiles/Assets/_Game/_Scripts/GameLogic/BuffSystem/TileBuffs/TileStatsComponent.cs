@@ -122,4 +122,9 @@ public class TileStatsComponent : IBuffable
 
         return simBuff;
     }
+
+    public TileStatsComponent Clone()
+    {
+        return (TileStatsComponent)this.MemberwiseClone();
+    }
 }

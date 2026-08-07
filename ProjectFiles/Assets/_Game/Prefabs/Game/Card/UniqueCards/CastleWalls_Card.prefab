@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
+  m_LocalScale: {x: 0.84999996, y: 0.84999996, z: 0.84999996}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3351530861171957621}
@@ -84,6 +84,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: {fileID: 7651446323821203534}
   manaCostTxt: {fileID: 5498244207492236163}
+  graveTokensCostTxt: {fileID: 0}
   cardDescription: {fileID: 6472812281592934305}
   picture: {fileID: 4356899336299264926}
   border: {fileID: 6729063303305478588}
@@ -105,10 +106,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: CastleWalls
-  originalDescription: <color=#005500><b>Prevents attacking</b></color> a cell for
-    <b>1 round</b>.
+  originalDescription: "Builds fortress walls, <color=red>prohibiting the attack
+    of units</color> <b>on this cell</b>. \n<i>Valid for 1 day.</i>"
   <ManaCost>k__BackingField: 2
-  <Image>k__BackingField: {fileID: 21300000, guid: e58da450313ff544c9a57e51cbe39100, type: 3}
+  <GraveTokensCost>k__BackingField: 0
+  <Image>k__BackingField: {fileID: 21300000, guid: cc810857912b00c448279ec9cafa1cc9, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8, b: 0.5686275, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 1
@@ -149,7 +151,7 @@ PrefabInstance:
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: e58da450313ff544c9a57e51cbe39100, type: 3}
+      objectReference: {fileID: 21300000, guid: cc810857912b00c448279ec9cafa1cc9, type: 3}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -195,12 +197,24 @@ PrefabInstance:
       value: 1.05
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.34792823
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.8282795
+      value: 0.28818178
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.34792823
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0053
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5956
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
@@ -220,11 +234,20 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <color=#005500><b>Prevents attacking</b></color> a cell for <b>1 round</b>.
+      value: "Builds fortress walls, <color=red>prohibiting the attack of units</color>
+        <b>on this cell</b>. \n<i>Valid for 1 day.</i>"
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 1.45
+      value: 1.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_margin.y
+      value: -0.38206106
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x
@@ -431,10 +454,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3315975895440761915, guid: 351d73e8702d8f34aaf8f1f9cecfad0f, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 5528455739978711777, guid: 351d73e8702d8f34aaf8f1f9cecfad0f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

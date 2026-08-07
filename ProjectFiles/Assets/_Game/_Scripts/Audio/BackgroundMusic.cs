@@ -82,7 +82,10 @@ public class BackgroundMusic : MonoBehaviour
         FindAndPlayMusic(musicList);
     }
 
-    void SetVolumeAudioSource(float volume) => audioSource.volume = volume;
+    void SetVolumeAudioSource(float volume)
+    {
+        audioSource.volume = volume;
+    }
 
     private void OnDisable()
     {

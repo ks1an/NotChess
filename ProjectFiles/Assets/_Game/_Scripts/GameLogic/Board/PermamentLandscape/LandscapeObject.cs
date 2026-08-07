@@ -8,6 +8,7 @@ public class LandscapeObject : MonoBehaviour
     public string landName;
     public int minAmount, maxAmount;
     public int duration;
+    [Range(0, 100)] public int chance;
 
     void DestroyObject() => Destroy(gameObject);
 

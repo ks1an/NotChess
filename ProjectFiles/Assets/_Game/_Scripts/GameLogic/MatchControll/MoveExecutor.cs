@@ -36,7 +36,7 @@ public partial class MoveExecutor : MonoBehaviour
 
             net.cardSync.UseCardRpc(cardID, movesX, movesY, (int)teamWhoUsed);
         }
-        if(BoardUI.Singleton != null)
+        if (BoardUI.Singleton != null)
             BoardUI.Singleton.muligan.OnUsedCard();
     }
 }
@@ -44,23 +44,21 @@ public partial class MoveExecutor : MonoBehaviour
 //Do UNITS
 public partial class MoveExecutor
 {
-    public void TryCreateUnitOnBoard(int x, int y, Team teamWhoMoved)
+    public void TryCreateUnitOnBoard(int x, int y, Team teamWhoMoved, PieceView uniquePrefab, bool needToSkipMove = true)
     {
-        if (board.piecesController.pieces[x, y] != null)
-            return;
-
+        if (board.piecesController.pieces[x, y] != null) { Debug.LogError($"Cant place unit on {x},{y} because tile have unit"); return; }
         if (match.isNetMatch)
         {
-            net.unitSync.CreateUnitOnBoardRpc(x, y, teamWhoMoved);
+            net.unitSync.CreateUnitOnBoardRpc(x, y, teamWhoMoved, uniquePrefab.gameObject.name);
             return;
         }
-
-        board.piecesController.pieces[x, y] = board.piecesController.GeneratePiece(teamWhoMoved);
+        board.piecesController.pieces[x, y] = board.piecesController.GeneratePiece(teamWhoMoved, uniquePrefab.gameObject.name);
         board.piecesController.SetPositionSinglePiece(x, y, true);
-        match.TeamMoved(x, y, teamWhoMoved);
+        if(needToSkipMove)
+            match.TeamMoved(x, y, teamWhoMoved);
     }
 
-    public void TryDestroyUnit(int x, int y, bool destroyedByUnit, Team teamWhoDestroyed)
+    public void TryDestroyUnit(int x, int y, bool destroyedByUnit, Team teamWhoDestroyed, bool blockGetGraveTokens = false, bool blockGetManaForDestroy = false)
     {
         if (teamWhoDestroyed == Team.None)
         {
@@ -76,16 +74,37 @@ public partial class MoveExecutor
             }
             else
             {
-                if (destroyedByUnit)
+                if (destroyedByUnit && !blockGetManaForDestroy)
                 {
-                    if(teamWhoDestroyed == GameController.Instance.player.GetLocalPlayerTeam())
+                    if (teamWhoDestroyed == GameController.Instance.player.GetLocalPlayerTeam())
                         GameController.Instance.player.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
                     else
                         GameController.Instance.enemy.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
                 }
+                if (!blockGetGraveTokens)
+                {
+                    if (teamWhoDestroyed == GameController.Instance.player.GetLocalPlayerTeam())
+                        GameController.Instance.player.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);
+                    else
+                        GameController.Instance.enemy.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);
+                }
 
-                Destroy(board.piecesController.pieces[x, y].gameObject);
+                Destroy(board.piecesController.pieces[x, y].view.gameObject);
+                board.piecesController.pieces[x, y] = null;
             }
+    }
+
+    public void TryDestroyAndCreateUnit(int x, int y, bool destroyedByUnit, Team teamWhoDestroyed, PieceView uniquePrefab, bool needToSkipMove = true)
+    {
+        if (match.isNetMatch)
+        {
+            net.unitSync.TryDestroyAndCreateUnitRpc(x, y, destroyedByUnit, teamWhoDestroyed, uniquePrefab.gameObject.name, needToSkipMove);
+            return;
+        }
+
+        TryDestroyUnit(x, y, destroyedByUnit, teamWhoDestroyed, true);
+        if (board.piecesController.pieces[x, y] == null)
+            TryCreateUnitOnBoard(x, y, teamWhoDestroyed, uniquePrefab, needToSkipMove);
     }
 
     public void MoveUnit(int originalX, int originalY, int toX, int toY)

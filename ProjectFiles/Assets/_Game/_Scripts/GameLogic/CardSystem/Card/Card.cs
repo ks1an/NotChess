@@ -20,6 +20,7 @@ public class Card : MonoBehaviour
     public string DisplayName { get; private set; }
     public string DisplayDescription { get; private set; }
     [field: SerializeField] public int ManaCost { get; private set; }
+    [field: SerializeField] public int GraveTokensCost { get; private set;  }
     [field: SerializeField] public Sprite Image { get; private set; }
     [field: SerializeField] public Color ColorBorder { get; private set; }
 
@@ -68,7 +69,8 @@ public class Card : MonoBehaviour
 
     public void SetDisplayDescriptionOfCard(string value)
     {
-        DisplayDescription = GameController.Instance.globalCards.GetImortantWordsFromDescription(value);
+        //DisplayDescription = GameController.Instance.globalCards.GetImortantWordsFromDescription(value);
+        DisplayDescription = value;
         UpdateCardUI();
     }
 

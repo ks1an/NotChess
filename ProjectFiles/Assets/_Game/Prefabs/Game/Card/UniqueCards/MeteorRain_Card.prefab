@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
+  m_LocalScale: {x: 0.84999996, y: 0.84999996, z: 0.84999996}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 5743025005558010016}
@@ -84,6 +84,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: {fileID: 2908537036355821179}
   manaCostTxt: {fileID: 1026813138629430710}
+  graveTokensCostTxt: {fileID: 0}
   cardDescription: {fileID: 1992379511076512148}
   picture: {fileID: 9080530353811764651}
   border: {fileID: 2238352297555480457}
@@ -105,16 +106,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: Meteor Rain
-  originalDescription: <color=#ff0000><b>Destroys</b> units</color> with <b>5</b>
-    random meteorites
+  originalDescription: "The area <b>4x4</b> is being hit by <b>5 meteorites</b>.
+    Hit \u2014 <color=red>destroy the unit</color>.\n<color=orange>Attack class 2</color>"
   <ManaCost>k__BackingField: 4
-  <Image>k__BackingField: {fileID: 21300000, guid: 1b6514af306826940b659daf6ac1dc02, type: 3}
+  <GraveTokensCost>k__BackingField: 0
+  <Image>k__BackingField: {fileID: 21300000, guid: 88a6b29dd279c5842a7f5ad0d2734efd, type: 3}
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 0
   <Category>k__BackingField: 2
   <Rarity>k__BackingField: 1
-  <AttackClass>k__BackingField: 3
+  <AttackClass>k__BackingField: 2
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
   countShells: 5
   radiousWidthRangeAttack: 2
@@ -219,7 +221,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_FlipX
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_FlipY
@@ -236,7 +238,7 @@ PrefabInstance:
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 1b6514af306826940b659daf6ac1dc02, type: 3}
+      objectReference: {fileID: 21300000, guid: 88a6b29dd279c5842a7f5ad0d2734efd, type: 3}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -247,6 +249,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
@@ -279,19 +285,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.30158216
+      value: 0.29115492
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.27248424
+      value: 0.2630631
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.96542495
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0092
+      value: -0.0242
       objectReference: {fileID: 0}
     - target: {fileID: 7409057412831830425, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5921
+      value: 0.6162
       objectReference: {fileID: 0}
     - target: {fileID: 8079367734730809489, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.a
@@ -315,11 +325,12 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <color=#ff0000><b>Destroys</b> units</color> with <b>5</b> random meteorites
+      value: "The area <b>4x4</b> is being hit by <b>5 meteorites</b>. Hit \u2014
+        <color=red>destroy the unit</color>.\n<color=orange>Attack class 2</color>"
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 1.5
+      value: 1.25
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x

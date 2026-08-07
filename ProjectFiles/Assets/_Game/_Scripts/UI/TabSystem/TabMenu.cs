@@ -1,9 +1,11 @@
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TabMenu : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI pageTitle;
     [Header("PagesView")]
     [SerializeField] GameSettingsView_GamePage settingsPage;
     [SerializeField] GameSettingsViewModel settingsVM;
@@ -52,6 +54,7 @@ public class TabMenu : MonoBehaviour
 
         enabledPage = newPage;
         enabledPage.SetActive(true);
+        pageTitle.text = enabledPage.name;
 
         activePageBttnTab = activeTabBttn;
         originalColorActivePageBttnTab = activeTabBttn.image.color;

@@ -4,25 +4,28 @@ using UnityEngine;
 public class PlayingEntity : MonoBehaviour 
 {
     public event Action <Team> OnTeamChanged;
-    public event Action<int> OnCurrentManaChaged;
+    public event Action<int> OnCurrentManaChanged;
+    public event Action<int> OnCurrentGraveTokensChanged;
 
     [Header("Board")]
     public float upValueWhileSelectingPiece;
     public Material tileFirstMaterial, tileSecondMaterial;
     public Material crossMaterial, zeroMaterial;
-    public GameObject crossPrefab, zeroPrefab;
+    public PieceView crossPawnPrefab, zeroPawnPrefab;
+    public GameObject graveCoinPrefab;
     //material for available moves
     //material for hover tiles
 
     [Header("Stats")]
     protected Team localTeam = Team.None;
     protected int currentMana, maxMana;
+    protected int currentGraveTokens, maxGraveTokens;
 
     [HideInInspector] public Deck deck;
     [HideInInspector] public HandObject hand;
 
     #region Set
-    public virtual void SetStartMana()
+    public virtual void SetStartManaAndGraveTokens()
     {
         var settings = GameController.Instance.matchSettings;
         if (localTeam != Team.None)
@@ -32,6 +35,9 @@ public class PlayingEntity : MonoBehaviour
             IncreaseMana(((settings.firtsMoveZero == (localTeam == Team.Cross))
                 && localTeam != Team.None) ?
                     settings.startManaForEvenPlayer : 0);
+
+            maxGraveTokens = settings.maxGraveTokens;
+            currentGraveTokens = 0;
         }
     }
 
@@ -53,7 +59,7 @@ public class PlayingEntity : MonoBehaviour
         currentMana += value;
         if (currentMana > maxMana)
             currentMana = maxMana;
-        OnCurrentManaChaged?.Invoke(currentMana);
+        OnCurrentManaChanged?.Invoke(currentMana);
     }
 
     public virtual void DeacreaseMana(int value)
@@ -67,12 +73,42 @@ public class PlayingEntity : MonoBehaviour
         currentMana -= value;
         if (currentMana < 0)
             currentMana = 0;
-        OnCurrentManaChaged?.Invoke(currentMana);
+        OnCurrentManaChanged?.Invoke(currentMana);
+    }
+    #endregion
+
+    #region +- graveTokens
+    public virtual void IncreaseGraveTokens(int value)
+    {
+        if (value < 0)
+        {
+            Debug.LogError("Negative number received when increasing grave tokens: " + value.ToString());
+            return;
+        }
+        currentGraveTokens += value;
+        if (currentGraveTokens > maxGraveTokens)
+            currentGraveTokens = maxGraveTokens;
+        OnCurrentGraveTokensChanged?.Invoke(currentGraveTokens);
+    }
+
+    public virtual void DeacreaseGraveTokens(int value)
+    {
+        if (value < 0)
+        {
+            Debug.LogError("Negative number received when deacreasing grave tokens: " + value.ToString());
+            return;
+        }
+
+        currentGraveTokens -= value;
+        if (currentGraveTokens < 0)
+            currentGraveTokens = 0;
+        OnCurrentGraveTokensChanged?.Invoke(currentGraveTokens);
     }
     #endregion
 
     #region Get
     public Team GetLocalPlayerTeam() { return localTeam; }
+
     public bool IsMyTurnOrNot()
     {
         if ((GameController.Instance.states.isMoveOfZero && localTeam == Team.Zero)
@@ -82,5 +118,7 @@ public class PlayingEntity : MonoBehaviour
             return false;
     }
     public int GetCurrentMana() { return currentMana; }
+
+    public int GetCurrentGraveTokens() { return  currentGraveTokens; }
     #endregion
 }

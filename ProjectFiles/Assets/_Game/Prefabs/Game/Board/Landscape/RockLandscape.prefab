@@ -48,5 +48,6 @@ MonoBehaviour:
   minAmount: 0
   maxAmount: 3
   duration: 512
+  chance: 95
   visualEffectOnTile: {fileID: 11400000, guid: 0a24d74ea1982df4f98d91286332549b, type: 2}
   spawnDurationMultiple: 0.1

@@ -10,7 +10,7 @@ public class EnemyAI_Sensors
         myEntity = entity;
         worldState.SetValue(CurrentPlayingEntity_HTN_WorldKey.Key, myEntity);
         myEntity.OnTeamChanged += SetMyTeam;
-        myEntity.OnCurrentManaChaged += SetCurrentMana;
+        myEntity.OnCurrentManaChanged += SetCurrentMana;
 
         if (myEntity.GetType() == typeof(Player))
         {
@@ -77,7 +77,7 @@ public class EnemyAI_Sensors
     public void Destroy()
     {
         myEntity.OnTeamChanged -= SetMyTeam;
-        myEntity.OnCurrentManaChaged -= SetCurrentMana;
+        myEntity.OnCurrentManaChanged -= SetCurrentMana;
         if (myEntity.GetType() == typeof(Player))
         {
             PlayerCardHand.Instance.OnCardAddedInHand -= OnCardAdded;

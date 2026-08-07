@@ -14,7 +14,7 @@ public class CardVisual : MonoBehaviour
 {
     [Header("Elements")]
     [SerializeField] TextMeshPro cardName;
-    [SerializeField] TextMeshPro manaCostTxt;
+    [SerializeField] TextMeshPro manaCostTxt, graveTokensCostTxt;
     [SerializeField] TextMeshPro cardDescription;
     [SerializeField] SpriteRenderer picture, border, blakoutRender;
     [SerializeField] SortingGroup sorting;
@@ -138,7 +138,11 @@ public class CardVisual : MonoBehaviour
 
         cardName.text = card.DisplayName;
         cardDescription.text = card.DisplayDescription;
-        manaCostTxt.text = card.ManaCost.ToString();
+
+        if(manaCostTxt != null)
+            manaCostTxt.text = card.ManaCost.ToString();
+        if(graveTokensCostTxt != null)
+            graveTokensCostTxt.text = card.GraveTokensCost.ToString();
 
         orientation = (int)card.Orientation;
         effectType = (int)card.Category;

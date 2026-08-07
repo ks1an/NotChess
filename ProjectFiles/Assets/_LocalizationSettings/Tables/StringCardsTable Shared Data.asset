@@ -48,11 +48,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 15076115922944
-    m_Key: ReturnCardName
+    m_Key: RepriseCardName
     m_Metadata:
       m_Items: []
   - m_Id: 15315635847168
-    m_Key: ReturnCardDescribe
+    m_Key: RepriseCardDescribe
     m_Metadata:
       m_Items: []
   - m_Id: 16798607523840
@@ -72,11 +72,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1551844968579072
-    m_Key: PickpocketCardName
+    m_Key: ThiefCardName
     m_Metadata:
       m_Items: []
   - m_Id: 1551935880118272
-    m_Key: PickpocketCardDescribe
+    m_Key: ThiefCardDescribe
     m_Metadata:
       m_Items: []
   - m_Id: 2567380905050112
@@ -88,11 +88,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7247461267095552
-    m_Key: DistantRelativeCardName
+    m_Key: ThedeptCardName
     m_Metadata:
       m_Items: []
   - m_Id: 7247470494564352
-    m_Key: DistantRelativeCardDescribe
+    m_Key: ThedeptCardDescribe
     m_Metadata:
       m_Items: []
   - m_Id: 10621526212165632
@@ -104,11 +104,27 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 47109135167733760
-    m_Key: ReloadCardName
+    m_Key: ResetCardName
     m_Metadata:
       m_Items: []
   - m_Id: 47109241111658496
-    m_Key: ReloadCardDescribe
+    m_Key: ResetCardDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93026169583648768
+    m_Key: KingCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 93026259702464512
+    m_Key: KingCardDescribe
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101487212966264832
+    m_Key: KnightCardName
+    m_Metadata:
+      m_Items: []
+  - m_Id: 101487284332347392
+    m_Key: KnightCardDescribe
     m_Metadata:
       m_Items: []
   m_Metadata:

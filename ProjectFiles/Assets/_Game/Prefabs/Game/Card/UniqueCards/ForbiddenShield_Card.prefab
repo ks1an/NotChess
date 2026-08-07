@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8000001, y: 0.8000001, z: 0.8000001}
+  m_LocalScale: {x: 0.84999996, y: 0.84999996, z: 0.84999996}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 9127807817105961390}
@@ -84,6 +84,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: {fileID: 2908537036355821179}
   manaCostTxt: {fileID: 1026813138629430710}
+  graveTokensCostTxt: {fileID: 0}
   cardDescription: {fileID: 1992379511076512148}
   picture: {fileID: 9080530353811764651}
   border: {fileID: 2238352297555480457}
@@ -105,10 +106,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   originalCardName: Forbidden Shield
-  originalDescription: <color=#005500><b>Prevents placing</b> a unit</color> on a
-    cell for <b>1 round</b>.
+  originalDescription: <b>Lower the Shield</b> onto the cage. <color=red>Blocks the
+    setting of units</color>, gives <b><color=#005500>3 Protection</color></b>. <i>Valid
+    for 1 day.</i>
   <ManaCost>k__BackingField: 2
-  <Image>k__BackingField: {fileID: 21300000, guid: 21fb40abd35a28e46b1a11d16986c9c3, type: 3}
+  <GraveTokensCost>k__BackingField: 0
+  <Image>k__BackingField: {fileID: 21300000, guid: 6270d255b18bbed42b53ca908696c3db, type: 3}
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8000001, b: 0.5686275, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 1
@@ -213,7 +216,7 @@ PrefabInstance:
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 21fb40abd35a28e46b1a11d16986c9c3, type: 3}
+      objectReference: {fileID: 21300000, guid: 6270d255b18bbed42b53ca908696c3db, type: 3}
     - target: {fileID: 1228094655716039347, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -292,12 +295,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_text
-      value: <color=#005500><b>Prevents placing</b> a unit</color> on a cell for
-        <b>1 round</b>.
+      value: <b>Lower the Shield</b> onto the cage. <color=red>Blocks the setting
+        of units</color>, gives <b><color=#005500>3 Protection</color></b>. <i>Valid
+        for 1 day.</i>
       objectReference: {fileID: 0}
     - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_fontSize
-      value: 1.45
+      value: 1.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_margin.w
+      value: -0.40781042
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_margin.x
+      value: -0.68914545
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_margin.y
+      value: -0.38103977
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_margin.z
+      value: -0.69915825
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406475786057666188, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
+      propertyPath: m_HorizontalAlignment
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8538271642077066422, guid: 8e8aa45a74d970f4d8c96461c7530451, type: 3}
       propertyPath: m_LocalPosition.x

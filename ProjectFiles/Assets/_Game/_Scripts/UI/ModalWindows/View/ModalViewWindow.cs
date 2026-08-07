@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,11 +29,19 @@ public sealed class ModalViewWindow : MonoBehaviour
     [SerializeField] Image backgroundImage;
     [SerializeField] Color basicColor, inFocusColor;
 
+    [Header("SubPannel")]
+    [SerializeField] Transform subPannel;
+    [SerializeField] SubInfoElem subPannelElementPrefab;
+    List<SubInfoElem> subElems;
+
     Action onAlternateAction, onDeclineAction, onConfirmAction, doItAnyway;
 
-    public void ShowHorizontal(string title, string message,bool backInFocus = false, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
+    public void ShowHorizontal(string title, string message, bool backInFocus = false, string confirmTxt = null, Action greenAction = null, string declineTxt = null,
         Action redAction = null, string altTxt = null, Action altAction = null, Sprite icon = null, Action doItAnyway = null)
     {
+        subPannel.gameObject.SetActive(false);
+        subPannelElementPrefab.gameObject.SetActive(false);
+
         _horizontalLayoutArea.gameObject.SetActive(true);
 
         #region Header
@@ -103,6 +112,18 @@ public sealed class ModalViewWindow : MonoBehaviour
         backgroundImage.color = backInFocus ? inFocusColor : basicColor;
     }
 
+    public void AddSubPannelInfo(string title, string content)
+    {
+        if (!subPannel.gameObject.activeSelf) subPannel.gameObject.SetActive(true);
+
+        SubInfoElem elem = Instantiate(subPannelElementPrefab.gameObject, subPannel).GetComponent<SubInfoElem>();
+        elem.gameObject.SetActive(true);
+        elem.Init(title, content);
+
+        subElems ??= new();
+        subElems.Add(elem);
+    }
+
     #region ActionsInvoke
     public void Confirm()
     {
@@ -137,6 +158,13 @@ public sealed class ModalViewWindow : MonoBehaviour
         onConfirmAction = null;
         this.doItAnyway = null;
         #endregion
+
+        if (subElems != null && subElems.Count > 0)
+        {
+            foreach (SubInfoElem obj in subElems)
+                Destroy(obj.gameObject);
+            subElems.Clear();
+        }
 
         gameObject.SetActive(false);
     }

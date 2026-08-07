@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 using UnityEngine;
 
 public enum Complexity
@@ -9,11 +8,13 @@ public enum Complexity
     normal,
     hard
 }
-
 [Serializable]
 [RequireComponent(typeof(HTN_PlanRunner))]
+
+[RequireComponent(typeof(EnemyAIPlanner))]
 public sealed class EnemyAI : MonoBehaviour
 {
+    private static WaitForSeconds _waitForSeconds1 = new WaitForSeconds(1f);
     [HideInInspector] public PlayingEntity myEntity;
     [HideInInspector] public EnemyAI_Sensors sensor;
 
@@ -22,15 +23,19 @@ public sealed class EnemyAI : MonoBehaviour
     bool isWorking;
     float DemonstrateChanceOfSkipMove;
     bool isDemontrate;
+    bool isTakingTurn = false;
 
     HTN_CardPlanner cardAI;
     TileEstimatorForAI estimator;
     MatchStates states;
     readonly MathOperations mathOp = MathOperations.GetInstance();
 
+    EnemyAIPlanner planner;
+
     #region BeforeStartMyTurn
     public void LoadEnemy(Team botTeam, PlayingEntity playingSideEntity)
     {
+        isTakingTurn = false;
         isWorking = true;
         DemonstrateChanceOfSkipMove = dataBase.chanceOfSkipTheMostValuableMove * 2;
         isDemontrate = GameController.Instance.states.isDemonstrationMatchAiVsAi;
@@ -48,8 +53,12 @@ public sealed class EnemyAI : MonoBehaviour
         myEntity = playingSideEntity;
         myEntity.SetTeam(botTeam);
 
+        planner = GetComponent<EnemyAIPlanner>();
+        planner.Init(this, sensor);
+
+        
         GameController.Instance.states.OnTurnEnded += DoSomeOnTurnEnded;
-        GameController.Instance.states.OnGameStarted += IsMyTurnOrNot;
+        GameController.Instance.states.OnGameStarted += OnGameReset;
     }
 
 
@@ -58,8 +67,10 @@ public sealed class EnemyAI : MonoBehaviour
         if ((states.isMoveOfZero && sensor.myTeam == Team.Zero)
             || (!states.isMoveOfZero && sensor.myTeam == Team.Cross))
         {
-            if (isWorking)
+            if (isWorking && !isTakingTurn)
+            {
                 StartEnemyTurn();
+            }
         }
     }
 
@@ -68,134 +79,96 @@ public sealed class EnemyAI : MonoBehaviour
 
     public void StartEnemyTurn()
     {
+        if (isTakingTurn) return;
+        isTakingTurn = true;
+
         if (states.isDemonstrationMatchAiVsAi)
             sensor.myTeam = states.isMoveOfZero ? Team.Zero : Team.Cross;
 
-        estimator.StartEstimate();
+        StartCoroutine(GetMoveWithWait());
     }
 
-    public void DoMove(Dictionary<Vector2Int, int> tilesCost)
+    private IEnumerator GetMoveWithWait()
     {
-        int tileCountX = GameController.Instance.matchSettings.tileCountX;
-        int tileCountY = GameController.Instance.matchSettings.tileCountY;
-        Piece[,] pieces = Board.Instance.piecesController.pieces;
+        yield return _waitForSeconds1;
 
-        HTNWorldState worldState = sensor.GetWorldState();
-        bool isMoving = true;
-        bool canSkipMostValuableByRandom = true;
+        var task = planner.GetBestMoveAsync();
 
-#if UNITY_EDITOR
-        foreach (var tile in tilesCost)
-            Board.Instance.tilesController.tiles[tile.Key.x, tile.Key.y].SetScoreValueTxt(tile.Value);
-#endif
-
-        foreach (var tile in tilesCost.OrderBy(k => k.Value).Reverse())
+        while (!task.IsCompleted)
         {
-            if (isDemontrate && GameController.Instance.states.turnCount == 0)
-            {
-                EndEnemyTurn(() => states.move.TryCreateUnitOnBoard((int)mathOp.GetSafeRandom(0, tileCountX - 1), (int)mathOp.GetSafeRandom(0, tileCountY - 1), sensor.myTeam));
-                isMoving = false;
-                break;
-            }
-
-            if ((canSkipMostValuableByRandom && mathOp.GetSafeRandom(0, 100) <= dataBase.chanceOfSkipTheMostValuableMove) ||
-                (isDemontrate && mathOp.GetSafeRandom(0, 100) <= DemonstrateChanceOfSkipMove))
-                continue;
-
-            int x = tile.Key.x;
-            int y = tile.Key.y;
-            canSkipMostValuableByRandom = false;
-            worldState.SetValue(TargetTile_HTN_WorldKey.Key, tile.Key);
-
-            //Tile empty
-            if (pieces[x, y] == null)
-            {
-                worldState.SetValue(TargetIsEnemy_HTN_WorldKey.Key, false);
-
-                if (Board.Instance.tilesController.tiles[x, y].Stats.CurrentStats.CanPutOnTile)
-                {
-                    EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(x, y, sensor.myTeam));
-                    isMoving = false;
-                    break;
-                }
-                continue;
-            }
-
-            Dictionary<Vector2Int, Team> myDiagonalNeighbours = estimator.GetDiagonalNeighborsTeams(x, y);
-            //Enemy on tile
-            if (pieces[x, y].team != sensor.myTeam && Board.Instance.tilesController.tiles[x, y].Stats.CurrentStats.CanAttackTile)
-            {
-                worldState.SetValue(TargetIsEnemy_HTN_WorldKey.Key, true);
-                if (cardAI.GetPlan())
-                {
-                    StartEnemyTurn();
-                    return;
-                }
-
-                #region TryToAttackByDiagonal
-                Vector2Int bestMove = new();
-                int minValue = 1000000000;
-                foreach (var neighbour in myDiagonalNeighbours)
-                    if (neighbour.Value == sensor.myTeam && tilesCost[neighbour.Key] < minValue && tilesCost[neighbour.Key] < tile.Value
-                        && Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].Stats.CurrentStats.CanLeaveFromTile)
-                    {
-                        minValue = tilesCost[neighbour.Key];
-                        bestMove = neighbour.Key;
-                    }
-                if (minValue < 1000000000)
-                {
-                    isMoving = false;
-                    EndEnemyTurn(() => states.move.MoveUnit(bestMove.x, bestMove.y, x, y));
-                    break;
-                }
-                #endregion
-
-                continue;
-            }
-
-            //Friend on tile
-            if (pieces[x, y].team == sensor.myTeam)
-            {
-                worldState.SetValue(TargetIsEnemy_HTN_WorldKey.Key, false);
-
-                #region TryToCreateFriendUnitOnDiagonal
-                Vector2Int bestMove = new();
-                int maxValue = -1000000000;
-                foreach (var neighbour in myDiagonalNeighbours)
-                    if (neighbour.Value == Team.None && tilesCost[neighbour.Key] > maxValue
-                        && Board.Instance.tilesController.tiles[neighbour.Key.x, neighbour.Key.y].Stats.CurrentStats.CanPutOnTile)
-                    {
-                        maxValue = tilesCost[neighbour.Key];
-                        bestMove = neighbour.Key;
-                    }
-                if (maxValue > -1000000000)
-                {
-                    isMoving = false;
-                    EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(bestMove.x, bestMove.y, sensor.myTeam));
-                    break;
-                }
-                #endregion
-
-                continue;
-            }
-
+            yield return null;
         }
 
-        if (isMoving)
+        if (task.IsCanceled || task.IsFaulted || task.Result.Equals(default(EnemyAIAction)))
         {
-            Debug.LogError($"Critical error! Enemy AI could not find an available move.\n Early end of move. My team: {sensor.myTeam}");
-            EndEnemyTurn(() => { states.GameEnd(GameController.Instance.player.GetLocalPlayerTeam(), 0, 0); });
+            yield break;
+        }
+
+        EnemyAIAction bestMove = task.Result;
+        ExecuteMove(bestMove);
+    }
+
+    private void ExecuteMove(EnemyAIAction bestMove)
+    {
+        switch (bestMove.Type)
+        {
+            case ActionType.PlacePawn:
+                var pawn = myEntity.GetLocalPlayerTeam() == Team.Zero
+                    ? GameController.Instance.player.zeroPawnPrefab
+                    : GameController.Instance.player.crossPawnPrefab;
+                EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(
+                    bestMove.TargetCell.x, bestMove.TargetCell.y, sensor.myTeam, pawn));
+                break;
+
+            case ActionType.AttackPawn:
+                EndEnemyTurn(() => states.move.MoveUnit(
+                    bestMove.SourceCell.x, bestMove.SourceCell.y,
+                    bestMove.TargetCell.x, bestMove.TargetCell.y));
+                break;
+
+            default:
+                Debug.LogError($"Error move! BestMoveType: {bestMove.Type}");
+                EndEnemyTurn(() => { });
+                break;
+        }
+    }
+
+    public void DoMove()
+    {
+        EnemyAIAction bestMove = planner.GetBestMove();
+        switch (bestMove.Type)
+        {
+            case ActionType.PlacePawn:
+                var pawn = myEntity.GetLocalPlayerTeam() == Team.Zero
+                    ? GameController.Instance.player.zeroPawnPrefab
+                    : GameController.Instance.player.crossPawnPrefab;
+                EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(
+                    bestMove.TargetCell.x, bestMove.TargetCell.y, sensor.myTeam, pawn));
+                break;
+
+            case ActionType.AttackPawn:
+                EndEnemyTurn(() => states.move.MoveUnit(
+                    bestMove.SourceCell.x, bestMove.SourceCell.y,
+                    bestMove.TargetCell.x, bestMove.TargetCell.y));
+                break;
+
+            default:
+                Debug.LogError($"Error move! BestMoveType: {bestMove.Type}");
+                EndEnemyTurn(() => { });
+                break;
         }
     }
 
     public void EndEnemyTurn(Action action)
     {
+        isTakingTurn = false;
         estimator.StopEstimate();
         action.Invoke();
     }
 
     public void StopEnemy()
     {
+        isTakingTurn = false;
         isWorking = false;
         estimator.StopEstimate();
         sensor.Destroy();
@@ -205,6 +178,21 @@ public sealed class EnemyAI : MonoBehaviour
     void OnDisable()
     {
         GameController.Instance.states.OnTurnEnded -= DoSomeOnTurnEnded;
-        GameController.Instance.states.OnGameStarted -= IsMyTurnOrNot;
+        GameController.Instance.states.OnGameStarted -= OnGameReset;
+    }
+
+    public void OnGameReset()
+    {
+        StopAllCoroutines();
+        if (planner != null)
+        {
+            planner.CancelPendingSearch();
+            IsMyTurnOrNot();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 }

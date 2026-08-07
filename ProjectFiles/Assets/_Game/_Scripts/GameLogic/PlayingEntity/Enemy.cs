@@ -1,14 +1,18 @@
 public class Enemy : PlayingEntity
 {
+    public StackView graveCoinStackView;
+
     void Awake()
     {
         DontDestroyOnLoad(this);
+        graveCoinStackView = GameController.Instance.enemyGraveCoinView;
     }
 
-    public override void SetStartMana()
+    public override void SetStartManaAndGraveTokens()
     {
-        base.SetStartMana();
+        base.SetStartManaAndGraveTokens();
         GameController.Instance.enemyManaBottle.SetSettings(currentMana, maxMana);
+        if (graveCoinStackView != null) graveCoinStackView.RemoveAll();
     }
 
     public override void SetTeam(Team team)
@@ -28,5 +32,17 @@ public class Enemy : PlayingEntity
     {
         base.DeacreaseMana(value);
         GameController.Instance.enemyManaBottle.DeacreaseMana(value);
+    }
+
+    public override void IncreaseGraveTokens(int value)
+    {
+        base.IncreaseGraveTokens(value);
+        if (graveCoinStackView != null) graveCoinStackView.Add(graveCoinPrefab, currentGraveTokens - graveCoinStackView.GetCountInStack());
+    }
+
+    public override void DeacreaseGraveTokens(int value)
+    {
+        base.DeacreaseGraveTokens(value);
+        if (graveCoinStackView != null) graveCoinStackView.Remove(value);
     }
 }

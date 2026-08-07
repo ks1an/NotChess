@@ -25,11 +25,14 @@ public class BoardLandscapeGenerator : MonoBehaviour
         foreach (LandscapeObject obj in landscapeObjects)
         {
             List<int> indexOfTilesWithLandscape = new();
-            for (int i = 0; i < math.GetSafeRandom(obj.minAmount, obj.maxAmount + 1, true); i++)
+            if (obj.chance >= UnityEngine.Random.Range(0, 100))
             {
-                int index = UnityEngine.Random.Range(0, tiles.Count);
-                if (!indexOfTilesWithLandscape.Contains(index))
-                    indexOfTilesWithLandscape.Add(index);
+                for (int i = 0; i < math.GetSafeRandom(obj.minAmount, obj.maxAmount + 1, true); i++)
+                {
+                    int index = UnityEngine.Random.Range(0, tiles.Count);
+                    if (!indexOfTilesWithLandscape.Contains(index))
+                        indexOfTilesWithLandscape.Add(index);
+                }
             }
             int[] tilesX = new int[indexOfTilesWithLandscape.Count],
                 tilesY = new int[indexOfTilesWithLandscape.Count];

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 102733287128978942}
   - component: {fileID: 7647873997620197160}
   - component: {fileID: 1939949957385836131}
+  - component: {fileID: 5420170325058324412}
   m_Layer: 0
   m_Name: EnemyBot
   m_TagString: Untagged
@@ -46,7 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myEntity: {fileID: 0}
-  CardsCollection: {fileID: 11400000, guid: 3b4a86c1f26dcb9448c10d3a7fdafb92, type: 2}
   dataBase: {fileID: 11400000, guid: 8a3992507a40c7d488d0b081103bca7a, type: 2}
 --- !u!114 &1939949957385836131
 MonoBehaviour:
@@ -60,3 +60,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb41cee7484130144839ab3525911c77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5420170325058324412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2824330033714672817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 496825092f0e7d249bcee8f5700c5f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackBonus: 150
+  friendUnderThreatBonus: 800
+  enemyUnderThreatBonus: 25
+  lineBlockBonus: 20
+  centerBonusMultiple: 0.3
+  lineBuildingBonusMultiple: 2
+  potentialLineBonusMultiple: 8
+  enemyPotentionalMultiple: 4
+  forkBonus: 1500
+  openFourBonus: 3000
+  searchDepth: 4
+  opponentWeight: 2
+  blunderChance: 0.05
+  blunderThreshold: 200

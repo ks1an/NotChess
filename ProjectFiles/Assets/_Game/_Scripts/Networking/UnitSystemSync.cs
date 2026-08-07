@@ -13,18 +13,26 @@ public sealed class UnitSystemSync : NetworkBehaviour
 
     /////////DO MOVE
     [Rpc(SendTo.Server)]
-    public void CreateUnitOnBoardRpc(int x, int y, Team team)
+    public void CreateUnitOnBoardRpc(int x, int y, Team team, string prefabId, bool needToSkipMove = true)
     {
-        if ((team == Team.Zero && !GameController.Instance.states.isMoveOfZero) ||
-            (team == Team.Cross && GameController.Instance.states.isMoveOfZero))
-            return;
-        board.piecesController.pieces[x, y] = board.piecesController.GeneratePiece(team);
+        board.piecesController.pieces[x, y] = board.piecesController.GeneratePiece(team, prefabId);
         board.piecesController.SetPositionSinglePiece(x, y, true);
-        NetworkObject netObj = board.piecesController.pieces[x, y].gameObject.GetComponent<NetworkObject>();
+        NetworkObject netObj = board.piecesController.pieces[x, y].view.gameObject.GetComponent<NetworkObject>();
         netObj.Spawn();
 
         UpdateUnitArrayOnClientsRpc(x, y, netObj.NetworkObjectId, team);
-        net.OnTeamMovedRpc(x, y, (int)team);
+        if (needToSkipMove)
+            net.OnTeamMovedRpc(x, y, (int)team);
+    }
+
+    [Rpc(SendTo.Server)]
+    public void TryDestroyAndCreateUnitRpc(int x, int y, bool destroyedByUnit, Team team, string uniquePrefabId, bool needToSkipMove = true)
+    {
+        DestroyUnitRpc(x, y, destroyedByUnit, (int)team, false, false);
+        if (board.piecesController.pieces[x, y] == null)
+            CreateUnitOnBoardRpc(x, y, team, uniquePrefabId, needToSkipMove);
+        else
+            Debug.LogError($"Cant place unit (id: {uniquePrefabId}) on {x},{y} because tile have unit");
     }
 
     [Rpc(SendTo.Server)]
@@ -41,12 +49,15 @@ public sealed class UnitSystemSync : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    public void DestroyUnitRpc(int x, int y, bool destroyedByUnit, int teamWhoDestroy)
+    public void DestroyUnitRpc(int x, int y, bool destroyedByUnit, int teamWhoDestroy, bool needAddMana = false, bool needAddGraveCoin = true)
     {
-        if (destroyedByUnit)
+        if (destroyedByUnit && needAddMana)
             IncreaseManaForDestroyRpc(teamWhoDestroy);
+        if (needAddGraveCoin)
+            IncreaseGraveCoinForDestroyRpc(teamWhoDestroy);
 
-        Destroy(board.piecesController.pieces[x, y].gameObject);
+        Destroy(board.piecesController.pieces[x, y].view.gameObject);
+        board.piecesController.pieces[x, y] = null;
         UpdateUnitArrayOnClientsRpc(x, y, 0, Team.None);
     }
 
@@ -61,6 +72,17 @@ public sealed class UnitSystemSync : NetworkBehaviour
         }
     }
 
+    [Rpc(SendTo.ClientsAndHost)]
+    public void IncreaseGraveCoinForDestroyRpc(int playerWhoDestroy)
+    {
+        int playerTeam = (int)GameController.Instance.player.GetLocalPlayerTeam();
+        if (playerTeam == playerWhoDestroy && playerTeam != (int)Team.None)
+        {
+            GameController.Instance.player.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);
+        }
+    }
+
+    //
     [Rpc(SendTo.NotServer)]
     public void UpdateUnitArrayOnClientsRpc(int x, int y, ulong idObj, Team team)
     {
@@ -77,7 +99,9 @@ public sealed class UnitSystemSync : NetworkBehaviour
             return;
         }
 
-        Piece piece = obj.gameObject.GetComponent<Piece>();
+        PieceView view = obj.gameObject.GetComponent<PieceView>();
+        view.Init();
+        PieceData piece = view.runtimeData;
         piece.currentX = x;
         piece.currentY = y;
         piece.team = team;

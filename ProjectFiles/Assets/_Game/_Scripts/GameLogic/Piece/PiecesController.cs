@@ -1,14 +1,17 @@
+using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
+[RequireComponent(typeof(TilesController))]
 public sealed class PiecesController : MonoBehaviour
 {
     [HideInInspector] public List<Vector2Int> availableMoves = new();
-    [HideInInspector] public Piece[,] pieces;
-    [HideInInspector] public Piece currentlySelectingPiece;
+    [HideInInspector] public PieceData[,] pieces;
+    [HideInInspector] public PieceData currentlySelectingPiece;
 
-    GameObject crossPrefab, zeroPrefab;
+    [SerializeField] private ResumeOfPrefab[] namedPrefabs;
+    Dictionary<string, GameObject> prefabDict;
     float upValueWhileSelectingPiece;
 
     TilesController tilesController;
@@ -19,23 +22,39 @@ public sealed class PiecesController : MonoBehaviour
         tilesController = GetComponent<TilesController>();
         match = GameController.Instance;
 
-        zeroPrefab = match.player.zeroPrefab;
-        crossPrefab = match.player.crossPrefab;
         upValueWhileSelectingPiece = match.player.upValueWhileSelectingPiece;
-        pieces = new Piece[match.matchSettings.tileCountX, match.matchSettings.tileCountY];
+        pieces = new PieceData[match.matchSettings.tileCountX, match.matchSettings.tileCountY];
+
+        prefabDict = new Dictionary<string, GameObject>();
+        for (int i = 0; i < namedPrefabs.Length; i++)
+        {
+            if (namedPrefabs[i].prefab != null)
+            {
+                namedPrefabs[i].id = namedPrefabs[i].prefab.name;
+                prefabDict[namedPrefabs[i].id] = namedPrefabs[i].prefab;
+            }
+            else
+                Debug.LogError("NamedPrefabs with num: " + i + " havent prefab!!!");
+        }
     }
 
-    public Piece GeneratePiece(Team type)
+    public PieceData GeneratePiece(Team type, string prefabId)
     {
-        Piece piece;
-        if (type == Team.Cross)
-            piece = Instantiate(crossPrefab, transform).GetComponent<Piece>();
+        PieceData pieceLogic = null;
+
+        if (prefabDict.TryGetValue(prefabId, out GameObject prefab))
+        {
+            var pieceView = Instantiate(prefab, transform).GetComponent<PieceView>();
+            pieceView.Init();
+            pieceLogic = pieceView.runtimeData;
+        }
         else
-            piece = Instantiate(zeroPrefab, transform).GetComponent<Piece>();
+        {
+            Debug.LogError($"Prefab with '{prefabId}' not finded in dictionary!");
+        }
 
-        piece.team = type;
-
-        return piece;
+        pieceLogic.team = type;
+        return pieceLogic;
     }
 
     #region TransformPiece
@@ -49,10 +68,10 @@ public sealed class PiecesController : MonoBehaviour
 
     public void MoveTo(int originalX, int originalY, int x, int y)
     {
-        Piece curPiece = pieces[originalX, originalY];
+        PieceData curPiece = pieces[originalX, originalY];
 
         if (pieces[x, y] != null && curPiece != null)
-            match.states.move.TryDestroyUnit(x, y, true, curPiece.team);
+            match.states.move.TryDestroyUnit(x, y, true, curPiece.team, false, true);
 
         pieces[x, y] = curPiece;
         pieces[originalX, originalY] = null;
@@ -60,7 +79,7 @@ public sealed class PiecesController : MonoBehaviour
         if (match.states.isNetMatch)
         {
             match.netMatch.unitSync.UpdateUnitArrayOnClientsRpc(originalX, originalY, 0, Team.None);
-            match.netMatch.unitSync.UpdateUnitArrayOnClientsRpc(x, y, curPiece.gameObject.GetComponent<NetworkObject>().NetworkObjectId, curPiece.team);
+            match.netMatch.unitSync.UpdateUnitArrayOnClientsRpc(x, y, curPiece.view.gameObject.GetComponent<NetworkObject>().NetworkObjectId, curPiece.team);
         }
 
         SetPositionSinglePiece(x, y, false);
@@ -80,7 +99,7 @@ public sealed class PiecesController : MonoBehaviour
             return;
 
         currentlySelectingPiece = pieces[hitPos.x, hitPos.y];
-        availableMoves = currentlySelectingPiece.GetAvailableMoves(ref pieces, match.matchSettings.tileCountX, match.matchSettings.tileCountY);
+        availableMoves = currentlySelectingPiece.GetAvailableMoves(pieces);
 
         Vector3 tileCenter = tilesController.GetTileCenter(hitPos.x, hitPos.y);
         match.states.move.SetUnitPos(hitPos.x, hitPos.y, new Vector3(tileCenter.x, upValueWhileSelectingPiece, tileCenter.z));
@@ -100,7 +119,7 @@ public sealed class PiecesController : MonoBehaviour
             match.states.move.SetUnitPos(previousPos.x, previousPos.y, tilesController.GetTileCenter(previousPos.x, previousPos.y));
 
         currentlySelectingPiece = null;
-        if(match.states.lastWinTeam == Team.None)
+        if (match.states.lastWinTeam == Team.None)
             tilesController.RemoveHighlightTiles(availableMoves);
     }
     #endregion
@@ -112,4 +131,11 @@ public sealed class PiecesController : MonoBehaviour
                 return true;
         return false;
     }
+}
+
+[Serializable]
+public struct ResumeOfPrefab
+{
+    public string id;
+    public GameObject prefab;
 }

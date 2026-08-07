@@ -52,6 +52,11 @@ public sealed class ModalViewWindowController : MonoBehaviour
             confirmTxt, greenAction, declineTxt, redAction, altTxt, altAction, icon, doItAnyway);
     }
 
+    public void ShowSubPannelInfo(string title, string content)
+    {
+        modalWindow.AddSubPannelInfo(title, content);
+    }
+
     public void TryCloseModalViewWindow(bool isForceClosure = false)
     {
         if (!dontCloseUntilChoose || isForceClosure)
