@@ -6,9 +6,6 @@ using UnityEngine;
 public class PlayerCardHand : HandObject
 {
     public static PlayerCardHand Instance { get; private set; }
-    public event Action<Card> OnCardAddedInHand;
-    public event Action<Card> OnCardRemovedInHand;
-    public event Action OnAllCardsRemovedInHand;
 
     public Card CurrentSelectCard { get; private set; }
     public Card CurrentHoverCard { get; private set; }
@@ -69,7 +66,6 @@ public class PlayerCardHand : HandObject
     {
         CardsInHand.Add(card);
 
-        OnCardAddedInHand?.Invoke(card);
         StartCoroutine(AddObj(card.gameObject));
     }
 
@@ -81,7 +77,6 @@ public class PlayerCardHand : HandObject
             CurrentSelectCard = null;
 
         CardsInHand.Remove(card);
-        OnCardRemovedInHand?.Invoke(card);
         StartCoroutine(RemoveObjectInHand(card.gameObject));
     }
 
@@ -92,7 +87,6 @@ public class PlayerCardHand : HandObject
 
         CardsInHand.Clear();
         RemoveAllObjects();
-        OnAllCardsRemovedInHand?.Invoke();
     }
 
     public Card GetCardFromHand(Card cardType)

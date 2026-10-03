@@ -62,15 +62,34 @@ public class TileStatsComponent : IBuffable
     void ApplyBuffs()
     {
         buffWithMostDefend = null;
+        int mostBanPutDur = 0, mostBanAttackDur = 0, MostBanLeaveDur = 0;
         CurrentStats = BaseStats;
         foreach (var buff in buffs)
         {
             TileStats newStats = (TileStats)buff.ApplyBuff(CurrentStats, this);
-            if (newStats.DefendClass >= CurrentStats.DefendClass)
+            if (newStats.defendClass >= CurrentStats.defendClass)
                 buffWithMostDefend = buff;
+
+            if (buff.GetType() == typeof(TemporaryBuff))
+            {
+                int turns = ((TemporaryBuff)buff).lifeTurnsRemain;
+                mostBanPutDur = !newStats.canPutOnTile && turns > mostBanPutDur ? turns : mostBanPutDur;
+                mostBanAttackDur = !newStats.canAttackTile && turns > mostBanAttackDur ? turns : mostBanAttackDur;
+                MostBanLeaveDur = !newStats.canLeaveFromTile && turns > MostBanLeaveDur ? turns : MostBanLeaveDur;
+            }
 
             CurrentStats = newStats;
         }
+        TileStats resultStats = new(
+            CurrentStats.canPutOnTile, CurrentStats.canAttackTile, CurrentStats.canLeaveFromTile, CurrentStats.defendClass,
+            mostBanPutDur, mostBanAttackDur, MostBanLeaveDur);
+        CurrentStats = resultStats;
+
+        /*Debugger.Instance.DebugLog($"Tile {Tile.coord} has: " +
+            $"canPutOnTile = {CurrentStats.canPutOnTile} with dur {CurrentStats.banPutDuration} " +
+            $"canAttackTile = {CurrentStats.canAttackTile} with dur {CurrentStats.banAttackDuration} " +
+            $"canLeaveFromTile = {CurrentStats.canLeaveFromTile} with dur {CurrentStats.banLeaveDuration} ");*/
+
         doOnUpdateStats?.Invoke(CurrentStats);
     }
 
@@ -88,8 +107,8 @@ public class TileStatsComponent : IBuffable
     }
     #endregion
 
-    public void DestroyBuffWithMostDefendClass() 
-    { 
+    public void DestroyBuffWithMostDefendClass()
+    {
         if (buffWithMostDefend != null)
         {
             RemoveBuff(buffWithMostDefend);
@@ -117,7 +136,7 @@ public class TileStatsComponent : IBuffable
             }
         }
         else
-            simBuff = buffs.FirstOrDefault(b => b.GetType() == buff.GetType() && 
+            simBuff = buffs.FirstOrDefault(b => b.GetType() == buff.GetType() &&
             ((b.CanDurationStack && buff.CanDurationStack) || (b.CanEffectStack && buff.CanEffectStack)));
 
         return simBuff;

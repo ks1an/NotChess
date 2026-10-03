@@ -21,6 +21,7 @@ public sealed class GameController : MonoBehaviour
     public StackView enemyGraveCoinView;
 
     [HideInInspector] public GameSettingsModel gameSettings;
+    [HideInInspector] public PlayerDataModel playerData;
     [HideInInspector] public MatchSettings matchSettings;
     [HideInInspector] public MatchStates states;
     [HideInInspector] public GlobalCardCollection globalCards;
@@ -41,7 +42,8 @@ public sealed class GameController : MonoBehaviour
             enemy = GameObject.Instantiate(enemy.gameObject).GetComponent<Enemy>();
 
             var loader = new SettingsLoader();
-            loader.LoadSettings();
+            loader.LoadGameSettings();
+            loader.LoadPlayerData();
 
             DontDestroyOnLoad(this);
         }
@@ -49,11 +51,11 @@ public sealed class GameController : MonoBehaviour
 
     public void CreateDemostrationGame()
     {
-        CreateGame(false, true);
+        CreateGame(MatchStates.GameMode_Demo, false, true);
         isDemonstration = true;
     }
 
-    public void CreateGame(bool isNetMatch, bool isMatchAiVsAi = false,
+    public void CreateGame(string gamemode, bool isNetMatch, bool isMatchAiVsAi = false,
         int winSequence = 5, bool firstMoveZero = true,
         int startMana = 0, int manaPerTurn = 1, int startManaForEvenPlayer = 1, int maxMana = 10, int manaForDestoryEnemy = 1, 
         int maxGraveTokens = 10, int graveTokensForKill = 1,
@@ -68,7 +70,7 @@ public sealed class GameController : MonoBehaviour
             maxGraveTokens, graveTokensForKill,
             startCards, defaultCardsInHand, maxDeck);
 
-        states.CreateGame(isNetMatch, isMatchAiVsAi);
+        states.CreateGame(isNetMatch, isMatchAiVsAi, gamemode);
     }
 
     public void CreateNetSync()
@@ -79,4 +81,5 @@ public sealed class GameController : MonoBehaviour
     }
     
     public void UpdateGameSettings(GameSettingsModel newSettings) => gameSettings = newSettings;
+    public void UpdatePlayerData(PlayerDataModel newSettings) => playerData = newSettings;
 }

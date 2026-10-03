@@ -7,6 +7,7 @@ public sealed class GameSound : MonoBehaviour
 
     AudioSource audioSource;
     readonly MathOperations mathOp = MathOperations.GetInstance();
+    float baseVolume;
 
     void Awake()
     {
@@ -16,16 +17,25 @@ public sealed class GameSound : MonoBehaviour
             Instance = this;
         }
         else Destroy(Instance);
+        GameController.Instance.gameSettings.EffectVolume.OnChanged += UpdateVolume;
+        baseVolume = GameController.Instance.gameSettings.EffectVolume.Value;
     }
 
     public void PlayRandomSound(AudioClip[] clips, float volumeMultiplicator = 1, float minPinch = 1, float maxPinch = 1)
     {
-        PlaySound(clips[(int)mathOp.GetSafeRandom(0, clips.Length, true)], volumeMultiplicator * GameController.Instance.gameSettings.EffectVolume.Value, minPinch, maxPinch);
+        PlaySound(clips[(int)mathOp.GetSafeRandom(0, clips.Length, true)], volumeMultiplicator * baseVolume, minPinch, maxPinch);
     }
 
     public void PlaySound(AudioClip clip, float volume, float minPinch = 1, float maxPinch = 1)
     {
         audioSource.pitch = mathOp.GetSafeRandom(minPinch, maxPinch);
         audioSource.PlayOneShot(clip, volume);
+    }
+
+    public void UpdateVolume(float newVolume) => baseVolume = newVolume;
+
+    private void OnDestroy()
+    {
+        GameController.Instance.gameSettings.EffectVolume.OnChanged -= UpdateVolume;
     }
 }

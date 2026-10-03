@@ -26,18 +26,18 @@ public sealed class EditPlayerName : MonoBehaviour
             },
             20);
         });
-        playerName = GameController.Instance.gameSettings.PlayerName.Value;
+        playerName = GameController.Instance.playerData.PlayerName.Value;
         playerNameText.text = playerName;
     }
 
     void EditPlayerName_OnNameChanged()
     {
-        GameController.Instance.gameSettings.PlayerName.Value = playerName;
+        GameController.Instance.playerData.PlayerName.Value = playerName;
 
         if(UnityServices.State == ServicesInitializationState.Initialized)
             LobbyManager.Instance.UpdatePlayerName(GetPlayerName());
 
-        GameController.Instance.gameSettings.SaveData();
+        GameController.Instance.playerData.SaveData();
     }
 
     public string GetPlayerName()

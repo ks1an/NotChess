@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Scorch_TileBuff : IBuff
@@ -62,7 +61,7 @@ public class Scorch_TileBuff : IBuff
     public void DoOnAddBuff() { OnBuffAdded?.Invoke(); }
     public void DoOnRemoveBuff() { OnBuffRemoved?.Invoke(); }
     public void DoOnTick() { OnBuffTicked?.Invoke(); }
-    public bool TryStack(IBuff stackingBuff) 
+    public bool TryStack(IBuff stackingBuff)
     {
         if (!stackingBuff.CanEffectStack || !CanEffectStack) return false;
 

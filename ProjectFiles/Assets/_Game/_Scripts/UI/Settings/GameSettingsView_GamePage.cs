@@ -5,68 +5,158 @@ using UnityEngine.UI;
 public class GameSettingsView_GamePage : GameSettingsView
 {
     [SerializeField] Toggle dontTranslateNameOfCardToogle;
-    [SerializeField]
-    TMP_Dropdown fullscreenModeDropdown,
-        antializingDropdown, vsyncDropdown;
+    [SerializeField] TMP_Dropdown fullscreenModeDropdown;
+    [SerializeField] SegmentedBttn vsyncBttns;
+    [SerializeField] CycleButton antializingCycleBttn;
+    [SerializeField] Transform fullscreenContainer, vsyncContainer;
     [SerializeField] TextMeshProUGUI musicNameTxt;
     [SerializeField] Button musicBttn;
     [SerializeField] Button applyBttn, closeBttn;
-    [SerializeField] Slider musicVolumeSlider, effectVolumeSlider;
+    [SerializeField] SnappedSlider musicVolumeSlider, effectVolumeSlider;
     [SerializeField] TextMeshProUGUI musicVolumeTxt, effectVolumeTxt;
+
+    bool isMobile;
 
     public override void Init(GameSettingsViewModel modelView)
     {
         base.Init(modelView);
 
-        dontTranslateNameOfCardToogle.onValueChanged.AddListener(viewModel.OnToggle_DontTranslateNameOfCard_Clicked);
+        isMobile = Application.isMobilePlatform;
+
+        if (isMobile)
+        {
+            if (fullscreenContainer != null) fullscreenContainer.gameObject.SetActive(false);
+            if (vsyncContainer != null) vsyncContainer.gameObject.SetActive(false);
+        }
+        else
+        {
+            fullscreenModeDropdown.onValueChanged.AddListener(value =>
+            {
+                viewModel.OnDropdownChanged_FullscreenMode(value);
+                CheckChangedParamsAndSetApplyBttn();
+            });
+            fullscreenModeDropdown.value = viewModel.FullscreenMode.Value;
+
+            vsyncBttns.OnValueChanged += value =>
+            {
+                viewModel.OnDropdownChanged_VSync(value);
+                CheckChangedParamsAndSetApplyBttn();
+            };
+            vsyncBttns.DisplayValue(viewModel.VSync.Value);
+        }
+
+        // Card
+        dontTranslateNameOfCardToogle.onValueChanged.AddListener(value =>
+        {
+            viewModel.OnToggle_DontTranslateNameOfCard_Clicked(value);
+            CheckChangedParamsAndSetApplyBttn();
+        });
         dontTranslateNameOfCardToogle.isOn = viewModel.DontTranslateNameOfCard.Value;
 
-        //GRAPHIC
-        fullscreenModeDropdown.onValueChanged.AddListener(viewModel.OnDropdownChanged_FullscreenMode);
-        fullscreenModeDropdown.value = viewModel.FullscreenMode.Value;
+        // GRAPHIC
+        antializingCycleBttn.OnValueChanged += value =>
+        {
+            viewModel.OnDropdownChanged_AntiAliasing(value);
+            CheckChangedParamsAndSetApplyBttn();
+        };
+        antializingCycleBttn.DisplayValue(viewModel.AntiAlaising.Value);
 
-        antializingDropdown.onValueChanged.AddListener(viewModel.OnDropdownChanged_AntiAliasing);
-        antializingDropdown.value = viewModel.AntiAlaising.Value;
-
-        vsyncDropdown.onValueChanged.AddListener(viewModel.OnDropdownChanged_VSync);
-        vsyncDropdown.value = viewModel.VSync.Value;
-
-        //Audio
-        musicVolumeSlider.onValueChanged.AddListener(viewModel.OnView_MusicVolume_Changed);
+        // AUDIO
+        musicVolumeSlider.OnValueChanged += value =>
+        {
+            viewModel.OnView_MusicVolume_Changed(value);
+            CheckChangedParamsAndSetApplyBttn();
+        };
         Display_MusicVolume(viewModel.MusicVolume.Value);
-        effectVolumeSlider.onValueChanged.AddListener(viewModel.OnView_EffectVolume_Changed);
+
+        effectVolumeSlider.OnValueChanged += value =>
+        {
+            viewModel.OnView_EffectVolume_Changed(value);
+            CheckChangedParamsAndSetApplyBttn();
+        };
         Display_EffectVolume(viewModel.EffectVolume.Value);
 
-        //OTHER
+        // OTHER
         musicBttn.onClick.AddListener(OnClickedMusicBttn);
         BackgroundMusic.CurrentMusic.OnChanged += Display_Music;
         Display_Music(BackgroundMusic.CurrentMusic.Value);
 
-        applyBttn.onClick.AddListener(viewModel.OnApplyClicked);
+        applyBttn.onClick.AddListener(OnApplyClicked);
         closeBttn.onClick.AddListener(viewModel.OnResetToModel);
+        applyBttn.interactable = false;
     }
 
+    void OnApplyClicked()
+    {
+        viewModel.OnApplyClicked();
+        applyBttn.interactable = false;
+    }
 
-    protected override void Display_DontTranslateNameOfCard(bool b) => dontTranslateNameOfCardToogle.isOn = b;
+    void CheckChangedParamsAndSetApplyBttn()
+    {
+        applyBttn.interactable = false;
+        var settings = GameController.Instance.gameSettings;
 
-    protected override void Display_Antialaizing(int val) => antializingDropdown.value = val;
-    protected override void Display_FullscreenMode(int val) => fullscreenModeDropdown.value = val;
-    protected override void Display_VSync(int val) => vsyncDropdown.value = val;
+        // CARD
+        if (viewModel.DontTranslateNameOfCard.Value != settings.DontTranslateNameOfCard.Value)
+        { applyBttn.interactable = true; return; }
+
+        // GRAPHIC — только для ПК
+        if (!isMobile)
+        {
+            if (viewModel.FullscreenMode.Value != settings.FullscreenMode.Value)
+            { applyBttn.interactable = true; return; }
+            if (viewModel.VSync.Value != settings.VSync.Value)
+            { applyBttn.interactable = true; return; }
+        }
+
+        if (viewModel.AntiAlaising.Value != settings.AntiAliasing.Value)
+        { applyBttn.interactable = true; return; }
+
+        // AUDIO
+        int currentMusic = Mathf.RoundToInt(viewModel.MusicVolume.Value * 100);
+        int savedMusic = Mathf.RoundToInt(settings.MusicVolume.Value * 100);
+        if (currentMusic != savedMusic) { applyBttn.interactable = true; return; }
+
+        int currentEffect = Mathf.RoundToInt(viewModel.EffectVolume.Value * 100);
+        int savedEffect = Mathf.RoundToInt(settings.EffectVolume.Value * 100);
+        if (currentEffect != savedEffect) { applyBttn.interactable = true; return; }
+    }
+
+    protected override void Display_DontTranslateNameOfCard(bool b)
+        => dontTranslateNameOfCardToogle.isOn = b;
+
+    protected override void Display_Antialaizing(int val)
+        => antializingCycleBttn.DisplayValue(val);
+
+    protected override void Display_FullscreenMode(int val)
+    {
+        if (!isMobile && fullscreenModeDropdown != null)
+            fullscreenModeDropdown.value = val;
+    }
+
+    protected override void Display_VSync(int val)
+    {
+        if (!isMobile)
+            vsyncBttns.DisplayValue(val);
+    }
 
     #region Audio
     protected override void Display_MusicVolume(float val)
     {
-        musicVolumeSlider.value = val;
-        musicVolumeTxt.text = ((int)(val * 100)).ToString();
+        musicVolumeSlider.DisplayValue(val);
+        musicVolumeTxt.text = Mathf.RoundToInt(val * 100).ToString();
     }
+
     protected override void Display_EffectVolume(float val)
     {
-        effectVolumeSlider.value = val;
-        effectVolumeTxt.text = ((int)(val * 100)).ToString();
+        effectVolumeSlider.DisplayValue(val);
+        effectVolumeTxt.text = Mathf.RoundToInt(val * 100).ToString();
     }
-    protected void Display_Music(Music music) => musicNameTxt.text = music.name + " by " + music.author;
-    #endregion
 
+    protected void Display_Music(Music music)
+        => musicNameTxt.text = music.name + " by " + music.author;
+    #endregion
 
     protected void OnClickedMusicBttn()
     {
@@ -80,22 +170,26 @@ public class GameSettingsView_GamePage : GameSettingsView
         Application.OpenURL(BackgroundMusic.CurrentMusic.Value.copyrightLink);
     }
 
-
     protected override void Dispose()
     {
         base.Dispose();
 
-        dontTranslateNameOfCardToogle.onValueChanged.RemoveListener(viewModel.OnToggle_DontTranslateNameOfCard_Clicked);
+        dontTranslateNameOfCardToogle.onValueChanged.RemoveAllListeners();
+        antializingCycleBttn.ClearListeners();
+        musicVolumeSlider.ClearListeners();     
+        effectVolumeSlider.ClearListeners();
 
-        //GRAPHIC
-        fullscreenModeDropdown.onValueChanged.RemoveListener(viewModel.OnDropdownChanged_FullscreenMode);
-        antializingDropdown.onValueChanged.RemoveListener(viewModel.OnDropdownChanged_AntiAliasing);
-        vsyncDropdown.onValueChanged.RemoveListener(viewModel.OnDropdownChanged_VSync);
+        if (!isMobile)
+        {
+            if (fullscreenModeDropdown != null)
+                fullscreenModeDropdown.onValueChanged.RemoveAllListeners();
+            vsyncBttns.ClearListeners();
+        }
 
         musicBttn.onClick.RemoveListener(OnClickedMusicBttn);
-        BackgroundMusic.CurrentMusic.OnChanged -= Display_Music;
+        applyBttn.onClick.RemoveListener(OnApplyClicked);
+        closeBttn.onClick.RemoveAllListeners();
 
-        applyBttn.onClick.RemoveListener(viewModel.OnApplyClicked);
-        closeBttn.onClick.RemoveListener(viewModel.OnResetToModel);
+        BackgroundMusic.CurrentMusic.OnChanged -= Display_Music;
     }
 }

@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static EnemyAIPlanner;
 
-public sealed class CastleWallsCard : Card
+public sealed class CastleWallsCard : Card, ICardAI
 {
     [field: SerializeField] InstanceGameobject_SO_VB visualEffectOnTile;
     [SerializeField] int duration;
@@ -84,5 +85,82 @@ public sealed class CastleWallsCard : Card
             return true;
         return false;
     }
+    #endregion
+
+    #region ICardAI Implementation
+
+    public List<List<Vector2Int>> GetTargets(FastBoardState state, CellOwner myTeam)
+    {
+        var result = new List<List<Vector2Int>>();
+        CellOwner opp = myTeam == CellOwner.Zero ? CellOwner.Cross : CellOwner.Zero;
+        int w = state.Board.GetLength(0);
+        int h = state.Board.GetLength(1);
+
+        for (int x = 0; x < w; x++)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                CellOwner owner = state.Board[x, y];
+
+  
+                if (owner == myTeam)
+                {
+                    if (IsCellAttackedByFast(state, x, y, opp))
+                    {
+                        result.Add(new List<Vector2Int> { new(x, y) });
+                    }
+                }
+                else if (owner == CellOwner.None)
+                {
+                   if (!state.Stats[x, y].CanPutOnTile)
+                        continue;
+
+                    if (IsCellAttackedByFast(state, x, y, opp) && IsCellAttackedByFast(state, x, y, myTeam))
+                    {
+                        result.Add(new List<Vector2Int> { new(x, y) });
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public FastBoardState ApplyToState(FastBoardState state, List<Vector2Int> targets, CellOwner myTeam)
+    {
+        if (targets == null || targets.Count == 0) return state;
+
+        Vector2Int targetCell = targets[0];
+
+        if (targetCell.x >= 0 && targetCell.x < state.Width && targetCell.y >= 0 && targetCell.y < state.Height)
+        {
+            state.Stats[targetCell.x, targetCell.y].CanAttackTile = false;
+            state.Stats[targetCell.x, targetCell.y].BanAttackTileDuration += duration;
+        }
+        state.Mana -= ManaCost;
+        state.Bones -= GraveTokensCost;
+        return state;
+    }
+
+    private bool IsCellAttackedByFast(FastBoardState state, int x, int y, CellOwner attacker)
+    {
+        int[] dx = { -1, -1, 1, 1 };
+        int[] dy = { -1, 1, -1, 1 };
+
+        for (int i = 0; i < dx.Length; i++)
+        {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if (nx >= 0 && nx < state.Width && ny >= 0 && ny < state.Height)
+            {
+                if (state.Board[nx, ny] == attacker)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     #endregion
 }

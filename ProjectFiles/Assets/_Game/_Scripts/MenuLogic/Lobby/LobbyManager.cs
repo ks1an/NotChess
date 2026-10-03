@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -10,13 +11,22 @@ using UnityEngine.Localization;
 public sealed class LobbyManager : MonoBehaviour
 {
     public static LobbyManager Instance { get; private set; }
+    public string CurrentGameMode { get; private set; }
 
     public const string KEY_PLAYER_NAME = "PlayerName";
-    public const string KEY_START_GAME = "0";
-    public const string KEY_GAME_VERSION = "0.0.0.0";
+    public const string KEY_PLAYER_MMR = "PlayerMmr";
+
+    public const string KEY_RELAY_CODE = "RelayCode";
+    public const string KEY_GAME_VERSION = "GameVersion";
+    public const string KEY_GAME_MODE = "GameMode";
+    public const string KEY_START_STATUS = "StartStatus";
+
+    public const string LOBBY_STATUS_WAITING = "Waiting";
+    public const string LOBBY_STATUS_STARTED = "Started";
 
     #region Events
     public event EventHandler OnLeftLobby;
+    public event EventHandler OnMatchmakerCancelled;
 
     public event EventHandler<LobbyEventArgs> OnJoinedLobby;
     public event EventHandler<LobbyEventArgs> OnJoinedLobbyUpdate;
@@ -34,10 +44,20 @@ public sealed class LobbyManager : MonoBehaviour
     }
     #endregion
 
+    public bool IsMatchmakingLobby => isMatchmakingLobby;
+    public bool IsMatchmakingCancelled => isMatchmakingCancelled;
+    public bool IsWaitingForMatchmaker =>
+     isMatchmakingLobby && joinedLobby != null && joinedLobby.Players.Count < 2;
+    float matchmakerWaitStartTime;
+
     [SerializeField] GameObject lobbyList;
     [SerializeField] EditPlayerName playerEdit;
     [SerializeField] LocalizedStringTable localTable;
     [SerializeField] float refreshLobbyListTimer = 5f;
+    [SerializeField] float lobbyPollTimerMax = 2f;
+    [SerializeField] float refreshLobbyListTimerMax = 5f;
+    [SerializeField] float heartbeatTimerMax = 15f;
+
 
     Lobby joinedLobby;
 
@@ -46,10 +66,15 @@ public sealed class LobbyManager : MonoBehaviour
     string playerName;
     string currentGameVersion;
 
+    bool isMatchmakingCancelled;
+    bool isMatchmakingLobby;
+    bool isStartingGame;
+    bool isPolling;
+
     void Awake()
     {
         Instance = this;
-        playerName = GameController.Instance.gameSettings.PlayerName.Value;
+        playerName = GameController.Instance.playerData.PlayerName.Value;
         currentGameVersion = Application.version;
     }
 
@@ -60,6 +85,21 @@ public sealed class LobbyManager : MonoBehaviour
         HandleLobbyPolling();
     }
 
+    public void CancelMatchmaker()
+    {
+        isMatchmakingCancelled = true;
+        WaitingWindowController.Instance.Hide();
+        InLobbyUI.Instance.Hide();
+
+        if (joinedLobby != null)
+        {
+            LeaveLobby();
+            return;
+        }
+
+        OnMatchmakerCancelled?.Invoke(this, EventArgs.Empty);
+    }
+
     #region Handle
     private void HandleRefreshLobbyList()
     {
@@ -68,7 +108,6 @@ public sealed class LobbyManager : MonoBehaviour
             refreshLobbyListTimer -= Time.deltaTime;
             if (refreshLobbyListTimer < 0f)
             {
-                float refreshLobbyListTimerMax = 5f;
                 refreshLobbyListTimer = refreshLobbyListTimerMax;
 
                 RefreshLobbyList();
@@ -83,7 +122,6 @@ public sealed class LobbyManager : MonoBehaviour
             heartbeatTimer -= Time.deltaTime;
             if (heartbeatTimer < 0f)
             {
-                float heartbeatTimerMax = 15f;
                 heartbeatTimer = heartbeatTimerMax;
                 await LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
             }
@@ -92,34 +130,91 @@ public sealed class LobbyManager : MonoBehaviour
 
     private async void HandleLobbyPolling()
     {
-        if (joinedLobby != null)
+        if (joinedLobby == null || isPolling) return;
+
+        lobbyPollTimer -= Time.deltaTime;
+        if (lobbyPollTimer > 0f) return;
+        lobbyPollTimer = lobbyPollTimerMax;
+
+        isPolling = true;
+
+        try
         {
-            lobbyPollTimer -= Time.deltaTime;
-            if (lobbyPollTimer < 0f)
+            Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+            joinedLobby = lobby;
+
+            OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
+
+            if (!IsPlayerInLobby())
             {
-                float lobbyPollTimerMax = 1.1f;
-                lobbyPollTimer = lobbyPollTimerMax;
+                bool wasMatchmaker = CurrentGameMode == MatchStates.GameMode_Matchmaking;
+                joinedLobby = null;
+                isStartingGame = false;
+                isMatchmakingLobby = false;
 
-                joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+                if (wasMatchmaker)
+                    OnMatchmakerCancelled?.Invoke(this, EventArgs.Empty);
+                else
+                    OnKickedFromLobby?.Invoke(this, new LobbyEventArgs { lobby = null });
 
-                OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
-
-                if (!IsPlayerInLobby())
-                {
-                    //Kicked from Lobby!
-                    OnKickedFromLobby?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
-
-                    joinedLobby = null;
-                }
-                else if (joinedLobby.Data[KEY_START_GAME].Value != "0")
-                {
-                    if (!IsLobbyHost())
-                        Relay.Instance.JoinRelay(joinedLobby.Data[KEY_START_GAME].Value);
-
-                    joinedLobby = null;
-                    OnLobbyGameStarted?.Invoke(this, EventArgs.Empty);
-                }
+                return;
             }
+
+            if (joinedLobby.Data.TryGetValue(KEY_START_STATUS, out var statusData)
+                && statusData.Value == LOBBY_STATUS_STARTED)
+            {
+                if (!IsLobbyHost()
+                    && joinedLobby.Data.TryGetValue(KEY_RELAY_CODE, out var codeData))
+                {
+                    Relay.Instance.JoinRelay(codeData.Value);
+                }
+
+                joinedLobby = null;
+                isMatchmakingLobby = false;
+                isStartingGame = false;
+                OnLobbyGameStarted?.Invoke(this, EventArgs.Empty);
+            }
+            else if (IsLobbyHost() && !isStartingGame && isMatchmakingLobby && joinedLobby.Players.Count >= 2)
+            {
+                StartGame();
+            }
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogWarning($"[Lobby poll] {e.Reason}: {e.Message}");
+
+            switch (e.Reason)
+            {
+                case LobbyExceptionReason.RateLimited:
+                    lobbyPollTimer = 3f;
+                    break;
+
+                case LobbyExceptionReason.LobbyNotFound:
+                case LobbyExceptionReason.EntityNotFound:
+                    if (joinedLobby == null) break;
+
+                    bool wasMatchmaker = CurrentGameMode == MatchStates.GameMode_Matchmaking;
+                    joinedLobby = null;
+                    isStartingGame = false;
+                    isMatchmakingLobby = false;
+
+                    if (wasMatchmaker)
+                        OnMatchmakerCancelled?.Invoke(this, EventArgs.Empty);
+                    else
+                        OnLeftLobby?.Invoke(this, EventArgs.Empty);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[Lobby poll] Unexpected: {e.Message}");
+        }
+        finally
+        {
+            isPolling = false;
         }
     }
     #endregion
@@ -150,34 +245,144 @@ public sealed class LobbyManager : MonoBehaviour
 
     private Unity.Services.Lobbies.Models.Player GetPlayer()
     {
-        return new Unity.Services.Lobbies.Models.Player(AuthenticationService.Instance.PlayerId, null, new Dictionary<string, PlayerDataObject> {
-            { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, playerName) },
-        });
+        return new Unity.Services.Lobbies.Models.Player(
+            AuthenticationService.Instance.PlayerId,
+            null,
+            new Dictionary<string, PlayerDataObject>
+            {
+                { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, playerName) },
+                { KEY_PLAYER_MMR,  new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, RatingService.Instance.Data.CurMmr.ToString()) },
+            });
     }
     #endregion
 
     public void SetActiveLobbyList(bool active) => lobbyList.SetActive(active);
+
+    #region Matchmaker
+    public async void Matchmaker()
+    {
+        if (joinedLobby != null) return;
+        isMatchmakingCancelled = false;
+
+        try
+        {
+            Unity.Services.Lobbies.Models.Player player = GetPlayer();
+
+            QuickJoinLobbyOptions options = new()
+            {
+                Player = player,
+                Filter = new List<QueryFilter>
+                {
+                    new(QueryFilter.FieldOptions.S1, currentGameVersion, QueryFilter.OpOptions.EQ),
+                    new(QueryFilter.FieldOptions.AvailableSlots, "1", QueryFilter.OpOptions.EQ),
+                   new(QueryFilter.FieldOptions.S2, MatchStates.GameMode_Matchmaking, QueryFilter.OpOptions.EQ),
+                }
+            };
+
+            Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync(options);
+            CurrentGameMode = MatchStates.GameMode_Matchmaking;
+            if (isMatchmakingCancelled)
+            {
+                await LobbyService.Instance.RemovePlayerAsync(lobby.Id, AuthenticationService.Instance.PlayerId);
+                isMatchmakingCancelled = false;
+                CurrentGameMode = null;
+                return;
+            }
+
+            isMatchmakingLobby = false;
+            joinedLobby = lobby;
+            OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+        }
+        catch (LobbyServiceException e)
+        {
+            if (isMatchmakingCancelled)
+            {
+                isMatchmakingCancelled = false;
+                CurrentGameMode = null;
+                return;
+            }
+
+            if (e.Reason == LobbyExceptionReason.LobbyNotFound
+                || e.Reason == LobbyExceptionReason.EntityNotFound
+                || e.Reason == LobbyExceptionReason.NoOpenLobbies)
+            {
+                await CreateMatchmakerLobby();
+            }
+            else
+            {
+                Debug.LogWarning($"[Matchmaker] QuickJoin failed: {e.Reason}");
+                ModalViewWindowController.Instance.ShowHorizontal(false, "[Matchmaker] QuickJoin failed:",
+                    $"Context: {e.Reason}\n", true, altTxt: "Ok", altAction: () => { });
+            }
+        }
+    }
+
+    private async Task CreateMatchmakerLobby()
+    {
+        try
+        {
+            Unity.Services.Lobbies.Models.Player player = GetPlayer();
+
+            CreateLobbyOptions options = new()
+            {
+                Player = player,
+                IsPrivate = false,
+                Data = new Dictionary<string, DataObject>
+                {
+                    { KEY_START_STATUS, new DataObject(DataObject.VisibilityOptions.Member, LOBBY_STATUS_WAITING) },
+                    { KEY_RELAY_CODE,   new DataObject(DataObject.VisibilityOptions.Member, "") },
+                    { KEY_GAME_VERSION, new DataObject(DataObject.VisibilityOptions.Public, currentGameVersion, index: DataObject.IndexOptions.S1) },
+                    { KEY_GAME_MODE, new DataObject(DataObject.VisibilityOptions.Public, MatchStates.GameMode_Matchmaking, index: DataObject.IndexOptions.S2) },
+                }
+            };
+
+            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(MatchStates.GameMode_Matchmaking, 2, options);
+            CurrentGameMode = MatchStates.GameMode_Matchmaking;
+
+            if (isMatchmakingCancelled)
+            {
+                await LobbyService.Instance.DeleteLobbyAsync(lobby.Id);
+                isMatchmakingCancelled = false;
+                CurrentGameMode = null;
+                return;
+            }
+
+            matchmakerWaitStartTime = Time.realtimeSinceStartup;
+            isMatchmakingLobby = true;
+            joinedLobby = lobby;
+            OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
+        }
+        catch (LobbyServiceException e)
+        {
+            isMatchmakingCancelled = false;
+            Debug.LogError(e);
+        }
+    }
+    #endregion
 
     #region HostCanDo
     public async void CreateLobby(string lobbyName, int maxPlayers, bool isPrivate)
     {
         Unity.Services.Lobbies.Models.Player player = GetPlayer();
 
-        CreateLobbyOptions options = new CreateLobbyOptions
+        CreateLobbyOptions options = new()
         {
             Player = player,
             IsPrivate = isPrivate,
             Data = new Dictionary<string, DataObject>
-            {
-                {KEY_START_GAME, new DataObject(visibility: DataObject.VisibilityOptions.Member, value: "0") },
-                {KEY_GAME_VERSION, new DataObject(DataObject.VisibilityOptions.Public, currentGameVersion, index: DataObject.IndexOptions.S1) }
-            }
+                {
+                    { KEY_START_STATUS, new DataObject(DataObject.VisibilityOptions.Member, LOBBY_STATUS_WAITING) },
+                    { KEY_RELAY_CODE,   new DataObject(DataObject.VisibilityOptions.Member, "") },
+                    {KEY_GAME_VERSION, new DataObject(DataObject.VisibilityOptions.Public, currentGameVersion, index: DataObject.IndexOptions.S1) },
+                    { KEY_GAME_MODE, new DataObject(DataObject.VisibilityOptions.Public, MatchStates.GameMode_CustomLobby, index: DataObject.IndexOptions.S2) },
+                }
         };
 
         Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, options);
+        CurrentGameMode = MatchStates.GameMode_CustomLobby;
 
         joinedLobby = lobby;
-
+        isMatchmakingLobby = false;
         OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
     }
 
@@ -198,23 +403,40 @@ public sealed class LobbyManager : MonoBehaviour
 
     public async void StartGame()
     {
-        if (IsLobbyHost())
+        if (!IsLobbyHost() || isStartingGame) return;
+        isStartingGame = true;
+
+        try
         {
-            try
+            string relayCode = await Relay.Instance.CreateRelay();
+            if (string.IsNullOrEmpty(relayCode))
             {
-                string relayCode = await Relay.Instance.CreateRelay();
-
-                Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
-                {
-                    Data = new Dictionary<string, DataObject>
-                    {
-                        {KEY_START_GAME, new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
-                    }
-                });
-
-                joinedLobby = lobby;
+                ModalViewWindowController.Instance.ShowHorizontal(false, "Relay code is empty",
+    $"Relay code: {relayCode}\n", true, altTxt: "Ok", altAction: () => { });
+                isStartingGame = false;
+                return;
             }
-            catch (LobbyServiceException) { }
+
+            Lobby lobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
+            {
+                Data = new Dictionary<string, DataObject>
+                        {
+                            { KEY_START_STATUS, new DataObject(DataObject.VisibilityOptions.Member, LOBBY_STATUS_STARTED) },
+                            { KEY_RELAY_CODE,   new DataObject(DataObject.VisibilityOptions.Member, relayCode) }
+                        }
+            });
+
+            joinedLobby = lobby;
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogError($"[StartGame] Lobby: {e.Reason}: {e.Message}");
+            isStartingGame = false;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[StartGame] {e.GetType().Name}: {e.Message}");
+            isStartingGame = false;
         }
     }
     #endregion
@@ -228,22 +450,18 @@ public sealed class LobbyManager : MonoBehaviour
             {
                 Count = 25,
 
-                // Filter for open lobbies only
                 Filters = new List<QueryFilter>
                 {
-                    new(
-                        field: QueryFilter.FieldOptions.AvailableSlots,
-                        op: QueryFilter.OpOptions.GT,
-                        value: "0"),
-                    new(QueryFilter.FieldOptions.S1, currentGameVersion, QueryFilter.OpOptions.EQ)
+                    new(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT),
+                    new(QueryFilter.FieldOptions.S1, currentGameVersion, QueryFilter.OpOptions.EQ),
+                    new(QueryFilter.FieldOptions.S2, MatchStates.GameMode_Matchmaking, QueryFilter.OpOptions.NE),
                 },
 
-                // Order by newest lobbies first
                 Order = new List<QueryOrder> {
-                    new(
-                        asc: false,
-                        field: QueryOrder.FieldOptions.Created)
-                }
+                        new(
+                            asc: false,
+                            field: QueryOrder.FieldOptions.Created)
+                    }
             };
 
             QueryResponse lobbyListQueryResponse = await Lobbies.Instance.QueryLobbiesAsync(options);
@@ -260,58 +478,67 @@ public sealed class LobbyManager : MonoBehaviour
     {
         this.playerName = playerName;
 
-        if (joinedLobby != null)
+        if (joinedLobby == null) return;
+
+        try
         {
-            try
+            UpdatePlayerOptions options = new()
             {
-                UpdatePlayerOptions options = new()
+                Data = new Dictionary<string, PlayerDataObject>
                 {
-                    Data = new Dictionary<string, PlayerDataObject>() {
-                        {
-                            KEY_PLAYER_NAME, new PlayerDataObject(
-                                visibility: PlayerDataObject.VisibilityOptions.Public,
-                                value: playerName)
-                        }
-                    }
-                };
+                    { KEY_PLAYER_NAME, new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, playerName) },
+                    { KEY_PLAYER_MMR,  new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, RatingService.Instance.Data.CurMmr.ToString()) },
+                }
+            };
 
-                string playerId = AuthenticationService.Instance.PlayerId;
+            string playerId = AuthenticationService.Instance.PlayerId;
+            Lobby lobby = await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, playerId, options);
+            joinedLobby = lobby;
 
-                Lobby lobby = await LobbyService.Instance.UpdatePlayerAsync(joinedLobby.Id, playerId, options);
-                joinedLobby = lobby;
-
-                OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.LogError(e);
-            }
+            OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogError(e);
         }
     }
 
     public async void LeaveLobby()
     {
-        if (joinedLobby != null)
+        if (joinedLobby == null) return;
+
+        bool wasMatchmaker = CurrentGameMode == MatchStates.GameMode_Matchmaking;
+        string lobbyId = joinedLobby.Id;
+        bool iAmHost = IsLobbyHost();
+
+        joinedLobby = null;
+        isStartingGame = false;
+        isMatchmakingLobby = false;
+        isMatchmakingCancelled = false;
+
+        try
         {
-            try
-            {
-                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
-
-                joinedLobby = null;
-
-                OnLeftLobby?.Invoke(this, EventArgs.Empty);
-            }
-            catch (LobbyServiceException e)
-            {
-                Debug.Log(e);
-            }
+            if (iAmHost && wasMatchmaker)
+                await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
+            else
+                await LobbyService.Instance.RemovePlayerAsync(lobbyId, AuthenticationService.Instance.PlayerId);
         }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogWarning($"[LeaveLobby] {e.Reason}: {e.Message}");
+        }
+
+        if (wasMatchmaker)
+            OnMatchmakerCancelled?.Invoke(this, EventArgs.Empty);
+        else
+            OnLeftLobby?.Invoke(this, EventArgs.Empty);
     }
     #endregion
 
     #region ClientCanDo
     public async void JoinLobbyByCode(string lobbyCode)
     {
+        isMatchmakingLobby = false;
         Unity.Services.Lobbies.Models.Player player = GetPlayer();
 
         Lobby lobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, new JoinLobbyByCodeOptions
@@ -319,14 +546,14 @@ public sealed class LobbyManager : MonoBehaviour
             Player = player
         });
 
-        if(!lobby.Data.TryGetValue(KEY_GAME_VERSION, out DataObject versionData) || versionData.Value != currentGameVersion)
+        if (!lobby.Data.TryGetValue(KEY_GAME_VERSION, out DataObject versionData) || versionData.Value != currentGameVersion)
         {
             ModalViewWindowController.Instance.ShowHorizontal(false, "Version does not match",
                 $"Your version:{currentGameVersion}\n" +
                 $"Lobby Version:{versionData.Value}", true, altTxt: "Ok", altAction: () => { });
             return;
         }
-
+        CurrentGameMode = ReadGameModeFromLobby(lobby);
         joinedLobby = lobby;
         OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
     }
@@ -340,6 +567,8 @@ public sealed class LobbyManager : MonoBehaviour
             Player = player
         });
 
+        CurrentGameMode = ReadGameModeFromLobby(lobby);
+        isMatchmakingLobby = false;
         OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
     }
 
@@ -358,7 +587,8 @@ public sealed class LobbyManager : MonoBehaviour
 
             Lobby lobby = await LobbyService.Instance.QuickJoinLobbyAsync(options);
             joinedLobby = lobby;
-
+            CurrentGameMode = ReadGameModeFromLobby(lobby);
+            isMatchmakingLobby = false;
             OnJoinedLobby?.Invoke(this, new LobbyEventArgs { lobby = lobby });
         }
         catch (LobbyServiceException)
@@ -370,4 +600,12 @@ public sealed class LobbyManager : MonoBehaviour
         }
     }
     #endregion
+
+    string ReadGameModeFromLobby(Lobby lobby)
+    {
+        if (lobby?.Data == null) return MatchStates.GameMode_CustomLobby;
+        if (!lobby.Data.TryGetValue(KEY_GAME_MODE, out var data)) return MatchStates.GameMode_CustomLobby;
+        if (string.IsNullOrEmpty(data.Value)) return MatchStates.GameMode_CustomLobby;
+        return data.Value;
+    }
 }

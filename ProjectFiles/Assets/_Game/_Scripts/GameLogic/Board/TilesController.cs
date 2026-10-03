@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public sealed class TilesController : MonoBehaviour
 {
     [SerializeField] Mesh tileMesh;
+    [SerializeField] Color highlightColor,
+        darkAccentColor, lightAccentColor, hoverColor;
 
     public Tile[,] tiles;
 
@@ -18,6 +18,13 @@ public sealed class TilesController : MonoBehaviour
     List<Vector2Int> darkAccentTiles = new();
     List<Vector2Int> lightAccentTiles = new();
     Vector3 offset;
+    Vector2Int hoverCoord = -Vector2Int.one;
+    bool hoverOverHighlight = false;
+
+    MaterialPropertyBlock highlightBlock;
+    MaterialPropertyBlock darkAccentBlock;
+    MaterialPropertyBlock lightAccentBlock;
+    MaterialPropertyBlock hoverBlock;
 
     public void SetSettings()
     {
@@ -27,6 +34,18 @@ public sealed class TilesController : MonoBehaviour
         tileCountY = match.matchSettings.tileCountY;
         tileSize = match.matchSettings.tileSize;
         offset = new();
+
+        highlightBlock = new MaterialPropertyBlock();
+        highlightBlock.SetColor("_BaseEmission", highlightColor);
+
+        darkAccentBlock = new MaterialPropertyBlock();
+        darkAccentBlock.SetColor("_BaseEmission", darkAccentColor);
+
+        lightAccentBlock = new MaterialPropertyBlock();
+        lightAccentBlock.SetColor("_BaseEmission", lightAccentColor);
+
+        hoverBlock = new MaterialPropertyBlock();
+        hoverBlock.SetColor("_BaseEmission", hoverColor);
     }
 
     #region GenerateAndDestroy
@@ -62,9 +81,10 @@ public sealed class TilesController : MonoBehaviour
         meshFilter.mesh = tileMesh;
 
         MeshRenderer renderer = tileObject.AddComponent<MeshRenderer>();
-        renderer.material = material;
+        renderer.sharedMaterial = material;
         renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+        tile.render = renderer;
 
         tileObject.AddComponent<BoxCollider>();
 
@@ -79,28 +99,6 @@ public sealed class TilesController : MonoBehaviour
         tile.tileCenter = tileObject.transform.position +
             new Vector3(-scaledSize.x / 2, scaledSize.y, -scaledSize.z / 2);
         tile.coord = new Vector2Int(x, y);
-
-        tileObject.isStatic = true;
-
-#if UNITY_EDITOR
-        TextMeshPro textTile = new GameObject(string.Format($"TEXT. X: {x}, Y: {y}")).AddComponent<TextMeshPro>();
-        textTile.gameObject.transform.SetParent(tileObject.transform);
-        textTile.gameObject.transform.SetLocalPositionAndRotation(
-            new Vector3(-0.5f, 0.5f, -0.5f), Quaternion.Euler(90, 0, 0));
-        textTile.GetComponent<RectTransform>().sizeDelta = new Vector2(1, 1);
-        textTile.gameObject.layer = LayerMask.NameToLayer("Card");
-        textTile.text = "0";
-        textTile.color = new Color(50, 50, 50)
-        {
-            a = 100
-        };
-        textTile.enableAutoSizing = true;
-        textTile.fontSizeMin = 1;
-        textTile.alignment = TextAlignmentOptions.Center;
-        tile.displayText = textTile;
-        tile.displayText.gameObject.SetActive(false);
-#endif
-
 
         return tile;
     }
@@ -125,20 +123,62 @@ public sealed class TilesController : MonoBehaviour
     }
     #endregion
 
-    #region HighLight
-    public bool IsHighlighTile(Vector2Int tile)
+    public void SetHoverPriority(bool overHighlight)
     {
-        return highlightTiles.Contains(tile);
+        if (hoverOverHighlight == overHighlight) return;
+        hoverOverHighlight = overHighlight;
+
+        if (hoverCoord != -Vector2Int.one)
+            ApplyTileVisual(tiles[hoverCoord.x, hoverCoord.y]);
     }
+
+    private void ApplyTileVisual(Tile tile)
+    {
+        bool isHighlight = highlightTiles.Contains(tile.coord);
+        bool isHover = hoverCoord == tile.coord;
+
+        if (isHover && (hoverOverHighlight || !isHighlight))
+            tile.render.SetPropertyBlock(hoverBlock);
+        else if (isHighlight)
+            tile.render.SetPropertyBlock(highlightBlock);
+        else if (darkAccentTiles.Contains(tile.coord))
+            tile.render.SetPropertyBlock(darkAccentBlock);
+        else if (lightAccentTiles.Contains(tile.coord))
+            tile.render.SetPropertyBlock(lightAccentBlock);
+        else
+            tile.render.SetPropertyBlock(null);
+    }
+
+    public void SetHoverTile(Vector2Int coord)
+    {
+        if (hoverCoord == coord) return;
+
+        Vector2Int oldHover = hoverCoord;
+        hoverCoord = coord; 
+
+        if (oldHover != -Vector2Int.one)
+            ApplyTileVisual(tiles[oldHover.x, oldHover.y]);
+
+        if (coord != -Vector2Int.one)
+            ApplyTileVisual(tiles[coord.x, coord.y]);
+    }
+
+    public void ClearHover() => SetHoverTile(-Vector2Int.one);
+
+    #region HighLight
+    public bool IsHighlighTile(Vector2Int tile) { return highlightTiles.Contains(tile); }
+    public bool IsDarkAccentTile(Vector2Int tile) { return darkAccentTiles.Contains(tile); }
+    public bool IsLightAccentTile(Vector2Int tile) { return lightAccentTiles.Contains(tile); }
 
     public void HighlighTiles(List<Vector2Int> availableMoves)
     {
         for (int i = 0; i < availableMoves.Count; i++)
         {
-            if (highlightTiles.Contains(tiles[availableMoves[i].x, availableMoves[i].y].coord)) continue;
+            var tile = tiles[availableMoves[i].x, availableMoves[i].y];
+            if (highlightTiles.Contains(tile.coord)) continue;
 
-            tiles[availableMoves[i].x, availableMoves[i].y].gameObject.layer = LayerMask.NameToLayer("Highlight");
-            highlightTiles.Add(tiles[availableMoves[i].x, availableMoves[i].y].coord);
+            highlightTiles.Add(tile.coord);
+            ApplyTileVisual(tile);
         }
     }
 
@@ -146,78 +186,58 @@ public sealed class TilesController : MonoBehaviour
     {
         for (int i = 0; i < needRemoveHighlightTiles.Count; i++)
         {
-            if (!highlightTiles.Contains(needRemoveHighlightTiles[i])) continue;
+            var tile = tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y];
+            if (!highlightTiles.Contains(tile.coord)) continue;
 
-            if (darkAccentTiles.Contains(needRemoveHighlightTiles[i]))
-                tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
-            else
-                tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("Tile");
-
-            if (lightAccentTiles.Contains(needRemoveHighlightTiles[i]))
-                tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
-            else
-                tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("Tile");
-
-            highlightTiles.Remove(tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y].coord);
+            highlightTiles.Remove(tile.coord);
+            ApplyTileVisual(tile);
         }
     }
 
     public void RemoveAllHighlightExcludeCurrentOnes(List<Vector2Int> currentHighlightTiles)
     {
-        for (int i = 0; i < highlightTiles.Count; i++)
+        for (int i = highlightTiles.Count - 1; i >= 0; i--)
         {
-            if (!currentHighlightTiles.Contains(highlightTiles[i]))
+            var coord = highlightTiles[i];
+            if (!currentHighlightTiles.Contains(coord))
             {
-                if (darkAccentTiles.Contains(highlightTiles[i]))
-                    tiles[highlightTiles[i].x, highlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
-                else
-                    tiles[highlightTiles[i].x, highlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("Tile");
-
-                if (lightAccentTiles.Contains(highlightTiles[i]))
-                    tiles[highlightTiles[i].x, highlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
-                else
-                    tiles[highlightTiles[i].x, highlightTiles[i].y].gameObject.layer = LayerMask.NameToLayer("Tile");
-
-                highlightTiles.Remove(highlightTiles[i]);
+                highlightTiles.RemoveAt(i);
+                ApplyTileVisual(tiles[coord.x, coord.y]);
             }
         }
     }
 
     public void RemoveAllHighlight()
     {
-        foreach (var tileCoord in highlightTiles)
-            if (darkAccentTiles.Contains(tileCoord))
-                tiles[tileCoord.x, tileCoord.y].gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
-            else if (darkAccentTiles.Contains(tileCoord))
-                tiles[tileCoord.x, tileCoord.y].gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
-            else
-                tiles[tileCoord.x, tileCoord.y].gameObject.layer = LayerMask.NameToLayer("Tile");
-
-        highlightTiles.Clear();
+        for (int i = highlightTiles.Count - 1; i >= 0; i--)
+        {
+            var coord = highlightTiles[i];
+            highlightTiles.RemoveAt(i);
+            ApplyTileVisual(tiles[coord.x, coord.y]);
+        }
     }
     #endregion
 
     #region Accent
-    public bool IsDarkAccentTile(Vector2Int tile) { return darkAccentTiles.Contains(tile); }
-    public bool IsLightAccentTile(Vector2Int tile) { return lightAccentTiles.Contains(tile); }
 
     public void AccentTiles(List<Vector2Int> availableMoves, bool dark)
     {
         for (int i = 0; i < availableMoves.Count; i++)
         {
-            if (dark && darkAccentTiles.Contains(tiles[availableMoves[i].x, availableMoves[i].y].coord)) continue;
-            if (!dark && lightAccentTiles.Contains(tiles[availableMoves[i].x, availableMoves[i].y].coord)) continue;
+            var tile = tiles[availableMoves[i].x, availableMoves[i].y];
 
             if (dark)
             {
-                tiles[availableMoves[i].x, availableMoves[i].y].gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
-                darkAccentTiles.Add(tiles[availableMoves[i].x, availableMoves[i].y].coord);
+                if (darkAccentTiles.Contains(tile.coord)) continue;
+                darkAccentTiles.Add(tile.coord);
             }
             else
             {
-                tiles[availableMoves[i].x, availableMoves[i].y].gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
-                lightAccentTiles.Add(tiles[availableMoves[i].x, availableMoves[i].y].coord);
+                if (lightAccentTiles.Contains(tile.coord)) continue;
+                lightAccentTiles.Add(tile.coord);
             }
+
+            ApplyTileVisual(tile);
         }
     }
 
@@ -225,27 +245,37 @@ public sealed class TilesController : MonoBehaviour
     {
         for (int i = 0; i < needRemoveAccentTiles.Count; i++)
         {
-            if (dark && !darkAccentTiles.Contains(tiles[needRemoveAccentTiles[i].x, needRemoveAccentTiles[i].y].coord)) continue;
-            if (!dark && !lightAccentTiles.Contains(tiles[needRemoveAccentTiles[i].x, needRemoveAccentTiles[i].y].coord)) continue;
+            var tile = tiles[needRemoveAccentTiles[i].x, needRemoveAccentTiles[i].y];
 
-            tiles[needRemoveAccentTiles[i].x, needRemoveAccentTiles[i].y].gameObject.layer = LayerMask.NameToLayer("Tile");
-
-            if(dark)
-                darkAccentTiles.Remove(tiles[needRemoveAccentTiles[i].x, needRemoveAccentTiles[i].y].coord);
+            if (dark)
+            {
+                if (!darkAccentTiles.Contains(tile.coord)) continue;
+                darkAccentTiles.Remove(tile.coord);
+            }
             else
-                lightAccentTiles.Remove(tiles[needRemoveAccentTiles[i].x, needRemoveAccentTiles[i].y].coord);
+            {
+                if (!lightAccentTiles.Contains(tile.coord)) continue;
+                lightAccentTiles.Remove(tile.coord);
+            }
+
+            ApplyTileVisual(tile);
         }
     }
 
     public void RemoveAllAccent()
     {
-        foreach (var tileCoord in darkAccentTiles)
-            tiles[tileCoord.x, tileCoord.y].gameObject.layer = LayerMask.NameToLayer("Tile");
-        foreach (var tileCoord in lightAccentTiles)
-            tiles[tileCoord.x, tileCoord.y].gameObject.layer = LayerMask.NameToLayer("Tile");
-
-        darkAccentTiles.Clear();
-        lightAccentTiles.Clear();
+        for (int i = darkAccentTiles.Count - 1; i >= 0; i--)
+        {
+            var coord = darkAccentTiles[i];
+            darkAccentTiles.RemoveAt(i);
+            ApplyTileVisual(tiles[coord.x, coord.y]);
+        }
+        for (int i = lightAccentTiles.Count - 1; i >= 0; i--)
+        {
+            var coord = lightAccentTiles[i];
+            lightAccentTiles.RemoveAt(i);
+            ApplyTileVisual(tiles[coord.x, coord.y]);
+        }
     }
     #endregion
 }

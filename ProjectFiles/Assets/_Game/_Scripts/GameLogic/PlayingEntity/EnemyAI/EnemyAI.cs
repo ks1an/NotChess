@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum Complexity
@@ -14,9 +16,12 @@ public enum Complexity
 [RequireComponent(typeof(EnemyAIPlanner))]
 public sealed class EnemyAI : MonoBehaviour
 {
-    private static WaitForSeconds _waitForSeconds1 = new WaitForSeconds(1f);
+    private static WaitForSeconds _waitForSeconds = new(1f);
+    private Coroutine currentTurnCoroutine;
+    private CancellationTokenSource myTurnCts;
     [HideInInspector] public PlayingEntity myEntity;
     [HideInInspector] public EnemyAI_Sensors sensor;
+
 
     public EnemyAI_SO dataBase;
 
@@ -28,7 +33,6 @@ public sealed class EnemyAI : MonoBehaviour
     HTN_CardPlanner cardAI;
     TileEstimatorForAI estimator;
     MatchStates states;
-    readonly MathOperations mathOp = MathOperations.GetInstance();
 
     EnemyAIPlanner planner;
 
@@ -69,7 +73,7 @@ public sealed class EnemyAI : MonoBehaviour
         {
             if (isWorking && !isTakingTurn)
             {
-                StartEnemyTurn();
+                MakeTurn();
             }
         }
     }
@@ -77,41 +81,64 @@ public sealed class EnemyAI : MonoBehaviour
     void DoSomeOnTurnEnded(int x, int y, Team team) => IsMyTurnOrNot();
     #endregion
 
-    public void StartEnemyTurn()
+    public void MakeTurn()
     {
-        if (isTakingTurn) return;
-        isTakingTurn = true;
+        if (!gameObject.activeInHierarchy || !enabled)
+            return;
 
-        if (states.isDemonstrationMatchAiVsAi)
-            sensor.myTeam = states.isMoveOfZero ? Team.Zero : Team.Cross;
+        CancelMySearch();
 
-        StartCoroutine(GetMoveWithWait());
+        myTurnCts = new CancellationTokenSource();
+        currentTurnCoroutine = StartCoroutine(GetMoveWithWait(myTurnCts.Token));
     }
 
-    private IEnumerator GetMoveWithWait()
+    private IEnumerator GetMoveWithWait(CancellationToken token)
     {
-        yield return _waitForSeconds1;
+        yield return _waitForSeconds;
 
-        var task = planner.GetBestMoveAsync();
+        if (token.IsCancellationRequested) yield break;
+
+        // Передаем локальный токен конкретного бота
+        var task = planner.GetBestMoveAsync(sensor.myTeam, token);
 
         while (!task.IsCompleted)
         {
+            if (token.IsCancellationRequested) yield break;
             yield return null;
         }
 
-        if (task.IsCanceled || task.IsFaulted || task.Result.Equals(default(EnemyAIAction)))
+        if (task.IsFaulted && task.Exception != null)
         {
+            Debug.LogError($"[MinMax Crash]: {task.Exception.InnerException}");
+            yield break;
+        }
+
+        if (token.IsCancellationRequested || task.IsCanceled)
+        {
+            Debug.Log("Enemy is canceled move. My team: " + myEntity.GetLocalPlayerTeam());
             yield break;
         }
 
         EnemyAIAction bestMove = task.Result;
+
+        if (bestMove.Type == ActionType.None)
+        {
+            Debug.LogError("[MinMax] bot valid moves = 0!");
+            yield break;
+        }
+
         ExecuteMove(bestMove);
+        planner.RecordBoardState(planner.CaptureFastState(myEntity.GetLocalPlayerTeam()));
     }
 
     private void ExecuteMove(EnemyAIAction bestMove)
     {
         switch (bestMove.Type)
         {
+            case ActionType.None:
+                Debug.LogWarning("[EnemyAI] Bot has no valid move. Skipping turn.");
+                EndEnemyTurn(() => { });
+                break;
             case ActionType.PlacePawn:
                 var pawn = myEntity.GetLocalPlayerTeam() == Team.Zero
                     ? GameController.Instance.player.zeroPawnPrefab
@@ -125,7 +152,9 @@ public sealed class EnemyAI : MonoBehaviour
                     bestMove.SourceCell.x, bestMove.SourceCell.y,
                     bestMove.TargetCell.x, bestMove.TargetCell.y));
                 break;
-
+            case ActionType.PlayCard:
+                ApplyCardAndContinueTurn(bestMove);
+                break;
             default:
                 Debug.LogError($"Error move! BestMoveType: {bestMove.Type}");
                 EndEnemyTurn(() => { });
@@ -133,31 +162,67 @@ public sealed class EnemyAI : MonoBehaviour
         }
     }
 
-    public void DoMove()
+    private void ApplyCardAndContinueTurn(EnemyAIAction cardMove)
     {
-        EnemyAIAction bestMove = planner.GetBestMove();
-        switch (bestMove.Type)
+        if (cardMove.CardToPlay != null)
         {
-            case ActionType.PlacePawn:
-                var pawn = myEntity.GetLocalPlayerTeam() == Team.Zero
-                    ? GameController.Instance.player.zeroPawnPrefab
-                    : GameController.Instance.player.crossPawnPrefab;
-                EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(
-                    bestMove.TargetCell.x, bestMove.TargetCell.y, sensor.myTeam, pawn));
-                break;
+            cardMove.CardToPlay.Init(myEntity.GetLocalPlayerTeam());
+            cardMove.CardToPlay.UseCard(cardMove.CardTargets, false);
+            if (myEntity.GetLocalPlayerTeam() == GameController.Instance.player.GetLocalPlayerTeam())
+            {
+                GameController.Instance.player.DeacreaseMana(cardMove.CardToPlay.ManaCost);
+                GameController.Instance.player.DeacreaseGraveTokens(cardMove.CardToPlay.GraveTokensCost);
+            }
+            else
+            {
+                GameController.Instance.enemy.DeacreaseMana(cardMove.CardToPlay.ManaCost);
+                GameController.Instance.enemy.DeacreaseGraveTokens(cardMove.CardToPlay.GraveTokensCost);
+            }
+        }
+        StartCoroutine(ContinueTurnRoutine());
+    }
 
-            case ActionType.AttackPawn:
-                EndEnemyTurn(() => states.move.MoveUnit(
-                    bestMove.SourceCell.x, bestMove.SourceCell.y,
-                    bestMove.TargetCell.x, bestMove.TargetCell.y));
-                break;
+    private IEnumerator ContinueTurnRoutine()
+    {
+        yield return _waitForSeconds;
 
-            default:
-                Debug.LogError($"Error move! BestMoveType: {bestMove.Type}");
-                EndEnemyTurn(() => { });
-                break;
+        if (isWorking && ((states.isMoveOfZero && sensor.myTeam == Team.Zero) ||
+                          (!states.isMoveOfZero && sensor.myTeam == Team.Cross)))
+        {
+            MakeTurn();
         }
     }
+
+    public void CancelMySearch()
+    {
+        if (myTurnCts != null)
+        {
+            try
+            {
+                if (!myTurnCts.IsCancellationRequested)
+                    myTurnCts.Cancel();
+            }
+            catch { }
+            finally
+            {
+                myTurnCts.Dispose();
+                myTurnCts = null;
+            }
+        }
+
+        if (currentTurnCoroutine != null)
+        {
+            StopCoroutine(currentTurnCoroutine);
+            currentTurnCoroutine = null;
+        }
+    }
+
+    public void OnGameReset()
+    {
+        CancelMySearch();
+        IsMyTurnOrNot();
+    }
+
 
     public void EndEnemyTurn(Action action)
     {
@@ -173,26 +238,13 @@ public sealed class EnemyAI : MonoBehaviour
         estimator.StopEstimate();
         sensor.Destroy();
         cardAI.KillPlanner();
+        OnGameReset();
     }
 
     void OnDisable()
     {
         GameController.Instance.states.OnTurnEnded -= DoSomeOnTurnEnded;
         GameController.Instance.states.OnGameStarted -= OnGameReset;
-    }
-
-    public void OnGameReset()
-    {
-        StopAllCoroutines();
-        if (planner != null)
-        {
-            planner.CancelPendingSearch();
-            IsMyTurnOrNot();
-        }
-    }
-
-    private void OnDestroy()
-    {
-        
+        OnGameReset();
     }
 }

@@ -52,6 +52,7 @@ public class Card : MonoBehaviour
     #region Sets
     void TryBlockSetDisplayNameByLocals(bool b)
     {
+        if (this == null || !gameObject) return;
         showOnlyOriginalName = b;
         if (b)
         {
@@ -94,6 +95,7 @@ public class Card : MonoBehaviour
 
     void UpdateCardUI()
     {
+        if (this == null || !gameObject) return;
         if (CardUI != null)
             CardUI.SetCardUI();
         else
@@ -130,7 +132,10 @@ public class Card : MonoBehaviour
 
     public virtual void UseCard(List<Vector2Int> moves, bool isSynced)
     {
-
+        if (!isSynced)
+        {
+            AnalyticsManager.Instance.LogCardPlayed(originalCardName, GameController.Instance.states.turnCount);
+        }
     }
 
     public virtual List<Vector2Int> GetAvailableMoves(int maxX, int maxY, int hoverX, int hoverY)
@@ -155,6 +160,11 @@ public class Card : MonoBehaviour
     private void OnEnable()
     {
         GameController.Instance.gameSettings.DontTranslateNameOfCard.OnChanged += TryBlockSetDisplayNameByLocals;
+    }
+
+    private void OnDisable()
+    {
+        GameController.Instance.gameSettings.DontTranslateNameOfCard.OnChanged -= TryBlockSetDisplayNameByLocals;
     }
 
     public void KillCard()

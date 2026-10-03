@@ -1,16 +1,25 @@
 [System.Serializable]
 public struct TileStats : IBuffableStats
 {
-    public bool CanPutOnTile;
-    public bool CanAttackTile;
-    public bool CanLeaveFromTile;
-    public DefendClass DefendClass;
+    public bool canPutOnTile;
+    public bool canAttackTile;
+    public bool canLeaveFromTile;
+    public DefendClass defendClass;
 
-    public TileStats(bool canPutOnTile, bool canAttackTile, bool canLeaveFromTile, DefendClass defendClass)
+    public int banPutDuration,
+        banAttackDuration,
+        banLeaveDuration;
+
+    public TileStats(bool canPutOnTile, bool canAttackTile, bool canLeaveFromTile, DefendClass defendClass, 
+        int banPutOnTileDuration, int banAttackTileDur, int banLeaveFromTileDur)
     {
-        CanPutOnTile = canPutOnTile;
-        CanAttackTile = canAttackTile;
-        CanLeaveFromTile = canLeaveFromTile;
-        DefendClass = defendClass;
+        this.canPutOnTile = canPutOnTile;
+        this.canAttackTile = canAttackTile;
+        this.canLeaveFromTile = canLeaveFromTile;
+        this.defendClass = defendClass;
+
+        this.banPutDuration = banPutOnTileDuration;
+        this.banAttackDuration = banAttackTileDur;
+        this.banLeaveDuration = banLeaveFromTileDur;
     }
 }

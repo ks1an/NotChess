@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public sealed class WaitingWindowController : MonoBehaviour
@@ -10,11 +11,14 @@ public sealed class WaitingWindowController : MonoBehaviour
         Instance = this;
     }
 
-    public void ShowWithRandomTxt()
+    public void Show(string title = null, string content = null, 
+        Action onBttnExit = null, bool enableTimer = false)
     {
         window.gameObject.SetActive(true);
-        window.SetRandomLoadText();
+        window.SetEnableWaitingWindow(title, content, onBttnExit, enableTimer);
     }
+
+    public void SwitchRndLoadTxt() => window.SwitchRandomLoadTxt();
 
     public void Hide()
     {

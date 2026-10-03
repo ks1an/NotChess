@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
+using static EnemyAIPlanner;
 
 //The dinosaurs won't like this. Oh, I mean the enemies.
-public sealed class MeteorRainCard : Card
+public sealed class MeteorRainCard : Card, ICardAI
 {
     [SerializeField] int countShells;
     [SerializeField] int radiousWidthRangeAttack;
     [SerializeField] int radiousHeightRangeAttack;
 
-    [SerializeField] GameObject spawnOnUsed;
+    [SerializeField] GameObject spawnOnUsed_Base, spawnOnUsed_Mobile;
     [field: SerializeField] InstanceParticle_SO_VB buffOnTile;
     [SerializeField] int durationEffect;
 
@@ -19,6 +20,11 @@ public sealed class MeteorRainCard : Card
     public override void Init(Team teamWhoHave)
     {
         base.Init(teamWhoHave);
+
+        if (Application.isMobilePlatform)
+        {
+            spawnOnUsed_Base = spawnOnUsed_Mobile;
+        }
     }
 
     #region OnDrag
@@ -69,7 +75,7 @@ public sealed class MeteorRainCard : Card
 
         for (int i = 0; i < moves.Count; i++)
         {
-            Instantiate(spawnOnUsed, Board.Instance.tilesController.GetTileCenter(moves[i].x, moves[i].y), Quaternion.identity)
+            Instantiate(spawnOnUsed_Base, Board.Instance.tilesController.GetTileCenter(moves[i].x, moves[i].y), Quaternion.identity)
                 .GetComponent<VisualEffect>();
 
             if (Board.Instance.tilesController.tiles[moves[i].x, moves[i].y].TryGetAroundDefend((int)AttackClass))
@@ -145,5 +151,104 @@ public sealed class MeteorRainCard : Card
             return true;
         return false;
     }
+    #endregion
+
+    #region ICardAI Implementation
+
+    public List<List<Vector2Int>> GetTargets(FastBoardState state, CellOwner myTeam)
+    {
+        var result = new List<List<Vector2Int>>();
+        CellOwner opp = myTeam == CellOwner.Zero ? CellOwner.Cross : CellOwner.Zero;
+
+        for (int cx = 0; cx < state.Width; cx++)
+        {
+            for (int cy = 0; cy < state.Height; cy++)
+            {
+                var areaMoves = GetAvailableMovesFast(state.Width, state.Height, cx, cy);
+                if (areaMoves == null || areaMoves.Count == 0) continue;
+
+                int enemyCount = 0;
+                int friendCount = 0;
+
+                foreach (var cell in areaMoves)
+                {
+                    CellOwner owner = state.Board[cell.x, cell.y];
+                    if (owner == opp) enemyCount++;
+                    else if (owner == myTeam) friendCount++;
+                }
+
+                if (enemyCount >= 2 && friendCount < enemyCount)
+                {
+                    result.Add(areaMoves);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public FastBoardState ApplyToState(FastBoardState state, List<Vector2Int> targets, CellOwner myTeam)
+    {
+        if (targets == null || targets.Count == 0) return state;
+
+        CellOwner opp = myTeam == CellOwner.Zero ? CellOwner.Cross : CellOwner.Zero;
+        if (targets.Count == 0) return state;
+
+        float hitProbability = 1.0f - Mathf.Pow((float)(targets.Count - 1) / targets.Count, countShells);
+
+        var enemyCells = new List<Vector2Int>();
+        foreach (var cell in targets)
+        {
+            if (state.Board[cell.x, cell.y] == opp)
+            {
+                enemyCells.Add(cell);
+            }
+        }
+
+        int expectedKills = Mathf.RoundToInt(enemyCells.Count * hitProbability);
+        for (int i = 0; i < expectedKills && i < enemyCells.Count; i++)
+        {
+            Vector2Int target = enemyCells[i];
+            state.Board[target.x, target.y] = CellOwner.None;
+        }
+
+        state.Mana -= ManaCost;
+        state.Bones -= GraveTokensCost;
+
+        return state;
+    }
+
+    // Чистая генерация области для симулятора (без вызова Board.Instance)
+    private List<Vector2Int> GetAvailableMovesFast(int maxX, int maxY, int hoverX, int hoverY)
+    {
+        List<Vector2Int> availables = new();
+        if (hoverX < 0 || hoverY < 0) return availables;
+
+        int leftXFlaw = Math.Max(0, radiousWidthRangeAttack - hoverX);
+        int rightXFlaw = Math.Max(0, hoverX + radiousWidthRangeAttack - maxX);
+        int downYFlaw = Math.Max(0, radiousHeightRangeAttack - hoverY);
+        int upYFlaw = Math.Max(0, hoverY + radiousHeightRangeAttack - maxY);
+
+        int adjustedX = hoverX + leftXFlaw - rightXFlaw;
+        int adjustedY = hoverY + downYFlaw - upYFlaw;
+
+        if (adjustedX - radiousWidthRangeAttack >= 0 &&
+            adjustedX + radiousWidthRangeAttack <= maxX &&
+            adjustedY - radiousHeightRangeAttack >= 0 &&
+            adjustedY + radiousHeightRangeAttack <= maxY)
+        {
+            for (int x = adjustedX - radiousWidthRangeAttack; x < adjustedX + radiousWidthRangeAttack; x++)
+            {
+                for (int y = adjustedY - radiousHeightRangeAttack; y < adjustedY + radiousHeightRangeAttack; y++)
+                {
+                    if (x >= 0 && x < maxX && y >= 0 && y < maxY)
+                        availables.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        return availables;
+    }
+
     #endregion
 }

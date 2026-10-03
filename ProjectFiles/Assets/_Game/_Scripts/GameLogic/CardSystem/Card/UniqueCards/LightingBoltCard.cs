@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static EnemyAIPlanner;
 
 //Zeus and Perun cast their hatred on the enemy
-public sealed class LightingBoltCard : Card
+public sealed class LightingBoltCard : Card, ICardAI
 {
     [Header("On used")]
     [SerializeField] GameObject OnUsedVFX;
@@ -42,6 +43,37 @@ public sealed class LightingBoltCard : Card
         }
     }
     #endregion
+
+    public List<List<Vector2Int>> GetTargets(FastBoardState state, CellOwner myTeam)
+    {
+        var validTargetSets = new List<List<Vector2Int>>();
+        CellOwner enemyTeam = myTeam == CellOwner.Zero ? CellOwner.Cross : CellOwner.Zero;
+
+        for (int x = 0; x < state.Width; x++)
+        {
+            for (int y = 0; y < state.Height; y++)
+            {
+                if (state.Board[x, y] == enemyTeam)
+                {
+                    validTargetSets.Add(new List<Vector2Int> { new(x, y) });
+                }
+            }
+        }
+
+        return validTargetSets;
+    }
+
+    public FastBoardState ApplyToState(FastBoardState state, List<Vector2Int> targets, CellOwner myTeam)
+    {
+        if (targets == null || targets.Count == 0) return state;
+
+        Vector2Int target = targets[0];
+        state.Board[target.x, target.y] = CellOwner.None;
+        state.Mana -= ManaCost;
+        state.Bones -= GraveTokensCost;
+
+        return state;
+    }
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {

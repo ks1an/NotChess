@@ -51,8 +51,8 @@ public class DefendClass_TileBuff : IBuff
         if (baseStats.GetType() == typeof(TileStats))
         {
             var newStats = (TileStats)baseStats;
-            if ((int)defendClass >= (int)newStats.DefendClass)
-                newStats.DefendClass = defendClass;
+            if ((int)defendClass >= (int)newStats.defendClass)
+                newStats.defendClass = defendClass;
             return newStats;
         }
         else

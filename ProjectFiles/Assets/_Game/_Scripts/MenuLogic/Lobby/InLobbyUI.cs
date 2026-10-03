@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using Unity.Services.Authentication;
 using Unity.Services.Lobbies.Models;
@@ -40,13 +41,30 @@ public class InLobbyUI : MonoBehaviour
         LobbyManager.Instance.OnJoinedLobbyUpdate += UpdateLobby_Event;
         LobbyManager.Instance.OnLeftLobby += LobbyManager_OnLeftLobby;
         LobbyManager.Instance.OnKickedFromLobby += LobbyManager_OnLeftLobby;
+        LobbyManager.Instance.OnMatchmakerCancelled += LobbyManager_OnMatchmakerCancelled;
 
+        Hide();
+    }
+
+    private void OnDestroy()
+    {
+        LobbyManager.Instance.OnJoinedLobby -= UpdateLobby_Event;
+        LobbyManager.Instance.OnJoinedLobbyUpdate -= UpdateLobby_Event;
+        LobbyManager.Instance.OnLeftLobby -= LobbyManager_OnLeftLobby;
+        LobbyManager.Instance.OnKickedFromLobby -= LobbyManager_OnLeftLobby;
+        LobbyManager.Instance.OnMatchmakerCancelled -= LobbyManager_OnMatchmakerCancelled;
+    }
+
+    private void LobbyManager_OnMatchmakerCancelled(object sender, EventArgs e)
+    {
+        ClearLobby();
         Hide();
     }
 
     private void LobbyManager_OnLeftLobby(object sender, System.EventArgs e)
     {
         ClearLobby();
+        WaitingWindowController.Instance.Hide();
         Hide();
     }
 
@@ -86,7 +104,7 @@ public class InLobbyUI : MonoBehaviour
 
     void ClearLobby()
     {
-        if(container != null)
+        if (container != null)
             foreach (Transform child in container)
             {
                 if (child == playerSingleTemplate)
@@ -96,7 +114,7 @@ public class InLobbyUI : MonoBehaviour
             }
     }
 
-    private void Hide()
+    public void Hide()
     {
         gameObject.SetActive(false);
     }

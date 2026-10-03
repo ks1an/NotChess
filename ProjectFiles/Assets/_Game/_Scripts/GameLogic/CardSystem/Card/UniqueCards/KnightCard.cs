@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class KnightCard : Card
 {
-    [field: SerializeField] PieceView kingPrefab;
+    [field: SerializeField] PieceView zeroKnightPrefab, crossKnightPrefab;
     public override void Init(Team teamWhoHave)
     {
         base.Init(teamWhoHave);
@@ -37,7 +37,8 @@ public class KnightCard : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.move.TryDestroyAndCreateUnit(moves[0].x, moves[0].y, false, teamWhoHave, kingPrefab, false);
+            PieceView prefab = GameController.Instance.player.GetLocalPlayerTeam() == Team.Zero ? zeroKnightPrefab : crossKnightPrefab;
+            GameController.Instance.states.move.TryDestroyAndCreateUnit(moves[0].x, moves[0].y, false, teamWhoHave, prefab, false);
 
             GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
             if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())

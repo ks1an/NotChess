@@ -462,7 +462,8 @@ MonoBehaviour:
   <Rarity>k__BackingField: 2
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
-  kingPrefab: {fileID: 4331324946700952597, guid: 19d3fd4c0b8fd4f479bbf1144e822041, type: 3}
+  zeroKnightPrefab: {fileID: 8036176483781266896, guid: 1a282c81aa46b2c419df7f3fc0673bd2, type: 3}
+  crossKnightPrefab: {fileID: 8036176483781266896, guid: 125cb6370a718794db36f4f9b462ec0a, type: 3}
 --- !u!1001 &6936401273770386555
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -73,16 +73,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackBonus: 150
-  friendUnderThreatBonus: 800
-  enemyUnderThreatBonus: 25
-  lineBlockBonus: 20
+  friendUnderThreatBonus: 300
+  enemyUnderThreatBonus: 80
+  lineBlockBonus: 150
   centerBonusMultiple: 0.3
-  lineBuildingBonusMultiple: 2
+  lineBuildingBonusMultiple: 4
   potentialLineBonusMultiple: 8
-  enemyPotentionalMultiple: 4
+  enemyPotentionalMultiple: 2
+  nearWinAttackBonus: 3000
+  attackSetupBonus: 500
+  preventEnemyWinBonus: 2800
+  blockEarlySetupBonus: 600
   forkBonus: 1500
   openFourBonus: 3000
+  hybridCounterAttackBonus: 2500
   searchDepth: 4
+  maxBranchingFactor: 14
+  myWeight: 1.5
   opponentWeight: 2
+  repeatPreviousBoardStatePenalty: 10000
+  feedingPenalty: 3500
   blunderChance: 0.05
   blunderThreshold: 200
+  cardsPriorityMove: 8000
+  destroyEnemyByCard: 3000
+  manaCardSpendingMultiple: 100
+  bonesCardSpendingMultiple: 100
+  reductionFactorDurationFriendUnderWalls: 0.5
+  placePawnUnderWallsPonus: 5000
+  maxHistorySizeMoves: 8

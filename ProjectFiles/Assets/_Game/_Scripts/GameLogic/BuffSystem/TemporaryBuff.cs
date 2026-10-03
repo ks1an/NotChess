@@ -32,6 +32,7 @@ public class TemporaryBuff : IBuff
     public bool IsCriticalBuff { get { return isCriticalBuff; } set { IsCriticalBuff = isCriticalBuff; } }
 
     public readonly IBuff coreBuff;
+    public int lifeTurnsRemain;
     readonly int lifeTurns;
     readonly bool isCriticalBuff;
     readonly TurnTimer timer;
@@ -53,7 +54,10 @@ public class TemporaryBuff : IBuff
         this.owner = owner;
         var newStats = coreBuff.ApplyBuff(baseStats, owner);
         if (subscriberInTimer == null)
+        {
+            lifeTurnsRemain = lifeTurns;
             timer.StartTimer(lifeTurns, OnLifeTurnsEnd, DoOnTick, out subscriberInTimer);
+        }
         return newStats;
     }
 
@@ -72,6 +76,7 @@ public class TemporaryBuff : IBuff
     }
     public void DoOnTick()
     {
+        lifeTurnsRemain--;
         coreBuff.DoOnTick();
         OnBuffTicked?.Invoke();
     }
@@ -84,6 +89,7 @@ public class TemporaryBuff : IBuff
             wasStacked = true;
         if(stackingBuff.CanDurationStack && CanDurationStack)
         {
+            lifeTurnsRemain += lifeTurns;
             subscriberInTimer?.AddTurnsLife(lifeTurns);
             wasStacked = true;
         }

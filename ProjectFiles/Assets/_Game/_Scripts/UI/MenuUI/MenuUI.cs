@@ -24,12 +24,18 @@ public partial class MenuUI : MonoBehaviour
         };
         menuBook.gameObject.SetActive(false);*/
 
+        Application.targetFrameRate = GameController.Instance.gameSettings.TargetFrameRate_Menu.Value;
         GameController.Instance.CreateDemostrationGame();
 
-        singleplay.onClick.AddListener(() => GameController.Instance.CreateGame(false));
+        singleplay.onClick.AddListener(() => GameController.Instance.CreateGame(MatchStates.GameMode_SinglePlayer, false));
         if (UnityServices.State == ServicesInitializationState.Initialized && AuthenticationService.Instance.IsAuthorized)
         {
-            matchmakingBttn.onClick.AddListener(LobbyManager.Instance.QuickJoinLobby);
+            matchmakingBttn.onClick.AddListener(() =>
+            {
+                WaitingWindowController.Instance.Show("Matchmaking",
+                    onBttnExit: () => {LobbyManager.Instance.CancelMatchmaker();}, enableTimer: true);
+                LobbyManager.Instance.Matchmaker();
+            });
             lobbyListBttn.onClick.AddListener(() => LobbyManager.Instance.SetActiveLobbyList(true));
 
             lobbyListBttn.interactable = true;
@@ -44,6 +50,21 @@ public partial class MenuUI : MonoBehaviour
                 );
             lobbyListBttn.interactable = false;
             matchmakingBttn.interactable = false;
+        }
+
+        settingsBttn.onClick.AddListener(() =>
+        {
+            SetActiveTabMenu(true);
+            tabMenu.ActiveSettingsPage();
+        });
+
+        if (Application.isMobilePlatform) Destroy(leaveBttn.gameObject);
+        else
+        {
+            leaveBttn.onClick.AddListener(() =>
+            {
+                TryExitFromApp();
+            });
         }
     }
 
@@ -85,9 +106,10 @@ public partial class MenuUI : MonoBehaviour
         matchmakingBttn.gameObject.SetActive(b);
         singleplay.gameObject.SetActive(b);
         gameTitle.gameObject.SetActive(b);
-        leaveBttn.gameObject.SetActive(b);
+        if(leaveBttn != null) leaveBttn.gameObject.SetActive(b);
         settingsBttn.gameObject.SetActive(b);
-        playerName.gameObject.SetActive(b);
+        PlayerField.SetActive(b);
+        MMRView.SetActive(b);
         myDeckBttn.gameObject.SetActive(b);
         //menuBook.gameObject.SetActive(false);
     }
@@ -98,5 +120,6 @@ public partial class MenuUI : MonoBehaviour
 public partial class MenuUI
 {
     [SerializeField] TextMeshProUGUI gameTitle;
-    [SerializeField] Button leaveBttn, settingsBttn, playerName;
+    [SerializeField] Button leaveBttn, settingsBttn;
+    [SerializeField] GameObject PlayerField, MMRView;
 }

@@ -31,6 +31,7 @@ public sealed class LobbyListUI : MonoBehaviour
         LobbyManager.Instance.OnLobbyListChanged += LobbyManager_OnLobbyListChanged;
         LobbyManager.Instance.OnJoinedLobby += LobbyManager_OnJoinedLobby;
         LobbyManager.Instance.OnLeftLobby += LobbyManager_OnLeftLobby;
+        LobbyManager.Instance.OnMatchmakerCancelled += LobbyManager_OnMatchmakerCancelled;
         LobbyManager.Instance.OnKickedFromLobby += LobbyManager_OnKickedFromLobby;
 
         Hide();
@@ -44,6 +45,11 @@ public sealed class LobbyListUI : MonoBehaviour
     private void LobbyManager_OnLeftLobby(object sender, EventArgs e)
     {
         Show();
+    }
+
+    void LobbyManager_OnMatchmakerCancelled(object sender, EventArgs e)
+    {
+        Hide();
     }
 
     private void LobbyManager_OnJoinedLobby(object sender, LobbyManager.LobbyEventArgs e)
@@ -78,7 +84,7 @@ public sealed class LobbyListUI : MonoBehaviour
         catch (Exception) { }
     }
 
-    private void Hide()
+    public void Hide()
     {
         gameObject.SetActive(false);
     }

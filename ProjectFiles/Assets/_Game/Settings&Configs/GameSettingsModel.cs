@@ -6,17 +6,15 @@ public class GameSettingsModel
 {
     readonly GameSettingsData _data;
 
-    //Player
-    public ReactiveProperty<string> PlayerName = new();
-
     //Game
     public ReactiveProperty<bool> DontTranslateNameOfCard = new();
-
 
     //GRAPHIC
     public ReactiveProperty<int> FullscreenMode = new();
     public ReactiveProperty<int> AntiAliasing = new();
     public ReactiveProperty<int> VSync = new();
+    public ReactiveProperty<int> TargetFrameRate_Board = new();
+    public ReactiveProperty<int> TargetFrameRate_Menu = new();
 
     //Audio
     public ReactiveProperty<float> MusicVolume = new();
@@ -26,16 +24,16 @@ public class GameSettingsModel
     {
         _data = data;
 
-        //Player
-        PlayerName.Value = _data.playerName;
-
         //Game
         DontTranslateNameOfCard.Value = _data.dontTranslateNameOfCard;
 
         //Graphic
         FullscreenMode.Value = _data.fullscreenMode;
         AntiAliasing.Value = _data.antiAliasing;
+        //
         VSync.Value = _data.vSyncCount;
+        TargetFrameRate_Board.Value = _data.targetFrameRate_BoardScene;
+        TargetFrameRate_Menu.Value = _data.targetFrameRate_MenuScene;
 
         //Audio
         MusicVolume.Value = _data.musicVolume; if (MusicVolume.Value > 1f) Debug.LogWarning("a number from 0 to 1 is recommended for musicVolume");
@@ -47,6 +45,7 @@ public class GameSettingsModel
     public void ApplySettings()
     {
         //GRAPHIC
+        Application.targetFrameRate = TargetFrameRate_Menu.Value;
         Screen.fullScreenMode = (FullScreenMode)FullscreenMode.Value;
         QualitySettings.antiAliasing = AntiAliasing.Value;
         QualitySettings.vSyncCount = VSync.Value;
@@ -55,38 +54,37 @@ public class GameSettingsModel
         SaveData();
     }
 
+
+
+    void UpdateData()
+    {
+        //game
+        _data.dontTranslateNameOfCard = DontTranslateNameOfCard.Value;
+
+        //GRAPHIC
+        _data.fullscreenMode = FullscreenMode.Value;
+        //
+        _data.antiAliasing = AntiAliasing.Value;
+        _data.vSyncCount = VSync.Value;
+        _data.targetFrameRate_BoardScene = TargetFrameRate_Board.Value;
+        _data.targetFrameRate_MenuScene = TargetFrameRate_Menu.Value;
+
+        //Audio
+        _data.musicVolume = MusicVolume.Value;
+        _data.effectsVolume = EffectVolume.Value;
+    }    
+    
     public void SaveData()
     {
         UpdateData();
         string jsonData = JsonUtility.ToJson(_data, true);
         File.WriteAllText(Application.persistentDataPath + "/gamesettings.json", jsonData);
     }
-
-    void UpdateData()
-    {
-        //player
-        _data.playerName = PlayerName.Value;
-
-        //game
-        _data.dontTranslateNameOfCard = DontTranslateNameOfCard.Value;
-
-        //GRAPHIC
-        _data.fullscreenMode = FullscreenMode.Value;
-        _data.antiAliasing = AntiAliasing.Value;
-        _data.vSyncCount = VSync.Value;
-
-        //Audio
-        _data.musicVolume = MusicVolume.Value;
-        _data.effectsVolume = EffectVolume.Value;
-    }
 }
 
 [Serializable]
 public class GameSettingsData
 {
-    //player
-    public string playerName;
-
     //game
     public bool dontTranslateNameOfCard;
 
@@ -94,6 +92,7 @@ public class GameSettingsData
     public int fullscreenMode,
         antiAliasing,
         vSyncCount;
+    public int targetFrameRate_BoardScene, targetFrameRate_MenuScene;
 
     //Audio
     public float musicVolume, effectsVolume;

@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-public class PlayingEntity : MonoBehaviour 
+public class PlayingEntity : MonoBehaviour
 {
-    public event Action <Team> OnTeamChanged;
+    public event Action<Team> OnTeamChanged;
     public event Action<int> OnCurrentManaChanged;
     public event Action<int> OnCurrentGraveTokensChanged;
 
@@ -32,12 +32,11 @@ public class PlayingEntity : MonoBehaviour
         {
             maxMana = settings.maxMana;
             currentMana = settings.startMana;
-            IncreaseMana(((settings.firtsMoveZero == (localTeam == Team.Cross))
-                && localTeam != Team.None) ?
-                    settings.startManaForEvenPlayer : 0);
-
             maxGraveTokens = settings.maxGraveTokens;
             currentGraveTokens = 0;
+
+            if (IsSecondPlayer())
+                currentMana += settings.startManaForEvenPlayer;
         }
     }
 
@@ -108,6 +107,15 @@ public class PlayingEntity : MonoBehaviour
 
     #region Get
     public Team GetLocalPlayerTeam() { return localTeam; }
+    public string GetStringPlayerTeam()
+    {
+        switch (localTeam)
+        {
+            case Team.Cross: return PieceData.CrossTeamName;
+            case Team.Zero: return PieceData.ZeroTeamName;
+            default: return PieceData.NoneTeamName;
+        }
+    }
 
     public bool IsMyTurnOrNot()
     {
@@ -119,6 +127,14 @@ public class PlayingEntity : MonoBehaviour
     }
     public int GetCurrentMana() { return currentMana; }
 
-    public int GetCurrentGraveTokens() { return  currentGraveTokens; }
+    public int GetCurrentGraveTokens() { return currentGraveTokens; }
+    protected bool IsSecondPlayer()
+    {
+        bool zeroMovesFirst = GameController.Instance.matchSettings.firtsMoveZero;
+        if (localTeam == Team.None) return false;
+        return zeroMovesFirst
+            ? localTeam == Team.Cross
+            : localTeam == Team.Zero;
+    }
     #endregion
 }

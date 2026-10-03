@@ -11,11 +11,13 @@ public class PlayerTeamUnitIndicator : MonoBehaviour
     {
         GameController.Instance.states.OnGameStarted += SpawnUnitTeamIndicator;
         GameController.Instance.states.OnLeaveMatch += DestroyUnitTeamIndicator;
+        GameController.Instance.states.OnGameRestarted += DestroyUnitTeamIndicator;
     }
     private void OnDisable()
     {
         GameController.Instance.states.OnGameStarted -= SpawnUnitTeamIndicator;
         GameController.Instance.states.OnLeaveMatch -= DestroyUnitTeamIndicator;
+        GameController.Instance.states.OnGameRestarted -= DestroyUnitTeamIndicator;
     }
 
     private void DestroyUnitTeamIndicator()

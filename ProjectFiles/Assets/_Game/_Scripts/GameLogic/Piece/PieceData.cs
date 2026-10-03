@@ -10,6 +10,10 @@ public enum Team
 
 public abstract class PieceData : ScriptableObject
 {
+    public const string CrossTeamName = "Cross";
+    public const string ZeroTeamName = "Zero";
+    public const string NoneTeamName = "None";
+
     public bool canAttackTeammate;
     public float durationSetPos = 0.5f;
 
@@ -30,7 +34,7 @@ public abstract class PieceData : ScriptableObject
     x > GameController.Instance.matchSettings.tileCountX - 1 || y > GameController.Instance.matchSettings.tileCountY - 1)
             return false;
 
-        if (board[x, y] != null && Board.Instance.tilesController.tiles[x, y].Stats.CurrentStats.CanAttackTile
+        if (board[x, y] != null && Board.Instance.tilesController.tiles[x, y].Stats.CurrentStats.canAttackTile
             && (board[x, y].team != team || (canAttackTeammate && board[x, y].team == team)))
             return true;
 

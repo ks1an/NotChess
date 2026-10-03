@@ -121,7 +121,8 @@ MonoBehaviour:
   countShells: 5
   radiousWidthRangeAttack: 2
   radiousHeightRangeAttack: 2
-  spawnOnUsed: {fileID: 8906116423058164431, guid: 19df3c1a0a9c7d4439230b23d42da72b, type: 3}
+  spawnOnUsed_Base: {fileID: 8906116423058164431, guid: 19df3c1a0a9c7d4439230b23d42da72b, type: 3}
+  spawnOnUsed_Mobile: {fileID: 4217423715014336906, guid: 5d20d6dcacb6ff548ad9be8efd33451b, type: 3}
   buffOnTile: {fileID: 11400000, guid: a5bcb078c8d3b524fa2c36fd4f1704f8, type: 2}
   durationEffect: 1
 --- !u!1001 &219084172027630145

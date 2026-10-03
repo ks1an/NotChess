@@ -14,6 +14,18 @@ public partial class GlobalVolumePostEffect : MonoBehaviour
         volume.profile.TryGet(out chromeAbb);
 
         vignette.rounded.value = isRoundedVignetteFocus;
+
+        if (Application.isMobilePlatform)
+        {
+            volume.profile.TryGet<Bloom>(out Bloom bloom);
+            bloom.active = false;
+
+            volume.profile.TryGet<Tonemapping>(out Tonemapping tone);
+            tone.active = false;
+
+            volume.profile.TryGet<ColorAdjustments>(out ColorAdjustments colorAd);
+            colorAd.active = false;
+        }
     }
 
     void Update()

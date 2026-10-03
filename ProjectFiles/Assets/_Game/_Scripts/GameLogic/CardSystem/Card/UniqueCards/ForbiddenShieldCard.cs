@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class ForbiddenShieldCard : Card
+public sealed class ForbiddenShieldCard : Card, ICardAI
 {
     [SerializeField] DefendClass defendClassForTile;
     [SerializeField] int durationEffectOfBanPut;
@@ -91,6 +91,55 @@ public sealed class ForbiddenShieldCard : Card
         if (Board.Instance.tilesController.tiles[targetX, targetY] != null)
             return true;
         return false;
+    }
+    #endregion
+
+    #region AI
+    public List<List<Vector2Int>> GetTargets(FastBoardState state, EnemyAIPlanner.CellOwner myTeam)
+    {
+        var result = new List<List<Vector2Int>>();
+
+        if (state?.Board == null || state.Stats == null)
+            return result;
+
+        int w = state.Board.GetLength(0);
+        int h = state.Board.GetLength(1);
+
+        if (state.Stats.GetLength(0) != w || state.Stats.GetLength(1) != h)
+            return result;
+
+        for (int x = 0; x < w; x++)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                if (state.Board[x, y] != EnemyAIPlanner.CellOwner.None) continue;
+                if (!state.Stats[x, y].CanPutOnTile) continue;
+
+                result.Add(new List<Vector2Int> { new(x, y) });
+            }
+        }
+
+        return result;
+    }
+
+    public FastBoardState ApplyToState(FastBoardState state, List<Vector2Int> targets, EnemyAIPlanner.CellOwner myTeam)
+    {
+        if (targets == null || targets.Count == 0) return state;
+
+        Vector2Int targetCell = targets[0];
+        int w = state.Board.GetLength(0);
+        int h = state.Board.GetLength(1);
+
+        if (targetCell.x >= 0 && targetCell.x < w &&
+            targetCell.y >= 0 && targetCell.y < h)
+        {
+            state.Stats[targetCell.x, targetCell.y].CanPutOnTile = false;
+            state.Stats[targetCell.x, targetCell.y].BanPutDuration += durationEffectOfBanPut;
+        }
+        state.Mana -= ManaCost;
+        state.Bones -= GraveTokensCost;
+
+        return state;
     }
     #endregion
 }

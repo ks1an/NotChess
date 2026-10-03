@@ -9,7 +9,7 @@ public sealed class EntryPoint : MonoBehaviour
     bool menuSceneStartedLoading;
     async void Awake()
     {
-        WaitingWindowController.Instance.ShowWithRandomTxt();
+        WaitingWindowController.Instance.Show();
         time = 0;
         menuSceneStartedLoading = false;
 

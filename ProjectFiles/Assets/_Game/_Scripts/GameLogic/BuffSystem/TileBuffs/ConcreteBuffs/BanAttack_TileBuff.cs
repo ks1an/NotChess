@@ -48,7 +48,7 @@ public class BanAttack_TileBuff : IBuff
         if (baseStats.GetType() == typeof(TileStats))
         {
             var newStats = (TileStats)baseStats;
-            newStats.CanAttackTile = false;
+            newStats.canAttackTile = false;
             return newStats;
         }
         else

@@ -49,7 +49,7 @@ public class BanPut_TileBuff : IBuff
         if (baseStats.GetType() == typeof(TileStats))
         {
             var newStats = (TileStats)baseStats;
-            newStats.CanPutOnTile = false;
+            newStats.canPutOnTile = false;
             return newStats;
         }
         else

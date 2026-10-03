@@ -19,6 +19,8 @@ public sealed class BoardUI : MonoBehaviour
 
     void Awake()
     {
+        Application.targetFrameRate = GameController.Instance.gameSettings.TargetFrameRate_Board.Value;
+
         muligan = new();
         muliganBttn.onClick.AddListener(muligan.TryDoMuligan);
         if (Singleton == null)
@@ -66,7 +68,7 @@ public sealed class BoardUI : MonoBehaviour
         ModalViewWindowController.Instance.ShowHorizontalWithLocalize
         (
         localTable, "Restart",
-        false, false, () => { }, GameController.Instance.states.GameRestart
+        false, false, () => { }, () => { GameController.Instance.states.GameRestart(); }
         );
     }
 

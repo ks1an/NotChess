@@ -19,21 +19,31 @@ public partial class Board : MonoBehaviour
     GameObject modalWindow;
 
     Camera curCamera;
-    Vector2Int curHoverTile;
     bool isGameStart;
     bool isPlayerControl;
 
     bool mouseDowned, waitToSkipMouseDown;
 
+    Vector2Int curHoverTile = -Vector2Int.one;
+    int tileLayerMask;
+    PlayerCardHand playerHand;
+
     void Awake()
     {
         if (Instance == null)
             Instance = this;
+        else
+        {
+            Debug.LogError("Board > 1 on scene");
+            Destroy(gameObject);
+            return;
+        }
 
         DontDestroyOnLoad(this);
         match = GameController.Instance;
         landscapeGenerator = GetComponent<BoardLandscapeGenerator>();
         interactLandscapeGenerator = GetComponent<InteractLandscapeGenerator>();
+        tileLayerMask = LayerMask.GetMask("Tile");
     }
 
     public void GenerateBoard()
@@ -74,15 +84,17 @@ public partial class Board : MonoBehaviour
     {
         if (!isGameStart || !landOnBoardReady || !isPlayerControl)
             return;
-
         if (!curCamera)
         {
             curCamera = Camera.main;
             return;
         }
+        if (playerHand == null) playerHand = PlayerCardHand.Instance;
+        if (playerHand == null) return;
 
         if (Input.GetMouseButtonDown(0))
             mouseDowned = true;
+
         if (waitToSkipMouseDown)
         {
             if (Input.GetMouseButtonUp(0))
@@ -92,6 +104,7 @@ public partial class Board : MonoBehaviour
             }
             return;
         }
+
         if (modalWindow.activeSelf)
         {
             if (mouseDowned)
@@ -100,32 +113,45 @@ public partial class Board : MonoBehaviour
         }
 
         Ray ray = curCamera.ScreenPointToRay(Input.mousePosition);
-        if (PlayerCardHand.Instance.CurrentHoverCard == null &&
-            Physics.Raycast(ray, out RaycastHit info, 50, LayerMask.GetMask("Tile", "Hover", "Highlight", "TileAccentDark", "TileAccentLight")))
+        Tile hitTile = null;
+        bool hasHit = false;
+
+        if (playerHand.CurrentHoverCard == null
+            && Physics.Raycast(ray, out RaycastHit info, 50, tileLayerMask))
         {
-            Vector2Int hitPos = tilesController.GetTileIndex(info.transform.gameObject);
+            if (info.transform.TryGetComponent(out hitTile))
+                hasHit = true;
+        }
+
+        if (hasHit)
+        {
+            Vector2Int hitPos = hitTile.coord;
             HoverTile(hitPos);
 
             #region CardMove
-            if (PlayerCardHand.Instance.CurrentSelectCard != null)
+            if (playerHand.CurrentSelectCard != null)
             {
-                List<Vector2Int> availabe = new();
+                tilesController.SetHoverPriority(false);
+                List<Vector2Int> available;
+
                 if (!tilesController.IsDarkAccentTile(hitPos))
-                    availabe = PlayerCardHand.Instance.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
+                    available = playerHand.CurrentSelectCard.GetAvailableMoves(
+                        settings.tileCountX, settings.tileCountY, hitPos.x, hitPos.y);
                 else
                 {
-                    availabe = PlayerCardHand.Instance.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, -1, -1);
-                    tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
-                    availabe.Clear();
+                    available = playerHand.CurrentSelectCard.GetAvailableMoves(
+                        settings.tileCountX, settings.tileCountY, -1, -1);
+                    tilesController.RemoveAllHighlightExcludeCurrentOnes(available);
+                    available.Clear();
                 }
 
-                tilesController.HighlighTiles(availabe);
-                tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
-                UnselectHoverHighlightTile(hitPos);
+                tilesController.HighlighTiles(available);
+                tilesController.RemoveAllHighlightExcludeCurrentOnes(available);
+
                 if (Input.GetMouseButtonUp(0))
                 {
-                    tilesController.RemoveHighlightTiles(availabe);
-                    PlayerCardHand.Instance.CurrentSelectCard.DoOnMouseUp();
+                    tilesController.RemoveHighlightTiles(available);
+                    playerHand.CurrentSelectCard.DoOnMouseUp();
                 }
 
                 return;
@@ -134,14 +160,19 @@ public partial class Board : MonoBehaviour
 
             #region PutPiece
 
-            if (PlayerCardHand.Instance.CurrentSelectCard == null && Input.GetMouseButtonUp(0) &&
-                piecesController.currentlySelectingPiece == null && piecesController.pieces[hitPos.x, hitPos.y] == null
-                && tilesController.tiles[hitPos.x, hitPos.y].Stats.CurrentStats.CanPutOnTile)
+            if (playerHand.CurrentSelectCard == null && Input.GetMouseButtonUp(0) &&
+            piecesController.currentlySelectingPiece == null &&
+            piecesController.pieces[hitPos.x, hitPos.y] == null &&
+            tilesController.tiles[hitPos.x, hitPos.y].Stats.CurrentStats.canPutOnTile)
             {
                 if (match.player.IsMyTurnOrNot())
                 {
-                    PieceView prefId = match.player.GetLocalPlayerTeam() == Team.Zero ? match.player.zeroPawnPrefab : match.player.crossPawnPrefab;
-                    match.states.move.TryCreateUnitOnBoard(hitPos.x, hitPos.y, match.player.GetLocalPlayerTeam(), prefId);
+                    PieceView prefId = match.player.GetLocalPlayerTeam() == Team.Zero
+                        ? match.player.zeroPawnPrefab
+                        : match.player.crossPawnPrefab;
+
+                    match.states.move.TryCreateUnitOnBoard(hitPos.x, hitPos.y,
+                        match.player.GetLocalPlayerTeam(), prefId);
                 }
 
                 return;
@@ -152,7 +183,10 @@ public partial class Board : MonoBehaviour
 
             //TODO: NewInputSystem
             if (Input.GetMouseButtonDown(0) && piecesController.pieces[hitPos.x, hitPos.y] != null)
+            {
                 piecesController.OnSelectingPiece(hitPos);
+                tilesController.SetHoverPriority(true);
+            }
 
             if (Input.GetMouseButtonUp(0) && piecesController.currentlySelectingPiece != null)
                 piecesController.OnBreakSelectingPiece(hitPos);
@@ -160,34 +194,26 @@ public partial class Board : MonoBehaviour
         }
         else
         {
-            if (curHoverTile != -Vector2Int.one)
+            ClearHoverTile();
+
+            if (playerHand.CurrentSelectCard != null)
             {
-                var tile = tilesController.tiles[curHoverTile.x, curHoverTile.y];
+                List<Vector2Int> available = playerHand.CurrentSelectCard.GetAvailableMoves(
+                    settings.tileCountX, settings.tileCountY, -1, -1);
 
-                if (tilesController.IsHighlighTile(tile.coord))
-                    tile.gameObject.layer = LayerMask.NameToLayer("Highlight");
-                else if (tilesController.IsDarkAccentTile(tile.coord))
-                    tile.gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
-                else if (tilesController.IsLightAccentTile(tile.coord))
-                    tile.gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
-                else
-                    tile.gameObject.layer = LayerMask.NameToLayer("Tile");
+                tilesController.RemoveAllHighlightExcludeCurrentOnes(available);
 
-                curHoverTile = -Vector2Int.one;
-            }
-
-            if (PlayerCardHand.Instance.CurrentSelectCard != null)
-            {
-                List<Vector2Int> availabe = PlayerCardHand.Instance.CurrentSelectCard.GetAvailableMoves(settings.tileCountX, settings.tileCountY, -1, -1);
-                tilesController.RemoveAllHighlightExcludeCurrentOnes(availabe);
                 if (Input.GetMouseButtonUp(0))
-                    PlayerCardHand.Instance.CurrentSelectCard.DoOnMouseUp();
+                    playerHand.CurrentSelectCard.DoOnMouseUp();
             }
 
             if (Input.GetMouseButtonUp(0) && piecesController.currentlySelectingPiece)
             {
-                piecesController.currentlySelectingPiece.SetPos(tilesController.GetTileCenter(piecesController.currentlySelectingPiece.currentX,
-                    piecesController.currentlySelectingPiece.currentY));
+                piecesController.currentlySelectingPiece.SetPos(
+                    tilesController.GetTileCenter(
+                        piecesController.currentlySelectingPiece.currentX,
+                        piecesController.currentlySelectingPiece.currentY));
+
                 piecesController.currentlySelectingPiece = null;
                 tilesController.RemoveHighlightTiles(piecesController.availableMoves);
             }
@@ -196,34 +222,17 @@ public partial class Board : MonoBehaviour
 
     void HoverTile(Vector2Int hoverPos)
     {
-        if (curHoverTile == -Vector2Int.one)
-        {
-            curHoverTile = hoverPos;
-            tilesController.tiles[hoverPos.x, hoverPos.y].gameObject.layer = LayerMask.NameToLayer("Hover");
-        }
+        if (curHoverTile == hoverPos) return;
 
-        if (curHoverTile != hoverPos)
-        {
-            var tile = tilesController.tiles[curHoverTile.x, curHoverTile.y];
-
-            if (tilesController.IsHighlighTile(tile.coord))
-                tile.gameObject.layer = LayerMask.NameToLayer("Highlight");
-            else if (tilesController.IsDarkAccentTile(tile.coord))
-                tile.gameObject.layer = LayerMask.NameToLayer("TileAccentDark");
-            else if (tilesController.IsLightAccentTile(tile.coord))
-                tile.gameObject.layer = LayerMask.NameToLayer("TileAccentLight");
-            else
-                tile.gameObject.layer = LayerMask.NameToLayer("Tile");
-
-            curHoverTile = hoverPos;
-            tilesController.tiles[curHoverTile.x, curHoverTile.y].gameObject.layer = LayerMask.NameToLayer("Hover");
-        }
+        curHoverTile = hoverPos;
+        tilesController.SetHoverTile(hoverPos);
     }
-
-    void UnselectHoverHighlightTile(Vector2Int hoverPos)
+    void ClearHoverTile()
     {
-        if (tilesController.IsHighlighTile(curHoverTile))
-            tilesController.tiles[hoverPos.x, hoverPos.y].gameObject.layer = LayerMask.NameToLayer("Highlight");
+        if (curHoverTile == -Vector2Int.one) return;
+
+        curHoverTile = -Vector2Int.one;
+        tilesController.ClearHover();
     }
 
     #region OnGameStates
@@ -370,6 +379,7 @@ public partial class Board : MonoBehaviour
     void SetDefaultBoardSettings()
     {
         piecesController.currentlySelectingPiece = null;
+        tilesController.SetHoverPriority(false);
         tilesController.RemoveAllHighlight();
         tilesController.RemoveAllAccent();
         piecesController.availableMoves = new List<Vector2Int>();

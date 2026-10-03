@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class Enemy : PlayingEntity
 {
     public StackView graveCoinStackView;

@@ -7,6 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class BackgroundMusic : MonoBehaviour
 {
+    public static BackgroundMusic instance;
     public static ReactiveProperty<Music> CurrentMusic = new();
 
     [SerializeField] List<Music> menuMusic;
@@ -21,6 +22,12 @@ public class BackgroundMusic : MonoBehaviour
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+        if(instance  == null ) instance = this;
+        else
+        {
+            Debug.LogError("BackgroundMusic on scene > 1");
+            Destroy(this);
+        }
     }
 
     private void Start()
@@ -82,9 +89,10 @@ public class BackgroundMusic : MonoBehaviour
         FindAndPlayMusic(musicList);
     }
 
-    void SetVolumeAudioSource(float volume)
+    public void SetVolumeAudioSource(float volume)
     {
         audioSource.volume = volume;
+        baseVolume = volume;
     }
 
     private void OnDisable()

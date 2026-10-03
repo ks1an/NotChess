@@ -5,6 +5,15 @@ using UnityEngine.Localization;
 
 public class MatchStates : MonoBehaviour
 {
+    public const string OpponentTypeName_AI = "AI";
+    public const string OpponentTypeName_Human = "Human";
+    //GameMode
+    public const string GameMode_Matchmaking = "Matchmaking";
+    public const string GameMode_SinglePlayer = "SinglePlayer";
+    public const string GameMode_CustomLobby = "CustomLobby";
+    public const string GameMode_Demo= "Demo";
+
+
     [HideInInspector] public Board board;
     [HideInInspector] public MoveExecutor move;
     [HideInInspector] public bool isGameStarted;
@@ -14,7 +23,8 @@ public class MatchStates : MonoBehaviour
     [HideInInspector] public int turnCount;
     [HideInInspector] public Team lastWinTeam;
     public PlayerMatchStats stats;
-
+    public string gamemode;
+    DateTime matchStartTime;
     #region Events
     public event Action OnGamePreStart;
     public event Action OnSetSettings;
@@ -32,8 +42,9 @@ public class MatchStates : MonoBehaviour
     List<EnemyAI> enemyBots = new();
 
     #region BeforePlay
-    public void CreateGame(bool isNetMatch, bool isDemontrationMatchAiVsAi)
+    public void CreateGame(bool isNetMatch, bool isDemontrationMatchAiVsAi, string gamemode)
     {
+        this.gamemode = gamemode;
         isGameStarted = false;
         ModalInputWindow.Instance.Hide();
 
@@ -47,8 +58,6 @@ public class MatchStates : MonoBehaviour
             move = gameObject.AddComponent<MoveExecutor>();
             move.SetSettings(this);
         }
-
-        stats = new();
 
         if (!isDemontrationMatchAiVsAi)
         {
@@ -84,14 +93,21 @@ public class MatchStates : MonoBehaviour
         board.GenerateBoard();
 
         OnGamePreStart?.Invoke();
-        if(!isDemonstrationMatchAiVsAi)
-        NotificationPanelConroller.Instance.ShowNotification($"Ряд из 5 юнитов = победа", () => { });
+        if (!isDemonstrationMatchAiVsAi)
+            NotificationPanelConroller.Instance.ShowNotification($"Ряд из 5 юнитов = победа", () => { });
     }
 
-    void SetSettings()
+    public Team GetRandomTeam()
     {
+        int t = UnityEngine.Random.Range(0, 2);
+        if (t == 0) return Team.Zero;
+        else return Team.Cross;
+    }
+
+    void SetSettings(bool needSwapTeam = true)
+    {
+        stats = new();
         isMoveOfZero = game.matchSettings.firtsMoveZero;
-        lastWinTeam = Team.None;
 
         if (isDemonstrationMatchAiVsAi)
         {
@@ -102,9 +118,24 @@ public class MatchStates : MonoBehaviour
         {
             if (!isNetMatch)
             {
-                game.player.SetTeam(isMoveOfZero ? Team.Zero : Team.Cross);
-                enemyBots[0].LoadEnemy(isMoveOfZero ? Team.Cross : Team.Zero, game.enemy);
+                if (needSwapTeam && lastWinTeam != Team.None)
+                    game.player.SetTeam(game.player.GetLocalPlayerTeam() == Team.Zero ? Team.Cross : Team.Zero);
+                else
+                    game.player.SetTeam(GetRandomTeam());
+
+                enemyBots[0].LoadEnemy(
+                    game.player.GetLocalPlayerTeam() == Team.Zero ? Team.Cross : Team.Zero,
+                    game.enemy);
             }
+            else //isNetMatch
+            {
+                if (needSwapTeam)
+                {
+                    game.player.SetTeam(game.player.GetLocalPlayerTeam() == Team.Zero ? Team.Cross : Team.Zero);
+                }
+            }
+            //For isNetMatch check NetMatchSync.OnPreStart()
+
             PlayerDeck.Instance.SetCardCollection(game.player.cardCollection);
         }
 
@@ -120,11 +151,11 @@ public class MatchStates : MonoBehaviour
                     EnemyDeck.Instance.SetCardCollection(newCollection);
             }
 
-
+        lastWinTeam = Team.None;
         OnSetSettings?.Invoke();
     }
 
-    public void GameRestart()
+    public void GameRestart(bool needSwapTeam = true)
     {
         if (!isNetMatch)
         {
@@ -132,7 +163,7 @@ public class MatchStates : MonoBehaviour
                 enemy.EndEnemyTurn(() => { });
         }
 
-        SetSettings();
+        SetSettings(needSwapTeam);
         OnGameRestarted?.Invoke();
         GameStart();
     }
@@ -151,9 +182,18 @@ public class MatchStates : MonoBehaviour
         if (!isNetMatch)
             game.enemy.deck.DrawHandRandomFromDeck(game.matchSettings.startCards, true);
 
+
         isGameStarted = true;
         OnGameStarted?.Invoke();
         board.GenerateLandscape();
+
+        if (!isDemonstrationMatchAiVsAi)
+        {
+            matchStartTime = DateTime.UtcNow;
+            string oppType = enemyBots.Count > 0 ? OpponentTypeName_AI : OpponentTypeName_Human;
+            AnalyticsManager.Instance.LogMatchStarted(
+                GameController.Instance.player.GetStringPlayerTeam(), oppType, gamemode);
+        }
     }
     #endregion
 
@@ -169,7 +209,7 @@ public class MatchStates : MonoBehaviour
             return;
         }
 
-        if (game.player.GetLocalPlayerTeam() != Team.None)
+        if (game.player.GetLocalPlayerTeam() != Team.None && !isDemonstrationMatchAiVsAi)
         {
             if (PlayerCardHand.Instance.CardsInHand.Count < game.matchSettings.defaultCardsInHand)
                 game.player.deck.DrawHandRandomFromDeck(game.matchSettings.defaultCardsInHand);
@@ -180,12 +220,27 @@ public class MatchStates : MonoBehaviour
 
         if (!isNetMatch)
         {
-            foreach (var enemy in enemyBots)
-                if (enemy.myEntity.GetLocalPlayerTeam() != whoMoved && turnCount > game.matchSettings.piecesWinSequence)
-                    enemy.myEntity.IncreaseMana(game.matchSettings.manaPerTurn);
+            foreach (var bot in enemyBots)
+            {
+                if (bot.myEntity.GetLocalPlayerTeam() != whoMoved)
+                {
+                    if (turnCount > game.matchSettings.piecesWinSequence)
+                        bot.myEntity.IncreaseMana(game.matchSettings.manaPerTurn);
 
-            if (EnemyDeck.Instance.hand.CardGameobjectsInHand.Count < game.matchSettings.defaultCardsInHand)
-                game.enemy.deck.DrawHandRandomFromDeck(game.matchSettings.defaultCardsInHand);
+                    if (bot.myEntity.GetLocalPlayerTeam() == game.player.GetLocalPlayerTeam())
+                    {
+                        if (PlayerCardHand.Instance.CardsInHand.Count < game.matchSettings.defaultCardsInHand)
+                            game.player.deck.DrawHandRandomFromDeck(game.matchSettings.defaultCardsInHand);
+                    }
+                    else
+                    {
+                        if (EnemyDeck.Instance.hand.CardGameobjectsInHand.Count < game.matchSettings.defaultCardsInHand)
+                            game.enemy.deck.DrawHandRandomFromDeck(game.matchSettings.defaultCardsInHand);
+                    }
+                }
+
+            }
+
         }
 
 
@@ -208,40 +263,63 @@ public class MatchStates : MonoBehaviour
         isGameStarted = false;
         EnvironmentManager.Instance.DoBoardFlickeringLight(3);
         lastWinTeam = winTeam;
-        if (!isNetMatch)
+
+        ResultMatch result = ResultMatch.Defeat;
+        if (game.player.GetLocalPlayerTeam() != Team.None)
+            result = game.player.GetLocalPlayerTeam() == winTeam ? ResultMatch.Win : ResultMatch.Defeat;
+
+        if (isDemonstrationMatchAiVsAi)
         {
-            if (isDemonstrationMatchAiVsAi)
-            {
-                game.secTimer.StartTimer(3, out SecondTimerSubscriber sub, GameRestart);
-                return;
-            }
-
-            foreach (var enemy in enemyBots)
-                enemy.StopEnemy();
-
-            RevengeOffer();
-            OnGameWin?.Invoke(x, y, winTeam);
+            game.secTimer.StartTimer(3, out SecondTimerSubscriber sub, () => { GameRestart(); });
+            return;
         }
         else
         {
-            RevengeOffer();
-            if (game.player.GetLocalPlayerTeam() == lastWinTeam)
+            string stringWinTeam = PieceData.NoneTeamName;
+            switch (lastWinTeam)
             {
+                case Team.Cross: stringWinTeam= PieceData.CrossTeamName; break;
+                case Team.Zero: stringWinTeam= PieceData.ZeroTeamName; break;
+                default: stringWinTeam= PieceData.NoneTeamName; break;
+            }
+            string[] deck = new string[PlayerDeck.Instance.cardCollection.CardsInCollection.Count];
+            for (int i = 0; i < deck.Length; i++)
+                deck[i] = PlayerDeck.Instance.cardCollection.CardsInCollection[i].originalCardName;
+            float durationMin = (float)(DateTime.UtcNow - matchStartTime).TotalMinutes;
+
+            AnalyticsManager.Instance.LogMatchFinished(GameController.Instance.player.GetStringPlayerTeam(), stringWinTeam
+                , durationMin, turnCount, "PiecesWinSequence", deck, gamemode);
+        }
+
+        if (!isNetMatch)
+        {
+            foreach (var enemy in enemyBots)
+                enemy.StopEnemy();
+        }
+        else
+        {
+            RatingService.Instance.ApplyMatchResult(result);
+        }
+
+        RevengeOfferMenu();
+        switch (result)
+        {
+            case ResultMatch.Win:
                 OnGameWin?.Invoke(x, y, winTeam);
-            }
-            else
-            {
+                break;
+
+            case ResultMatch.Defeat:
                 OnGameTied?.Invoke(x, y, winTeam);
-            }
+                break;
         }
     }
 
-    public void RevengeOffer()
+    public void RevengeOfferMenu()
     {
         if (!isNetMatch)
         {
             ModalViewWindowController.Instance.ShowHorizontal(false, $"Winner: <color=#FFD700>{lastWinTeam}</color>", "Victory. Nothing to add or take away.",
-    false, "Restart", GameRestart, "Exit", LeaveFromMatch);
+    false, "Restart", () => { GameRestart(); }, "Exit", LeaveFromMatch);
         }
         else if (game.player.GetLocalPlayerTeam() != Team.None)
         {

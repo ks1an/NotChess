@@ -1,17 +1,69 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Tables;
+using UnityEngine.UI;
 
 public sealed class WaitingWindow : MonoBehaviour
 {
     [SerializeField] LocalizedStringTable localStringLoadPhrases;
-    [SerializeField] TextMeshProUGUI displayText;
+    [SerializeField] TextMeshProUGUI displayText, displayTitle;
+    [SerializeField] Button exitBttn;
 
-    public void SetRandomLoadText()
+    string baseTitle;
+    bool timerEnabled;
+    float timerStartTime;
+
+    public void SetEnableWaitingWindow(string title = null, string content = null, 
+        Action onExitBttn = null, bool enableTimer = false)
+    {
+        if (title != null)
+        {
+            displayTitle.gameObject.SetActive(true);
+            displayTitle.text = title;
+            baseTitle = title;
+        }
+        else
+        {
+            displayTitle.gameObject.SetActive(false);
+            baseTitle = null;
+        }
+
+        if (content != null)
+            displayText.text = content;
+        else
+            SwitchRandomLoadTxt();
+
+        if (onExitBttn != null)
+        {
+            exitBttn.gameObject.SetActive(true);
+            exitBttn.onClick.RemoveAllListeners();
+            exitBttn.onClick.AddListener(() => onExitBttn?.Invoke());
+        }
+        else
+            exitBttn.gameObject.SetActive(false);
+
+        timerEnabled = enableTimer;
+        timerStartTime = Time.realtimeSinceStartup;
+
+        if (!timerEnabled && baseTitle != null)
+            displayTitle.text = baseTitle;
+    }
+
+    void Update()
+    {
+        if (!timerEnabled || baseTitle == null) return;
+
+        int seconds = Mathf.CeilToInt(Time.realtimeSinceStartup - timerStartTime);
+        displayTitle.text = $"{baseTitle} {seconds}";
+    }
+
+
+    public void SwitchRandomLoadTxt()
     {
         GetLocalizedTable(out StringTable table);
-        displayText.text = GetLocalizedPhrase(table, Random.Range(0, table.Count));
+        displayText.text = GetLocalizedPhrase(table, UnityEngine.Random.Range(0, table.Count));
     }
 
     string GetLocalizedPhrase(StringTable table, int index)

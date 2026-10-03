@@ -46,10 +46,18 @@ public class GameSettingsViewModel
 
     #region Audio
     void OnModel_MusicVolume_Changed(float b) => MusicVolume.Value = b;
-    public void OnView_MusicVolume_Changed(float b) => MusicVolume.Value = b;
+    public void OnView_MusicVolume_Changed(float b)
+    {
+        MusicVolume.Value = b;
+        BackgroundMusic.instance.SetVolumeAudioSource(b);
+    }
 
     void OnModel_EffectVolume_Changed(float b) => EffectVolume.Value = b;
-    public void OnView_EffectVolume_Changed(float b) => EffectVolume.Value = b;
+    public void OnView_EffectVolume_Changed(float b)
+    {
+        EffectVolume.Value = b;
+        GameSound.Instance.UpdateVolume(b);
+    }
     #endregion
 
     public void OnResetToModel()
@@ -63,7 +71,9 @@ public class GameSettingsViewModel
 
         //Audio
         MusicVolume.Value = _model.MusicVolume.Value;
+        BackgroundMusic.instance.SetVolumeAudioSource(MusicVolume.Value);
         EffectVolume.Value = _model.EffectVolume.Value;
+        GameSound.Instance.UpdateVolume(EffectVolume.Value);
     }
 
     public void OnApplyClicked()

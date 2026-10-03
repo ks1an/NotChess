@@ -5,9 +5,7 @@ using UnityEngine;
 
 public class EnemyCardHand : HandObject
 {
-    public event Action<Card> OnCardAddedInHand;
-    public event Action<Card> OnCardRemovedInHand;
-    public event Action OnAllCardsRemovedInHand;
+    public static EnemyCardHand Instance { get; private set;  }
     public int CurrentSelectCardIndex { get; private set; }
     public List<GameObject> CardGameobjectsInHand { get; private set; } = new();
     public Dictionary<GameObject, Card> cardsInHand = new();
@@ -16,6 +14,17 @@ public class EnemyCardHand : HandObject
     [SerializeField] float objSelectUpDistance = 0.25f;
     [SerializeField] bool needToHighlightOnHover;
     [SerializeField] Color highlightColor;
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+        {
+            Debug.LogError("PlayerCardHand > 1 in scene");
+            Destroy(this);
+        }
+    }
 
     void SetCurrentSelectCard(GameObject cardInHand) => CurrentSelectCardIndex = CardGameobjectsInHand.IndexOf(cardInHand);
 
@@ -48,8 +57,6 @@ public class EnemyCardHand : HandObject
         HoverObject cardInHand = obj.AddComponent<HoverObject>();
         cardInHand.SetSettigns(SetCurrentSelectCard, ResetCurrentSelectCard, needToHighlightOnHover, highlightColor);
         obj.layer = LayerMask.NameToLayer("EnemyCard");
-
-        OnCardAddedInHand?.Invoke(logic);
     }
 
     public void RemoveCard(GameObject obj)
@@ -59,7 +66,6 @@ public class EnemyCardHand : HandObject
         cardsInHand.Remove(obj);
 
         StartCoroutine(RemoveObjectInHand(obj));
-        OnCardRemovedInHand?.Invoke(c);
     }
 
     public void RemoveAllCards()
@@ -68,7 +74,6 @@ public class EnemyCardHand : HandObject
         CardGameobjectsInHand.Clear();
         cardsInHand.Clear();
         RemoveAllObjects();
-        OnAllCardsRemovedInHand?.Invoke();
     }
 
     public Card GetCardFromHand(Card cardType)
