@@ -13,23 +13,8 @@ public class DistantRelativeCard : Card
     #region OnDrag
     protected override void OnCursorDown()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
-    }
-
-    protected override void DoActionOnMouseUp()
-    {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
-        {
-            GameController.Instance.player.DeacreaseMana(ManaCost);
-            UseCard(availableMoves);
-        }
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
     #endregion
 
@@ -47,7 +32,7 @@ public class DistantRelativeCard : Card
                     null,
                     out TurnTimerSubscriber sub
                     );
-                GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
+                GameController.Instance.states.move.UseCard(ID, moves, teamWhoHave);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
@@ -62,9 +47,9 @@ public class DistantRelativeCard : Card
                 null,
                 out TurnTimerSubscriber sub
                 );
-            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
+            GameController.Instance.states.move.UseCard(ID, moves, teamWhoHave);
 
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
             {
                 GameController.Instance.player.IncreaseMana(amountGetMana);
                 PlayerDeck.Instance.DestroyCardInHand(this);
@@ -81,11 +66,11 @@ public class DistantRelativeCard : Card
 
     void DoAfterTurnsRepayDebt()
     {
-        if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+        if (teamWhoHave == GameController.Instance.player.GetTeam())
         {
             if (GameController.Instance.player.GetCurrentMana() >= amountGetMana)
             {
-                GameController.Instance.player.DeacreaseMana(amountLostMana);
+                GameController.Instance.player.DecreaseMana(amountLostMana);
                 return;
             }
         }
@@ -93,7 +78,7 @@ public class DistantRelativeCard : Card
         {
             if (GameController.Instance.enemy.GetCurrentMana() >= amountGetMana)
             {
-                GameController.Instance.enemy.DeacreaseMana(amountLostMana);
+                GameController.Instance.enemy.DecreaseMana(amountLostMana);
                 return;
             }
         }

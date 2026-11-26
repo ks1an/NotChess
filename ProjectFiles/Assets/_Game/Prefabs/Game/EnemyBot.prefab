@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 102733287128978942}
   - component: {fileID: 7647873997620197160}
-  - component: {fileID: 1939949957385836131}
   - component: {fileID: 5420170325058324412}
   m_Layer: 0
   m_Name: EnemyBot
@@ -47,19 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myEntity: {fileID: 0}
-  dataBase: {fileID: 11400000, guid: 8a3992507a40c7d488d0b081103bca7a, type: 2}
---- !u!114 &1939949957385836131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2824330033714672817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb41cee7484130144839ab3525911c77, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  cardsCollection: {fileID: 11400000, guid: 3b4a86c1f26dcb9448c10d3a7fdafb92, type: 2}
 --- !u!114 &5420170325058324412
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,10 +82,11 @@ MonoBehaviour:
   feedingPenalty: 3500
   blunderChance: 0.05
   blunderThreshold: 200
-  cardsPriorityMove: 8000
+  cardsPriorityMove: 6500
   destroyEnemyByCard: 3000
   manaCardSpendingMultiple: 100
   bonesCardSpendingMultiple: 100
   reductionFactorDurationFriendUnderWalls: 0.5
   placePawnUnderWallsPonus: 5000
+  characterProfile: {fileID: 0}
   maxHistorySizeMoves: 8

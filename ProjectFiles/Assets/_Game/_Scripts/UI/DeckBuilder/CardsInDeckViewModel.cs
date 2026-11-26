@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -6,88 +7,221 @@ public sealed class CardsInDeckViewModel : MonoBehaviour
 {
     [SerializeField] CardInDeckView cardTemplate;
     [SerializeField] Transform container;
-    [SerializeField] TextMeshProUGUI avgManaText, countInDeck;
+    [SerializeField] TextMeshProUGUI avgManaText, avgBonesText, countInDeck;
     [SerializeField] CardsView cardsView;
-    [SerializeField] DeckView deckView;
 
-    List<CardInDeckView> cardsInDeckViewModel = new();
+    readonly List<CardInDeckView> _rows = new();
+    DeckService _draft;
+    DeckService _subscribedTo;
+    DeckData _editingDeckData;
+
+    public DeckService CurrentDeck
+    {
+        get
+        {
+            if (_draft != null) return _draft;
+            var p = PlayerRef;
+            return p != null ? p.UniqueDeck : null;
+        }
+    }
+
+    public event Action DeckChanged;
+
+    Player PlayerRef
+    {
+        get
+        {
+            var gc = GameController.Instance;
+            return gc != null ? gc.player : null;
+        }
+    }
+
+    // ===== Lifecycle (сессия редактирования) =====
+
+    void OnEnable()
+    {
+        if (cardTemplate != null) cardTemplate.gameObject.SetActive(false);
+
+        if (_editingDeckData != null)
+        {
+            Subscribe(_draft);
+            RebuildRows();
+            UpdateStatsUI();
+            DeckChanged?.Invoke();
+            return;
+        }
+
+        var gc = GameController.Instance;
+        var global = gc != null ? gc.globalCards : null;
+        var p = PlayerRef;
+        if (global != null && p != null && p.UniqueDeck != null)
+        {
+            _draft = new DeckService(global, p.UniqueDeck.MaxSize);
+            _draft.LoadFromData(p.UniqueDeck.ToData(), fallbackToStandardIfEmpty: false);
+        }
+
+        Subscribe(_draft);
+        RebuildRows();
+        UpdateStatsUI();
+        DeckChanged?.Invoke();
+    }
+
+    void OnDisable()
+    {
+        Unsubscribe();
+        _draft = null;
+        _editingDeckData = null;
+
+        ClearRows();
+        DeckChanged?.Invoke();
+    }
+
+    public void OpenDeckForEdit(DeckData deckData)
+    {
+        _editingDeckData = deckData;
+
+        var gc = GameController.Instance;
+        var global = gc != null ? gc.globalCards : null;
+        var p = PlayerRef;
+        int maxSize = (p != null && p.UniqueDeck != null) ? p.UniqueDeck.MaxSize : DeckService.DefaultMaxSize;
+
+        if (global != null && deckData != null)
+        {
+            _draft = new DeckService(global, maxSize);
+            _draft.LoadFromData(deckData, fallbackToStandardIfEmpty: false);
+            Subscribe(_draft);
+        }
+
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
+
+        RebuildRows();
+        UpdateStatsUI();
+        DeckChanged?.Invoke();
+    }
+
+    void Subscribe(DeckService d)
+    {
+        if (_subscribedTo == d) return;
+        if (_subscribedTo != null) _subscribedTo.Changed -= OnDeckChanged;
+        _subscribedTo = d;
+        if (_subscribedTo != null) _subscribedTo.Changed += OnDeckChanged;
+    }
+
+    void Unsubscribe()
+    {
+        if (_subscribedTo != null) _subscribedTo.Changed -= OnDeckChanged;
+        _subscribedTo = null;
+    }
+
+    void OnDeckChanged()
+    {
+        RebuildRows();
+        UpdateStatsUI();
+        DeckChanged?.Invoke();
+    }
+
+    // ===== Commands =====
 
     public void AddCard(Card cardData)
     {
-        int sumManaCost = cardData.ManaCost;
-        for (int i = 0; i < cardsInDeckViewModel.Count; i++)
-        {
-            if (cardsInDeckViewModel[i].cardData.GetType() == cardData.GetType())
-                return;
-            sumManaCost += cardsInDeckViewModel[i].cardData.ManaCost;
-        }
-
-        CardInDeckView cardView = GameObject.Instantiate(cardTemplate, container);
-        cardsInDeckViewModel.Add(cardView);
-        cardView.SetCardData(cardData, 1);
-        cardView.gameObject.SetActive(true);
-
-        countInDeck.text = $"<b>{cardsInDeckViewModel.Count}</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
-        avgManaText.text = $"<b><color=#43A5BE>{sumManaCost / cardsInDeckViewModel.Count}</b></color> \n avg. mana";
-        cardsView.GetCard(cardData).UpdateView(true);
+        if (cardData == null) return;
+        CurrentDeck?.Add(cardData);
     }
 
     public void RemoveCard(Card cardData)
     {
-        int sumManaCost = 0;
-        for (int i = 0; i < cardsInDeckViewModel.Count; i++)
-        {
-            sumManaCost += cardsInDeckViewModel[i].cardData.ManaCost;
-            if (cardsInDeckViewModel[i].cardData.GetType() == cardData.GetType())
-            {
-                sumManaCost -= cardsInDeckViewModel[i].cardData.ManaCost;
-                Destroy(cardsInDeckViewModel[i].gameObject);
-                cardsInDeckViewModel.Remove(cardsInDeckViewModel[i]);
-            }
-        }
-
-        if (cardsInDeckViewModel.Count > 0)
-        {
-            countInDeck.text = $"<b>{cardsInDeckViewModel.Count}</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
-            avgManaText.text = $"<b><color=#43A5BE>{sumManaCost / cardsInDeckViewModel.Count}</b></color> \n avg. mana";
-        }
-        else
-        {
-            countInDeck.text = $"<b>0</b> /{PlayerDeck.Instance.DeckSize} \n unique cards in deck";
-            avgManaText.text = $"<b><color=#43A5BE>0</b></color> \n avg. mana";
-        }
-
-        cardsView.GetCard(cardData).UpdateView(false);
+        if (cardData == null) return;
+        CurrentDeck?.Remove(cardData);
     }
 
     public void SaveDeck()
     {
-        GameController.Instance.player.cardCollection.ClearCollection();
-        for(int i = 0;i < cardsInDeckViewModel.Count; i++)
+        if (_draft == null) return;
+
+        var updatedData = _draft.ToData();
+        var p = PlayerRef;
+
+        if (_editingDeckData != null)
         {
-            GameController.Instance.player.cardCollection.AddCardToCollection(cardsInDeckViewModel[i].cardData);
+            updatedData.id = _editingDeckData.id;
+            updatedData.isFavorite = _editingDeckData.isFavorite;
+            updatedData.lastUsedTicks = _editingDeckData.lastUsedTicks;
+            _editingDeckData = updatedData;
+
+            DeckLibraryManager.Instance?.SaveEditedDeck(updatedData);
         }
-        GameController.Instance.player.cardCollection.cardBack = deckView.deckIcon;
-        GameController.Instance.player.cardCollection.SaveDataToJson();
+        else if (p != null && p.UniqueDeck != null)
+        {
+            p.UniqueDeck.LoadFromData(updatedData, fallbackToStandardIfEmpty: false);
+            p.UniqueDeck.Save();
+            DeckLibraryManager.Instance.SyncActiveDeckToLibrary(saveToDisk: true, notify: true);
+        }
     }
 
-    public void LoadCards()
+    public void CancelChanges()
     {
-        cardTemplate.gameObject.SetActive(false);
-        foreach (Card cardData in GameController.Instance.player.cardCollection.CardsInCollection)
+        var gc = GameController.Instance;
+        var global = gc != null ? gc.globalCards : null;
+        var p = PlayerRef;
+        int maxSize = (p != null && p.UniqueDeck != null) ? p.UniqueDeck.MaxSize : DeckService.DefaultMaxSize;
+        if (global == null) return;
+
+        DeckData sourceData = _editingDeckData ?? p.UniqueDeck?.ToData();
+        if (sourceData == null) return;
+
+        _draft = new DeckService(global, maxSize);
+        _draft.LoadFromData(sourceData, fallbackToStandardIfEmpty: false);
+
+        Subscribe(_draft);
+        RebuildRows();
+        UpdateStatsUI();
+        DeckChanged?.Invoke();
+    }
+
+    // ===== View =====
+
+    void RebuildRows()
+    {
+        ClearRows();
+        var d = CurrentDeck;
+        if (d == null || cardTemplate == null) return;
+
+        foreach (var card in d.Cards)
         {
-            AddCard(cardData);
+            if (card == null) continue;
+            var row = Instantiate(cardTemplate, container);
+            row.SetCardData(card, 1);
+            row.gameObject.SetActive(true);
+            _rows.Add(row);
         }
     }
 
-    private void OnDisable()
+    void ClearRows()
     {
-        foreach (Transform child in container)
+        foreach (var row in _rows) if (row != null) Destroy(row.gameObject);
+        _rows.Clear();
+    }
+
+    void UpdateStatsUI()
+    {
+        var d = CurrentDeck;
+        if (d == null)
         {
-            if (cardTemplate.transform == child) continue;
-            Destroy(child.gameObject);
+            if (countInDeck != null) countInDeck.text = "<b>0</b>\ncards in deck";
+            if (avgManaText != null) avgManaText.text = "<b><color=#43A5BE>0.0</color></b>\n avg. mana";
+            if (avgBonesText != null) avgBonesText.text = "<b><color=red>0.0</color></b>\n avg. bones";
+            return;
         }
 
-        cardsInDeckViewModel.Clear();
+        var s = d.GetStats();
+        if (countInDeck != null)
+            countInDeck.text = $"<b>{s.Count}</b> /{d.MaxSize}\n cards in deck";
+        if (avgManaText != null)
+            avgManaText.text = $"<b><color=#43A5BE>{s.AvgManaAll:F1}</color></b> " +
+                               $"(<color=#43A5BE>{s.AvgManaOnManaCards:F1}</color> on {s.ManaCards})\n avg. mana";
+        if (avgBonesText != null)
+            avgBonesText.text = $"<b><color=red>{s.AvgBonesAll:F1}</color></b> " +
+                                $"(<color=red>{s.AvgBonesOnBoneCards:F1}</color> on {s.BoneCards})\n avg. bones";
     }
 }

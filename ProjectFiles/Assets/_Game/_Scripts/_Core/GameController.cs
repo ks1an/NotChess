@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,7 +14,9 @@ public sealed class GameController : MonoBehaviour
     [Space(10)]
     public Player player;
     public Enemy enemy;
+    public List<AICharacterProfile> aiProfiles = new();
     public GameObject botPrefab;
+    public TutorialController tutorialPrefab;
 
     [Header("Board")]
     public Board board;
@@ -41,6 +44,8 @@ public sealed class GameController : MonoBehaviour
             player = GameObject.Instantiate(player.gameObject).GetComponent<Player>();
             enemy = GameObject.Instantiate(enemy.gameObject).GetComponent<Enemy>();
 
+            player.SetUniqueDeck(globalCards, 26);
+
             var loader = new SettingsLoader();
             loader.LoadGameSettings();
             loader.LoadPlayerData();
@@ -53,6 +58,17 @@ public sealed class GameController : MonoBehaviour
     {
         CreateGame(MatchStates.GameMode_Demo, false, true);
         isDemonstration = true;
+    }
+
+    public void StartTutorial()
+    {
+        if (TutorialController.Instance == null)
+            Instantiate(tutorialPrefab);
+
+        CreateGame(
+            gamemode: MatchStates.GameMode_Tutorial,
+            isNetMatch: false,
+            isMatchAiVsAi: false);
     }
 
     public void CreateGame(string gamemode, bool isNetMatch, bool isMatchAiVsAi = false,

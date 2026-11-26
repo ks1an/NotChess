@@ -30,9 +30,9 @@ public class Enemy : PlayingEntity
         GameController.Instance.enemyManaBottle.IncreaseMana(value);
     }
 
-    public override void DeacreaseMana(int value)
+    public override void DecreaseMana(int value)
     {
-        base.DeacreaseMana(value);
+        base.DecreaseMana(value);
         GameController.Instance.enemyManaBottle.DeacreaseMana(value);
     }
 
@@ -42,9 +42,9 @@ public class Enemy : PlayingEntity
         if (graveCoinStackView != null) graveCoinStackView.Add(graveCoinPrefab, currentGraveTokens - graveCoinStackView.GetCountInStack());
     }
 
-    public override void DeacreaseGraveTokens(int value)
+    public override void DecreaseGraveTokens(int value)
     {
-        base.DeacreaseGraveTokens(value);
+        base.DecreaseGraveTokens(value);
         if (graveCoinStackView != null) graveCoinStackView.Remove(value);
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class PickpocketCard : Card
@@ -13,28 +12,26 @@ public class PickpocketCard : Card
         enemyCardFromHandWasSelected = false;
     }
 
+    public override bool CanBeUsed()
+    {
+        if (!CanBeSelected()) return false;
+        if (EnemyDeck.Instance == null) return false;
+        if (EnemyDeck.Instance.hand.CurrentSelectCardIndex <= -1) return false;
+        return true;
+    }
+
     protected override void OnCursorDown()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
-
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
 
     protected override void DoActionOnMouseUp()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost &&
-            EnemyDeck.Instance.hand.CurrentSelectCardIndex > -1)
-        {
-            enemyCardFromHandWasSelected = true;
-            GameController.Instance.player.DeacreaseMana(ManaCost);
-            UseCard(availableMoves);
-        }
+        if (!CanBeUsed()) return;
+        availableMoves.Add(new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0));
+        enemyCardFromHandWasSelected = true;
+        base.DoActionOnMouseUp();
     }
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
@@ -55,12 +52,12 @@ public class PickpocketCard : Card
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
 
-                GameController.Instance.states.move.UseCard(GetID(), targetCards, teamWhoHave);
+                GameController.Instance.states.move.UseCard(ID, targetCards, teamWhoHave);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
             {
-                GameController.Instance.netMatch.cardSync.Player_DrawCardInHandRpc(PlayerCardHand.Instance.CardsInHand[moves[0][0]].GetID());
+                GameController.Instance.netMatch.cardSync.Player_DrawCardInHandRpc(PlayerCardHand.Instance.CardsInHand[moves[0][0]].ID);
                 PlayerDeck.Instance.DestroyCardInHand(PlayerCardHand.Instance.CardsInHand[moves[0][0]], false);
                 KillCard();
             }
@@ -74,9 +71,9 @@ public class PickpocketCard : Card
             GameObject cardInHandEnemy = EnemyDeck.Instance.hand.CardGameobjectsInHand[targetCards[0][0]];
             PlayerDeck.Instance.DrawCardInHand(EnemyDeck.Instance.hand.cardsInHand[cardInHandEnemy]);
             EnemyDeck.Instance.DestroyCardInHand(cardInHandEnemy);
-            GameController.Instance.states.move.UseCard(GetID(), targetCards, teamWhoHave);
+            GameController.Instance.states.move.UseCard(ID, targetCards, teamWhoHave);
 
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
                 PlayerDeck.Instance.DestroyCardInHand(this);
             else
             {

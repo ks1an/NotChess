@@ -11,24 +11,8 @@ public class KnightCard : Card
 
     protected override void OnCursorDown()
     {
-        if (GameController.Instance.player.GetCurrentGraveTokens() >= GraveTokensCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
-
-    }
-
-    protected override void DoActionOnMouseUp()
-    {
-        if (GameController.Instance.player.GetCurrentGraveTokens() >= GraveTokensCost && availableMoves.Count > 0)
-        {
-            GameController.Instance.player.DeacreaseGraveTokens(GraveTokensCost);
-            UseCard(availableMoves);
-        }
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
@@ -37,11 +21,11 @@ public class KnightCard : Card
 
         if (!isSynced)
         {
-            PieceView prefab = GameController.Instance.player.GetLocalPlayerTeam() == Team.Zero ? zeroKnightPrefab : crossKnightPrefab;
+            PieceView prefab = GameController.Instance.player.GetTeam() == Team.Zero ? zeroKnightPrefab : crossKnightPrefab;
             GameController.Instance.states.move.TryDestroyAndCreateUnit(moves[0].x, moves[0].y, false, teamWhoHave, prefab, false);
 
-            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            GameController.Instance.states.move.UseCard(ID, moves, teamWhoHave);
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
                 PlayerDeck.Instance.DestroyCardInHand(this);
             else
             {
@@ -75,7 +59,7 @@ public class KnightCard : Card
     public override bool IsAvailableMove(int targetX, int targetY)
     {
         if (Board.Instance.tilesController.tiles[targetX, targetY] != null && Board.Instance.piecesController.pieces[targetX, targetY] != null
-            && Board.Instance.piecesController.pieces[targetX, targetY].team == GameController.Instance.player.GetLocalPlayerTeam()
+            && Board.Instance.piecesController.pieces[targetX, targetY].team == GameController.Instance.player.GetTeam()
             && Board.Instance.piecesController.pieces[targetX, targetY].GetType() == typeof(PawnData))
             return true;
         return false;

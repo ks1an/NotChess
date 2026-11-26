@@ -30,24 +30,8 @@ public sealed class MeteorRainCard : Card, ICardAI
     #region OnDrag
     protected override void OnCursorDown()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
-
-    }
-
-    protected override void DoActionOnMouseUp()
-    {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
-        {
-            GameController.Instance.player.DeacreaseMana(ManaCost);
-            UseCard(availableMoves);
-        }
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
     #endregion
 
@@ -68,7 +52,7 @@ public sealed class MeteorRainCard : Card, ICardAI
                         break;
                     }
             }
-            GameController.Instance.states.move.UseCard(GetID(), alreadyAttacked, teamWhoHave);
+            GameController.Instance.states.move.UseCard(ID, alreadyAttacked, teamWhoHave);
             Board.Instance.tilesController.RemoveHighlightTiles(moves);
             moves = alreadyAttacked;
         }
@@ -95,7 +79,7 @@ public sealed class MeteorRainCard : Card, ICardAI
 
         if (!isSynced)
         {
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
                 PlayerDeck.Instance.DestroyCardInHand(this);
             else
             {

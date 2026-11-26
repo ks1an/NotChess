@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: King
   m_EditorClassIdentifier: 
   canAttackTeammate: 1
-  durationSetPos: 0.4
+  durationSetPos: 0.65
   view: {fileID: 0}
   currentX: 0
   currentY: 0

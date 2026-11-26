@@ -65,7 +65,7 @@ public sealed class UnitSystemSync : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     public void IncreaseManaForDestroyRpc(int playerWhoDestroy)
     {
-        int playerTeam = (int)GameController.Instance.player.GetLocalPlayerTeam();
+        int playerTeam = (int)GameController.Instance.player.GetTeam();
         if (playerTeam == playerWhoDestroy && playerTeam != (int)Team.None)
         {
             GameController.Instance.player.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
@@ -75,7 +75,7 @@ public sealed class UnitSystemSync : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     public void IncreaseGraveCoinForDestroyRpc(int playerWhoDestroy)
     {
-        int playerTeam = (int)GameController.Instance.player.GetLocalPlayerTeam();
+        int playerTeam = (int)GameController.Instance.player.GetTeam();
         if (playerTeam == playerWhoDestroy && playerTeam != (int)Team.None)
         {
             GameController.Instance.player.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);

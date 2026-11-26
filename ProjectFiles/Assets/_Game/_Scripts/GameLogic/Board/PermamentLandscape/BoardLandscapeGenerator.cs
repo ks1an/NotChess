@@ -5,6 +5,7 @@ using UnityEngine;
 public class BoardLandscapeGenerator : MonoBehaviour
 {
     [SerializeField] List<LandscapeObject> landscapeObjects = new();
+    [HideInInspector] public List<LandscapeObject> activeLandscapes = new();
 
     Board board;
     List<Vector2Int> tiles = new();
@@ -71,8 +72,25 @@ public class BoardLandscapeGenerator : MonoBehaviour
         {
             LandscapeObject land = Instantiate(obj.gameObject).GetComponent<LandscapeObject>();
             land.Init(indexesX[i], indexesY[i]);
+            RegisterLandscape(land);
             tiles.Remove(board.tilesController.tiles[indexesX[i], indexesY[i]].coord);
         }
         Board.Instance.SetLandReady(true);
+    }
+
+    public void RegisterLandscape(LandscapeObject landObj)
+    {
+        if (landObj != null && !activeLandscapes.Contains(landObj))
+            activeLandscapes.Add(landObj);
+    }
+
+    public void DestroyLandscapes()
+    {
+        foreach (var land in activeLandscapes)
+        {
+            if (land != null)
+                land.ClearLandscape();
+        }
+        activeLandscapes.Clear();
     }
 }

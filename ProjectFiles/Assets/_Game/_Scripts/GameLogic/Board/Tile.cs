@@ -4,6 +4,7 @@ public sealed class Tile : MonoBehaviour
 {
     public Vector2Int coord;
     public Vector3 tileCenter;
+    public Vector2 uvOffsetSeed;
 
     public TileStatsComponent Stats;
     public TileStats StatsView;

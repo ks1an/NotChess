@@ -49,6 +49,10 @@ public class SettingsLoader
             {
                 //SetDeffault;
                 playerName = "Player45510",
+
+                tutorialCompleted = false,
+
+                magicCrystals = 0
             };
         }
         PlayerDataModel model = new(playerData);

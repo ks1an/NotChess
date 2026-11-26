@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public sealed class StackView : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public sealed class StackView : MonoBehaviour
     {
         for(int i = 0; i < countToAdd; i++)
         {
-            Transform objT = Instantiate(cardBackPrefab, gameObject.transform).transform;
+            Transform objT = Instantiate(cardBackPrefab.gameObject, gameObject.transform).transform;
             objT.SetLocalPositionAndRotation(new Vector3(0, countInStack * objHight, 0) + new Vector3(
                     rnd.GetSafeRandom(randomPosX[0], randomPosX[1]),
                     rnd.GetSafeRandom(randomPosY[0], randomPosY[1]),

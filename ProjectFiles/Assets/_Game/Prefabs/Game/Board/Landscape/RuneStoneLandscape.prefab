@@ -47,7 +47,7 @@ MonoBehaviour:
   landName: RuneStone
   minAmount: 0
   maxAmount: 1
-  duration: 64
+  duration: 512
   chance: 5
   visualEffectOnTile: {fileID: 11400000, guid: 8cc9eab1de95b0548be988df2c32b9bc, type: 2}
   spawnDurationMultiple: 0.1

@@ -64,7 +64,7 @@ public class ManaRock : InteractLandscapeObject
             if (Board.Instance.piecesController.pieces[coordTile.x, coordTile.y] != null)
             {
                 if (Board.Instance.piecesController.pieces[coordTile.x, coordTile.y].team ==
-                    GameController.Instance.player.GetLocalPlayerTeam())
+                    GameController.Instance.player.GetTeam())
                     playerTeamAmount++;
             }
 

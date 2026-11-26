@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 074a3159271488f468d6110583335b6a, type: 3}
   m_Name: Knight
   m_EditorClassIdentifier: 
+  canAttackTeammate: 0
+  durationSetPos: 0.3
   view: {fileID: 0}
   currentX: 0
   currentY: 0
-  canAttackTeammate: 0
   team: 0
-  durationSetPos: 0.75

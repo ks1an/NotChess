@@ -4,16 +4,23 @@ using UnityEngine.UI;
 
 public class GameSettingsView_GamePage : GameSettingsView
 {
+    [Header("Game")]
     [SerializeField] Toggle dontTranslateNameOfCardToogle;
+    [Header("Graphic && Display")]
     [SerializeField] TMP_Dropdown fullscreenModeDropdown;
     [SerializeField] SegmentedBttn vsyncBttns;
     [SerializeField] CycleButton antializingCycleBttn;
     [SerializeField] Transform fullscreenContainer, vsyncContainer;
+    [Header("Audio")]
     [SerializeField] TextMeshProUGUI musicNameTxt;
     [SerializeField] Button musicBttn;
-    [SerializeField] Button applyBttn, closeBttn;
     [SerializeField] SnappedSlider musicVolumeSlider, effectVolumeSlider;
     [SerializeField] TextMeshProUGUI musicVolumeTxt, effectVolumeTxt;
+    [Header("SettingsPageControl")]
+    [SerializeField] Button applyBttn, closeBttn;
+    [Header("Other")]
+    [SerializeField] Button tutorialBttn;
+    [SerializeField] Button SocialTelegramBttn;
 
     bool isMobile;
 
@@ -44,6 +51,8 @@ public class GameSettingsView_GamePage : GameSettingsView
             };
             vsyncBttns.DisplayValue(viewModel.VSync.Value);
         }
+
+        tutorialBttn.onClick.AddListener(() => GameController.Instance.StartTutorial());
 
         // Card
         dontTranslateNameOfCardToogle.onValueChanged.AddListener(value =>
@@ -80,6 +89,9 @@ public class GameSettingsView_GamePage : GameSettingsView
         musicBttn.onClick.AddListener(OnClickedMusicBttn);
         BackgroundMusic.CurrentMusic.OnChanged += Display_Music;
         Display_Music(BackgroundMusic.CurrentMusic.Value);
+
+        //SOCIAL
+        SocialTelegramBttn.onClick.AddListener(() => Application.OpenURL("https://t.me/unuraLab"));
 
         applyBttn.onClick.AddListener(OnApplyClicked);
         closeBttn.onClick.AddListener(viewModel.OnResetToModel);

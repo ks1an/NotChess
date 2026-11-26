@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public enum CardAttackStrong
 {
@@ -12,7 +13,7 @@ public enum CardAttackStrong
 }
 
 [RequireComponent(typeof(CardVisual))]
-public class Card : MonoBehaviour
+public class Card : MonoBehaviour, IPointerDownHandler
 {
     public string originalCardName;
     [field: TextArea] public string originalDescription;
@@ -26,7 +27,7 @@ public class Card : MonoBehaviour
 
     [field: SerializeField] public bool IsUseOnlyMyTurn { get; private set; } = true;
     [field: SerializeField] public CardOrientation Orientation { get; private set; }
-    [field: SerializeField] public Category Category { get; private set; }
+    [field: SerializeField] public TargetCategory TargetCategory { get; private set; }
     [field: SerializeField] public CardRarity Rarity { get; private set; }
     [field: SerializeField] public CardAttackStrong AttackClass { get; private set; }
 
@@ -36,18 +37,53 @@ public class Card : MonoBehaviour
     public PlayerCardHand Hand { get; private set; }
 
     protected List<Vector2Int> availableMoves = new();
-    protected int ID;
     protected bool cardUsedForLandscape;
     protected bool cardInited;
     protected Team teamWhoHave;
     bool showOnlyOriginalName;
 
+    [SerializeField, HideInInspector] private string stableGuid;
+    [SerializeField, HideInInspector] private int stableId;
+    public int ID
+    {
+        get
+        {
+#if UNITY_EDITOR
+            EnsureStableId();
+#endif
+            return stableId;
+        }
+    }
+#if UNITY_EDITOR
+    void EnsureStableId()
+    {
+        if (string.IsNullOrEmpty(stableGuid))
+        {
+            stableGuid = System.Guid.NewGuid().ToString("N");
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+        int h = stableGuid.GetHashCode();
+        stableId = StableHash(stableGuid);
+    }
+
+    static int StableHash(string s)
+    {
+        unchecked
+        {
+            int h = 5381;
+            foreach (char c in s) h = ((h << 5) + h) ^ c; 
+            return h == 0 ? 1 : h;
+        }
+    }
+
     public virtual void OnValidate()
     {
+        EnsureStableId();
         DisplayName = originalCardName;
         DisplayDescription = originalDescription;
         UpdateCardUI();
     }
+#endif
 
     #region Sets
     void TryBlockSetDisplayNameByLocals(bool b)
@@ -81,7 +117,6 @@ public class Card : MonoBehaviour
     public virtual void Init(Team teamWhoHave)
     {
         this.teamWhoHave = teamWhoHave;
-        GetID();
         CardUI = GetComponent<CardVisual>();
         UpdateCardUI();
 
@@ -109,10 +144,27 @@ public class Card : MonoBehaviour
         }
     }
 
-    void OnMouseDown()
+    public virtual bool CanBeSelected()
+    {
+        var player = GameController.Instance.player;
+
+        if (player.GetCurrentMana() < ManaCost) return false;
+        if (player.GetCurrentGraveTokens() < GraveTokensCost) return false; 
+        if (IsUseOnlyMyTurn && !player.IsMyTurnOrNot()) return false;
+
+        return true;
+    }
+
+    public virtual bool CanBeUsed()
+    {
+        return CanBeSelected();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
     {
         OnCursorDown();
     }
+
     protected virtual void OnCursorDown() { }
 
 
@@ -128,14 +180,25 @@ public class Card : MonoBehaviour
 
         CardUI.MouseExitFromCard(gameObject);
     }
-    protected virtual void DoActionOnMouseUp() { }
+    protected virtual void DoActionOnMouseUp()
+    {
+        if (!CanBeUsed() || availableMoves.Count < 1) return;
+
+        GameController.Instance.player.DecreaseMana(ManaCost);
+        GameController.Instance.player.DecreaseGraveTokens(GraveTokensCost);
+
+        GameController.Instance.states.stats.countOfPlayedCards++;
+        GameController.Instance.states.stats.manaSpent += ManaCost;
+        GameController.Instance.states.stats.graveTokensSpent += GraveTokensCost;
+
+        AnalyticService.Instance.LogCardPlayed(originalCardName, GameController.Instance.states.turnCount);
+
+        UseCard(availableMoves, false);
+    } 
 
     public virtual void UseCard(List<Vector2Int> moves, bool isSynced)
     {
-        if (!isSynced)
-        {
-            AnalyticsManager.Instance.LogCardPlayed(originalCardName, GameController.Instance.states.turnCount);
-        }
+
     }
 
     public virtual List<Vector2Int> GetAvailableMoves(int maxX, int maxY, int hoverX, int hoverY)
@@ -145,17 +208,6 @@ public class Card : MonoBehaviour
     }
 
     public virtual bool IsAvailableMove(int targetX, int targetY) { return false; }
-
-    public int GetID()
-    {
-        if (ID != 0)
-            return ID;
-
-        string id = originalCardName.Length.ToString() + originalDescription.Length.ToString() + ((int)ColorBorder.b).ToString() +
-            ((int)Orientation).ToString() + ((int)Category).ToString() + ((int)Rarity).ToString() + ((int)AttackClass).ToString();
-
-        return int.Parse(id);
-    }
 
     private void OnEnable()
     {
@@ -183,12 +235,11 @@ public enum CardOrientation
     Social
 }
 
-public enum Category
+public enum TargetCategory
 {
     CELLS,
     PIECES,
-    PIECES_AND_CELLS,
-    HandOrDeck
+    EnemyHand
 }
 
 public enum CardRarity

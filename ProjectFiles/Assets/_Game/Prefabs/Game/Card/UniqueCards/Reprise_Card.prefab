@@ -113,10 +113,12 @@ MonoBehaviour:
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 0.39215687, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 1
-  <Category>k__BackingField: 0
+  <TargetCategory>k__BackingField: 0
   <Rarity>k__BackingField: 2
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
+  stableGuid: 17df46410bf947429c9808bfaa4d78c3
+  stableId: -1826908458
 --- !u!1001 &7476644145943505567
 PrefabInstance:
   m_ObjectHideFlags: 0

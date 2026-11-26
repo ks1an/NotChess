@@ -145,7 +145,7 @@ public class CardVisual : MonoBehaviour
             graveTokensCostTxt.text = card.GraveTokensCost.ToString();
 
         orientation = (int)card.Orientation;
-        effectType = (int)card.Category;
+        effectType = (int)card.TargetCategory;
         rarity = (int)card.Rarity;
         visualState = CardVisualState.Passive;
     }

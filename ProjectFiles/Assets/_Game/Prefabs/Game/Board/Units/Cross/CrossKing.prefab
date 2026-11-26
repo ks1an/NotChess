@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7365296593392535597}
   - component: {fileID: 8280419485305875967}
   - component: {fileID: 8036176483781266896}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: CrossKing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0631ee9cae1dff44f8f5f0245477f186, type: 2}
+  - {fileID: 2100000, guid: cc153c35e3a45fd4585125f118a91126, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1104173756
+  GlobalObjectIdHash: 4006581056
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -237,7 +237,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0631ee9cae1dff44f8f5f0245477f186, type: 2}
+  - {fileID: 2100000, guid: cc153c35e3a45fd4585125f118a91126, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

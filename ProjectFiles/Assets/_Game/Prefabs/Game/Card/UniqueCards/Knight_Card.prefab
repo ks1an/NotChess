@@ -458,10 +458,12 @@ MonoBehaviour:
   <ColorBorder>k__BackingField: {r: 0.5803922, g: 0.6392157, b: 0.6784314, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 0
-  <Category>k__BackingField: 1
+  <TargetCategory>k__BackingField: 1
   <Rarity>k__BackingField: 2
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
+  stableGuid: ab76df7fcae74dcfb777737291e83e0c
+  stableId: -1639393131
   zeroKnightPrefab: {fileID: 8036176483781266896, guid: 1a282c81aa46b2c419df7f3fc0673bd2, type: 3}
   crossKnightPrefab: {fileID: 8036176483781266896, guid: 125cb6370a718794db36f4f9b462ec0a, type: 3}
 --- !u!1001 &6936401273770386555

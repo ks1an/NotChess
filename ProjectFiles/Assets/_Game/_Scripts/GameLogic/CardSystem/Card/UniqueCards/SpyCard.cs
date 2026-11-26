@@ -9,27 +9,19 @@ public class SpyCard : Card
         base.Init(teamWhoHave);
     }
 
-    protected override void OnCursorDown()
+    public override bool CanBeUsed()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
-
+        if (!CanBeSelected()) return false;
+        if (EnemyDeck.Instance == null) return false;
+        if (EnemyDeck.Instance.hand.CurrentSelectCardIndex <= -1) return false;
+        availableMoves.Add(new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0));
+        return true;
     }
 
-    protected override void DoActionOnMouseUp()
+    protected override void OnCursorDown()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost &&
-            EnemyDeck.Instance.hand.CurrentSelectCardIndex > -1)
-        {
-            GameController.Instance.player.DeacreaseMana(ManaCost);
-            UseCard(availableMoves);
-        }
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
@@ -50,13 +42,13 @@ public class SpyCard : Card
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
 
-                GameController.Instance.states.move.UseCard(GetID(), targetCards, teamWhoHave);
+                GameController.Instance.states.move.UseCard(ID, targetCards, teamWhoHave);
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
             {
                 GameController.Instance.netMatch.cardSync.ShowSpyInfoAboutCardRpc(
-                    PlayerCardHand.Instance.CardsInHand[moves[0][0]].GetID());
+                    PlayerCardHand.Instance.CardsInHand[moves[0][0]].ID);
                 KillCard();
             }
         else
@@ -66,20 +58,20 @@ public class SpyCard : Card
                         new Vector2Int(EnemyDeck.Instance.hand.CurrentSelectCardIndex, 0)
                     };
 
-            GameController.Instance.states.move.UseCard(GetID(), targetCards, teamWhoHave);
+            GameController.Instance.states.move.UseCard(ID, targetCards, teamWhoHave);
 
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
             {
                 GameObject cardInHandEnemy = EnemyDeck.Instance.hand.CardGameobjectsInHand[targetCards[0][0]];
                 NotificationPanelConroller.Instance.ShowNotification
-(GameController.Instance.globalCards.GetImortantWordsFromDescription(EnemyDeck.Instance.hand.cardsInHand[cardInHandEnemy].GetID()), () => { });
+(GameController.Instance.globalCards.GetImportantWordsFromDescription(EnemyDeck.Instance.hand.cardsInHand[cardInHandEnemy].ID), () => { });
                 PlayerDeck.Instance.DestroyCardInHand(this);
             }
             else
             {
                 Card cardInHandPlayr = PlayerCardHand.Instance.CardsInHand[targetCards[0][0]];
                 NotificationPanelConroller.Instance.ShowNotification
-(GameController.Instance.globalCards.GetImortantWordsFromDescription(cardInHandPlayr.GetID()), () => { });
+(GameController.Instance.globalCards.GetImportantWordsFromDescription(cardInHandPlayr.ID), () => { });
 
                 //TODO: Effectively removes a random card of the type. Creates ambiguity for the player. Needs to be changed.
                 EnemyCardHand hand = EnemyDeck.Instance.hand;

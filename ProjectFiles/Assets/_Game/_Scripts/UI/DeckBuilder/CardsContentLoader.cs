@@ -6,39 +6,70 @@ public class CardsView : MonoBehaviour
     [SerializeField] CardShopView cardTemplate;
     [SerializeField] GameObject deckTitle;
     [SerializeField] Transform container;
-    [SerializeField] List<CardShopView> cards;
-    [SerializeField] CardsInDeckViewModel inDeckViewModel; 
+    [SerializeField] List<CardShopView> cards = new();
+
+    // ===== Lookup =====
 
     public CardShopView GetCard(Card card)
     {
-        foreach(CardShopView cardView in cards)
+        if (card == null) return null;
+        int id = card.ID;
+
+        foreach (var cardView in cards)
         {
-            if(cardView.cardData == card)
-                return cardView;
+            if (cardView == null || cardView.cardData == null) continue;
+            if (cardView.cardData.ID == id) return cardView;
         }
-        Debug.LogError("NOT FOUND");
         return null;
     }
 
+    // ===== Lifecycle =====
+
     private void OnEnable()
     {
-        cardTemplate.gameObject.SetActive(false);
-        foreach (Card cardData in GameController.Instance.globalCards.GlobalCardsDictionary.Values)
-        {
-            CardShopView cardView = GameObject.Instantiate(cardTemplate, container);
-            cardView.SetCardData(cardData);
-            cardView.gameObject.SetActive(true);
-            cards.Add(cardView);
-        }
-        inDeckViewModel.LoadCards();
+        if (cardTemplate != null) cardTemplate.gameObject.SetActive(false);
+        Rebuild();
     }
 
     private void OnDisable()
     {
-        foreach (Transform child in container)
+        Clear();
+    }
+
+    // ===== Build =====
+
+    private void Rebuild()
+    {
+        Clear();
+
+        var gc = GameController.Instance;
+        if (gc == null) return;
+
+        var global = gc.globalCards;
+        if (global == null || global.GlobalCardsDictionary == null) return;
+        if (cardTemplate == null || container == null) return;
+
+        foreach (var cardData in global.GlobalCardsDictionary.Values)
         {
-            if (cardTemplate.transform == child || deckTitle.transform == child) continue;
-            Destroy(child.gameObject);
+            if (cardData == null) continue;
+
+            var cardView = Instantiate(cardTemplate, container);
+            cardView.SetCardData(cardData);
+            cardView.gameObject.SetActive(true);
+            cards.Add(cardView);
+        }
+    }
+
+    private void Clear()
+    {
+        if (container != null)
+        {
+            foreach (Transform child in container)
+            {
+                if (cardTemplate != null && cardTemplate.transform == child) continue;
+                if (deckTitle != null && deckTitle.transform == child) continue;
+                Destroy(child.gameObject);
+            }
         }
         cards.Clear();
     }

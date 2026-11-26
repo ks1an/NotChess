@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdb990f6739e13c4f9d7287b6d663f69, type: 3}
   m_Name: Pawn
   m_EditorClassIdentifier: 
+  canAttackTeammate: 0
+  durationSetPos: 0.4
   view: {fileID: 0}
   currentX: 0
   currentY: 0
-  canAttackTeammate: 0
   team: 0
-  durationSetPos: 0.5

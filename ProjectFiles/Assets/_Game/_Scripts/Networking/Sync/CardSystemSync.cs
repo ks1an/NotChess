@@ -33,7 +33,7 @@ public partial class CardSystemSync : NetworkBehaviour
     public void ShowSpyInfoAboutCardRpc(int cardID)
     {
         NotificationPanelConroller.Instance.ShowNotification(
-            GameController.Instance.globalCards.GetImortantWordsFromDescription(cardID), () => { });
+            GameController.Instance.globalCards.GetImportantWordsFromDescription(cardID), () => { });
     }
 }
 

@@ -114,10 +114,12 @@ MonoBehaviour:
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 0
-  <Category>k__BackingField: 2
+  <TargetCategory>k__BackingField: 0
   <Rarity>k__BackingField: 1
   <AttackClass>k__BackingField: 2
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
+  stableGuid: 6054429005d24cdfbf71e111e089e2cb
+  stableId: -847113377
   countShells: 5
   radiousWidthRangeAttack: 2
   radiousHeightRangeAttack: 2

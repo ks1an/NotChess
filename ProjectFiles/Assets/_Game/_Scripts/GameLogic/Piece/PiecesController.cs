@@ -69,6 +69,7 @@ public sealed class PiecesController : MonoBehaviour
     public void MoveTo(int originalX, int originalY, int x, int y)
     {
         PieceData curPiece = pieces[originalX, originalY];
+        bool isAttack = pieces[x, y] != null;
 
         if (pieces[x, y] != null && curPiece != null)
             match.states.move.TryDestroyUnit(x, y, true, curPiece.team, false, true);
@@ -83,6 +84,10 @@ public sealed class PiecesController : MonoBehaviour
         }
 
         SetPositionSinglePiece(x, y, false);
+        if (!match.states.isDemonstrationMatchAiVsAi)
+        {
+            tilesController.HighlightMove(new Vector2Int(originalX, originalY), new Vector2Int(x, y), isAttack);
+        }
     }
 
     #endregion
@@ -94,8 +99,8 @@ public sealed class PiecesController : MonoBehaviour
         if (!(pieces[hitPos.x, hitPos.y].team == Team.Zero && match.states.isMoveOfZero
             || pieces[hitPos.x, hitPos.y].team == Team.Cross && !match.states.isMoveOfZero))
             return;
-        if (!(match.player.GetLocalPlayerTeam() == Team.Zero && match.states.isMoveOfZero ||
-            match.player.GetLocalPlayerTeam() == Team.Cross && !match.states.isMoveOfZero))
+        if (!(match.player.GetTeam() == Team.Zero && match.states.isMoveOfZero ||
+            match.player.GetTeam() == Team.Cross && !match.states.isMoveOfZero))
             return;
 
         currentlySelectingPiece = pieces[hitPos.x, hitPos.y];

@@ -114,10 +114,12 @@ MonoBehaviour:
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 0.39215687, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 0
-  <Category>k__BackingField: 1
+  <TargetCategory>k__BackingField: 1
   <Rarity>k__BackingField: 3
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
+  stableGuid: 93a4d79f12794b4ab85796790b246949
+  stableId: 1862427863
   manaToAdd: 1
 --- !u!1001 &3909484180700156792
 PrefabInstance:

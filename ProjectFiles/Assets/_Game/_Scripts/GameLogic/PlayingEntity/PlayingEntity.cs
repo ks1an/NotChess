@@ -21,6 +21,7 @@ public class PlayingEntity : MonoBehaviour
     protected int currentMana, maxMana;
     protected int currentGraveTokens, maxGraveTokens;
 
+    public DeckService UniqueDeck { get; private set; }
     [HideInInspector] public Deck deck;
     [HideInInspector] public HandObject hand;
 
@@ -45,6 +46,12 @@ public class PlayingEntity : MonoBehaviour
         localTeam = team;
         OnTeamChanged?.Invoke(localTeam);
     }
+
+    public void SetUniqueDeck(GlobalCardCollection global, int maxSize)
+    {
+        if (UniqueDeck != null) return;
+        UniqueDeck = new DeckService(global, maxSize);
+    }
     #endregion
 
     #region +- mana
@@ -61,7 +68,7 @@ public class PlayingEntity : MonoBehaviour
         OnCurrentManaChanged?.Invoke(currentMana);
     }
 
-    public virtual void DeacreaseMana(int value)
+    public virtual void DecreaseMana(int value)
     {
         if (value < 0)
         {
@@ -90,7 +97,7 @@ public class PlayingEntity : MonoBehaviour
         OnCurrentGraveTokensChanged?.Invoke(currentGraveTokens);
     }
 
-    public virtual void DeacreaseGraveTokens(int value)
+    public virtual void DecreaseGraveTokens(int value)
     {
         if (value < 0)
         {
@@ -106,7 +113,7 @@ public class PlayingEntity : MonoBehaviour
     #endregion
 
     #region Get
-    public Team GetLocalPlayerTeam() { return localTeam; }
+    public Team GetTeam() { return localTeam; }
     public string GetStringPlayerTeam()
     {
         switch (localTeam)

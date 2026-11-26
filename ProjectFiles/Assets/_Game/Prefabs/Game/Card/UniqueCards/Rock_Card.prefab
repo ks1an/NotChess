@@ -114,10 +114,12 @@ MonoBehaviour:
   <ColorBorder>k__BackingField: {r: 0.52156866, g: 0.8, b: 0.5686275, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 1
-  <Category>k__BackingField: 0
+  <TargetCategory>k__BackingField: 0
   <Rarity>k__BackingField: 0
   <AttackClass>k__BackingField: 0
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
+  stableGuid: 93e05395ae6445ea974c2e237a980a67
+  stableId: -1819890437
   visualEffectOnTile: {fileID: 11400000, guid: 0a24d74ea1982df4f98d91286332549b, type: 2}
   duration: 4
 --- !u!1001 &6606015154013290942

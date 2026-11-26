@@ -11,24 +11,8 @@ public sealed class SacrificeCard : Card
 
     protected override void OnCursorDown()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
-
-    }
-
-    protected override void DoActionOnMouseUp()
-    {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
-        {
-            GameController.Instance.player.DeacreaseMana(ManaCost);
-            UseCard(availableMoves);
-        }
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
@@ -40,8 +24,8 @@ public sealed class SacrificeCard : Card
             GameController.Instance.states.move.TryDestroyUnit(moves[0].x, moves[0].y,
                 false, teamWhoHave);
 
-            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            GameController.Instance.states.move.UseCard(ID, moves, teamWhoHave);
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
             {
                 GameController.Instance.player.IncreaseMana(manaToAdd);
                 PlayerDeck.Instance.DestroyCardInHand(this);
@@ -80,7 +64,7 @@ public sealed class SacrificeCard : Card
     public override bool IsAvailableMove(int targetX, int targetY)
     {
         if (Board.Instance.tilesController.tiles[targetX, targetY] != null && Board.Instance.piecesController.pieces[targetX, targetY] != null
-            && Board.Instance.piecesController.pieces[targetX, targetY].team == GameController.Instance.player.GetLocalPlayerTeam())
+            && Board.Instance.piecesController.pieces[targetX, targetY].team == GameController.Instance.player.GetTeam())
             return true;
         return false;
     }

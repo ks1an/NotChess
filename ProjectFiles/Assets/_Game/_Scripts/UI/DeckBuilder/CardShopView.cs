@@ -19,23 +19,35 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public Card cardData;
     float startLocalY_forNameBlackoutAnim, startLocalY_forDescribeBlackoutAnim, startLocalY_forManaCostAnim;
 
+    // ===== Lifecycle =====
+
+    void OnEnable()
+    {
+        if (cardsViewModel != null)
+            cardsViewModel.DeckChanged += RefreshInDeckIndicator;
+        RefreshInDeckIndicator();
+    }
+
+    void OnDisable()
+    {
+        if (cardsViewModel != null)
+            cardsViewModel.DeckChanged -= RefreshInDeckIndicator;
+    }
+
+    // ===== Data =====
+
     public void SetCardData(Card data)
     {
         cardData = data;
 
         describeTxt.text = cardData.originalDescription;
-
         manaCostTxt.text = cardData.ManaCost.ToString();
         graveCoinCostTxt.text = cardData.GraveTokensCost.ToString();
 
-        if(data.ManaCost == 0 && data.GraveTokensCost != 0)
-        {
+        if (data.ManaCost == 0 && data.GraveTokensCost != 0)
             manaCostTxt.gameObject.transform.parent.gameObject.SetActive(false);
-        }
         else if (data.GraveTokensCost == 0)
-        {
             graveCoinCostTxt.gameObject.transform.parent.gameObject.SetActive(false);
-        }
 
         image.sprite = cardData.Image;
         startLocalY_forNameBlackoutAnim = blackoutName.rectTransform.localPosition.y;
@@ -43,14 +55,14 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         startLocalY_forManaCostAnim = costFrame.rectTransform.localPosition.y;
 
         inDeckIndicator.SetCard(cardData, cardsViewModel);
-        inDeckIndicator.gameObject.SetActive(false);
+        RefreshInDeckIndicator();
+
         string cardnameKey = cardData.originalCardName.Replace(" ", "");
-        LocalizeStringEvent nameLocalize = nameCardTxt.gameObject.GetComponent<LocalizeStringEvent>();
+        var nameLocalize = nameCardTxt.gameObject.GetComponent<LocalizeStringEvent>();
         if (!GameController.Instance.gameSettings.DontTranslateNameOfCard.Value)
         {
-            string entryNameName = cardnameKey + "CardName";
             nameLocalize.enabled = true;
-            nameLocalize.SetEntry(entryNameName);
+            nameLocalize.SetEntry(cardnameKey + "CardName");
         }
         else
         {
@@ -58,16 +70,21 @@ public class CardShopView : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             nameCardTxt.text = cardData.originalCardName;
         }
 
-        string entryNameDescribe = cardnameKey + "CardDescribe";
-        describeTxt.gameObject.GetComponent<LocalizeStringEvent>().SetEntry(entryNameDescribe);
+        describeTxt.gameObject.GetComponent<LocalizeStringEvent>().SetEntry(cardnameKey + "CardDescribe");
     }
 
-    public void OnClicked() => cardsViewModel.AddCard(cardData);
-
-    public void UpdateView(bool isInDeck)
+    void RefreshInDeckIndicator()
     {
-        inDeckIndicator.gameObject.SetActive(isInDeck);
+        if (inDeckIndicator == null || cardData == null || cardsViewModel == null) return;
+        var d = cardsViewModel.CurrentDeck;
+        inDeckIndicator.gameObject.SetActive(d != null && d.Contains(cardData));
     }
+
+    // ===== Actions =====
+
+    public void OnClicked() => cardsViewModel?.AddCard(cardData);
+
+    // ===== Hover =====
 
     public void OnPointerEnter(PointerEventData eventData)
     {

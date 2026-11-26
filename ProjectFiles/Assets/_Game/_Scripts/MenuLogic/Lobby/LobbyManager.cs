@@ -12,6 +12,10 @@ public sealed class LobbyManager : MonoBehaviour
 {
     public static LobbyManager Instance { get; private set; }
     public string CurrentGameMode { get; private set; }
+    [Header("AI Matchmaking Timeout Settings")]
+    [SerializeField] float minWaitTime = 45f;
+    [SerializeField] float maxWaitTime = 150f;
+    float currentMatchmakerWaitDuration;
 
     public const string KEY_PLAYER_NAME = "PlayerName";
     public const string KEY_PLAYER_MMR = "PlayerMmr";
@@ -83,10 +87,12 @@ public sealed class LobbyManager : MonoBehaviour
         HandleRefreshLobbyList(); // Disable if you test multiple builds! Invoke "more request"
         HandleLobbyHeartbeat();
         HandleLobbyPolling();
+        HandleMatchmakerTimeout();
     }
 
     public void CancelMatchmaker()
     {
+        GameController.Instance.CreateDemostrationGame();
         isMatchmakingCancelled = true;
         WaitingWindowController.Instance.Hide();
         InLobbyUI.Instance.Hide();
@@ -132,6 +138,7 @@ public sealed class LobbyManager : MonoBehaviour
     {
         if (joinedLobby == null || isPolling) return;
 
+        string currentPollingId = joinedLobby.Id;
         lobbyPollTimer -= Time.deltaTime;
         if (lobbyPollTimer > 0f) return;
         lobbyPollTimer = lobbyPollTimerMax;
@@ -141,6 +148,7 @@ public sealed class LobbyManager : MonoBehaviour
         try
         {
             Lobby lobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+            if (joinedLobby == null || joinedLobby.Id != currentPollingId) return;
             joinedLobby = lobby;
 
             OnJoinedLobbyUpdate?.Invoke(this, new LobbyEventArgs { lobby = joinedLobby });
@@ -217,6 +225,22 @@ public sealed class LobbyManager : MonoBehaviour
             isPolling = false;
         }
     }
+
+    private void HandleMatchmakerTimeout()
+    {
+        if (IsWaitingForMatchmaker && CurrentGameMode == MatchStates.GameMode_Matchmaking)
+        {
+            if (Time.realtimeSinceStartup - matchmakerWaitStartTime >= currentMatchmakerWaitDuration)
+            {
+                CancelMatchmaker();
+                GameController.Instance.CreateGame(
+                    gamemode: MatchStates.GameMode_Matchmaking,
+                    isNetMatch: false,
+                    isMatchAiVsAi: false
+                );
+            }
+        }
+    }
     #endregion
 
     #region return anything
@@ -262,8 +286,14 @@ public sealed class LobbyManager : MonoBehaviour
     public async void Matchmaker()
     {
         if (joinedLobby != null) return;
+        GameController.Instance.states.EndDemonstrationGame();
         isMatchmakingCancelled = false;
 
+        int searchSeed = (int)(System.DateTime.UtcNow.Ticks % int.MaxValue);
+        UnityEngine.Random.InitState(searchSeed);
+        currentMatchmakerWaitDuration = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
+
+        matchmakerWaitStartTime = Time.realtimeSinceStartup;
         try
         {
             Unity.Services.Lobbies.Models.Player player = GetPlayer();
@@ -321,6 +351,7 @@ public sealed class LobbyManager : MonoBehaviour
     {
         try
         {
+            GameController.Instance.states.EndDemonstrationGame();
             Unity.Services.Lobbies.Models.Player player = GetPlayer();
 
             CreateLobbyOptions options = new()
@@ -346,6 +377,10 @@ public sealed class LobbyManager : MonoBehaviour
                 CurrentGameMode = null;
                 return;
             }
+
+            int searchSeed = (int)(System.DateTime.UtcNow.Ticks % int.MaxValue);
+            UnityEngine.Random.InitState(searchSeed);
+            currentMatchmakerWaitDuration = UnityEngine.Random.Range(minWaitTime, maxWaitTime);
 
             matchmakerWaitStartTime = Time.realtimeSinceStartup;
             isMatchmakingLobby = true;

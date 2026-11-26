@@ -9,94 +9,115 @@ public sealed class GlobalCardCollection : MonoBehaviour
     [field: SerializeField] public Dictionary<int, Card> GlobalCardsDictionary { get; private set; } = new();
     [field: SerializeField] public List<GameObject> GlobalCardBacks { get; private set; } = new();
 
-    [field: SerializeField] List<Card> cards;
+    [SerializeField] private List<Card> cards = new();
+
+    private static readonly Regex ImportantWordsPattern = new(
+        @"(<color[^>]*>)?<b>([^<]+)</b>(</color>)?",
+        RegexOptions.Compiled | RegexOptions.Singleline);
+
+    // ===== Init =====
 
     public void CreateGlobalCards()
     {
-        if (GlobalCardsDictionary.Count > 0)
-            GlobalCardsDictionary.Clear();
+        GlobalCardsDictionary.Clear();
+
+        if (cards == null || cards.Count == 0)
+        {
+            Debug.LogWarning($"{name}: cards list is empty", this);
+            return;
+        }
 
         foreach (Card card in cards)
         {
-            GlobalCardsDictionary.Add(card.GetID(), card);
-        }
-    }
-
-    public string GetImortantWordsFromDescription(int cardID)
-    {
-        string descriptionWords = GetInfoAboutCard(cardID, false, false, true)["Describe"];
-        string importantWords = "";
-
-        string patternOfImportantWord = @"(?<=<b>).+?(?=</b>)";
-        MatchCollection matches = Regex.Matches(descriptionWords, patternOfImportantWord);
-
-        foreach (Match match in matches)
-        {
-            string cleanedWord = match.Value.Trim();
-            if (!string.IsNullOrEmpty(cleanedWord))
+            if (card == null)
             {
-                importantWords += cleanedWord + " ";
+                Debug.LogWarning($"{name}: null entry in cards list, skipped", this);
+                continue;
             }
-        }
 
-        return importantWords;
-    }
-
-    public string GetImortantWordsFromDescription(string description)
-    {
-
-        StringBuilder importantWords = new StringBuilder();
-
-        // Паттерн ищет: <b> в любом месте, затем всё до следующего </b>
-        // включая возможные теги цвета внутри или снаружи
-        string pattern = @"(<color[^>]*>)?<b>.*?</b>(</color>)?";
-        MatchCollection matches = Regex.Matches(description, pattern, RegexOptions.Singleline);
-
-        foreach (Match match in matches)
-        {
-            string fragment = match.Value.Trim();
-            if (!string.IsNullOrEmpty(fragment))
+            int id = card.ID;
+            if (GlobalCardsDictionary.ContainsKey(id))
             {
-                importantWords.Append(fragment + " ");
+                Debug.LogError(
+                    $"{name}: StableId collision {id} between " +
+                    $"'{GlobalCardsDictionary[id].originalCardName}' and '{card.originalCardName}'",
+                    card);
+                continue;
             }
+
+            GlobalCardsDictionary.Add(id, card);
         }
-
-        return importantWords.ToString().Trim();
     }
 
-    public Dictionary<string, string> GetInfoAboutCard(int cardID,
-        bool needName, bool needCost = false, bool needDescribe = false)
+    // ===== Lookups =====
+
+    public Card GetCardByStableId(int id)
+        => GlobalCardsDictionary.TryGetValue(id, out var card) ? card : null;
+
+    public Card GetCardTemplateOfType(Type type)
     {
-        Dictionary<string, string> infoAboutCard = new();
-        Card card = GlobalCardsDictionary[cardID];
-
-        if (needName)
-            infoAboutCard.Add("Name", card.originalCardName);
-        if (needCost)
-            infoAboutCard.Add("ManaCost", card.ManaCost.ToString());
-        if (needDescribe)
-            infoAboutCard.Add("Describe", card.originalDescription);
-
-        return infoAboutCard;
-    }
-
-    public Card GetCardPrefabByType(Card type)
-    {
-        foreach(Card card in GlobalCardsDictionary.Values)
-        {
-            if(type.GetType() == card.GetType())
-                return card;
-        }
-        return null;
-    }
-
-    public Card GetCardPrefabByType(Type type)
-    {
+        if (type == null) return null;
         foreach (Card card in GlobalCardsDictionary.Values)
-        {
-            if (type == card.GetType())
+            if (card != null && type == card.GetType())
                 return card;
-        }
         return null;
+    }
+
+    public Card GetCardTemplateOfType(Card type)
+        => type != null ? GetCardTemplateOfType(type.GetType()) : null;
+
+    public SpriteRenderer GetCardBackById(string id)
+    {
+        if (string.IsNullOrEmpty(id) || GlobalCardBacks == null) return null;
+        foreach (var obj in GlobalCardBacks)
+            if (obj != null && obj.name == id) return obj.GetComponent<SpriteRenderer>();
+        return null;
+    }
+
+    // ===== Info =====
+
+    public Dictionary<string, string> GetInfoAboutCard(
+        int cardID, bool needName, bool needCost = false, bool needDescribe = false)
+    {
+        var info = new Dictionary<string, string>(3);
+
+        if (!GlobalCardsDictionary.TryGetValue(cardID, out var card) || card == null)
+        {
+            Debug.LogWarning($"{name}: card with StableId {cardID} not found", this);
+            return info;
+        }
+
+        if (needName) info["Name"] = card.originalCardName;
+        if (needCost) info["ManaCost"] = card.ManaCost.ToString();
+        if (needDescribe) info["Describe"] = card.originalDescription;
+
+        return info;
+    }
+
+    // ===== Important words =====
+
+    public string GetImportantWordsFromDescription(int cardID)
+    {
+        if (!GlobalCardsDictionary.TryGetValue(cardID, out var card) || card == null)
+        {
+            Debug.LogWarning($"{name}: card with StableId {cardID} not found", this);
+            return string.Empty;
+        }
+        return GetImportantWordsFromDescription(card.originalDescription);
+    }
+
+    public string GetImportantWordsFromDescription(string description)
+    {
+        if (string.IsNullOrEmpty(description)) return string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (Match match in ImportantWordsPattern.Matches(description))
+        {
+            string word = match.Groups[2].Value.Trim();
+            if (word.Length == 0) continue;
+            if (sb.Length > 0) sb.Append(' ');
+            sb.Append(word);
+        }
+        return sb.ToString();
     }
 }

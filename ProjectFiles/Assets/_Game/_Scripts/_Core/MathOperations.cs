@@ -48,4 +48,7 @@ public sealed class MathOperations
 
         return UnityEngine.Random.Range(min, max);
     }
+
+    public float Modify(float baseValue, float percent)
+    => baseValue * (1f + percent / 100f);
 }

@@ -10,20 +10,23 @@ public class LandscapeObject : MonoBehaviour
     public int duration;
     [Range(0, 100)] public int chance;
 
-    void DestroyObject() => Destroy(gameObject);
+    protected Tile targetTile;
+    protected IBuff appliedBuff;
 
     public virtual void Init(int tileX, int tileY)
     {
-        
+        targetTile = Board.Instance.tilesController.tiles[tileX, tileY];
     }
 
-    private void OnEnable()
+    public virtual void ClearLandscape()
     {
-        GameController.Instance.states.OnGameStarted += DestroyObject;
-    }
+        if (targetTile != null && appliedBuff != null)
+        {
+            targetTile.Stats.RemoveBuff(appliedBuff);
+            appliedBuff = null;
+        }
 
-    private void OnDisable()
-    {
-        GameController.Instance.states.OnGameStarted -= DestroyObject;
+        if (gameObject != null)
+            Destroy(gameObject);
     }
 }

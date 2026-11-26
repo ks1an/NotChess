@@ -1,4 +1,3 @@
-using TMPro;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
@@ -8,24 +7,21 @@ using UnityEngine.UI;
 public partial class MenuUI : MonoBehaviour
 {
     [SerializeField] LocalizedStringTable localTable;
-    [SerializeField] Button lobbyListBttn, matchmakingBttn, singleplay, myDeckBttn;
+    [SerializeField] Button lobbyListBttn, matchmakingBttn, singleplay;
     [SerializeField] TabMenu tabMenu;
-    //[SerializeField] MenuBook menuBook;
+    [SerializeField] DailyQuestsWindow dailyQuestsWindow;
 
     void Awake()
     {
         SetActiveTabMenu(false);
-        /*menuBook.OnBackClosed += () => 
-        {
-            menuBook.ClosedFront();
-            menuBook.gameObject.transform.DOLocalMoveX(100, 2f)
-            .OnComplete(() => { menuBook.gameObject.SetActive(false); });
-            SetActiveMainMenuUI(true);
-        };
-        menuBook.gameObject.SetActive(false);*/
 
         Application.targetFrameRate = GameController.Instance.gameSettings.TargetFrameRate_Menu.Value;
-        GameController.Instance.CreateDemostrationGame();
+
+        if (GameController.Instance.playerData.TutorialCompleted)
+            GameController.Instance.CreateDemostrationGame();
+        else
+            GameController.Instance.StartTutorial();
+
 
         singleplay.onClick.AddListener(() => GameController.Instance.CreateGame(MatchStates.GameMode_SinglePlayer, false));
         if (UnityServices.State == ServicesInitializationState.Initialized && AuthenticationService.Instance.IsAuthorized)
@@ -33,7 +29,7 @@ public partial class MenuUI : MonoBehaviour
             matchmakingBttn.onClick.AddListener(() =>
             {
                 WaitingWindowController.Instance.Show("Matchmaking",
-                    onBttnExit: () => {LobbyManager.Instance.CancelMatchmaker();}, enableTimer: true);
+                    onBttnExit: () => { LobbyManager.Instance.CancelMatchmaker(); }, enableTimer: true);
                 LobbyManager.Instance.Matchmaker();
             });
             lobbyListBttn.onClick.AddListener(() => LobbyManager.Instance.SetActiveLobbyList(true));
@@ -58,6 +54,12 @@ public partial class MenuUI : MonoBehaviour
             tabMenu.ActiveSettingsPage();
         });
 
+        questsBttn.onClick.AddListener(() =>
+        {
+            SetActiveMainMenuUI(false);
+            SetActiveQuestMenu(true);
+        });
+
         if (Application.isMobilePlatform) Destroy(leaveBttn.gameObject);
         else
         {
@@ -66,6 +68,8 @@ public partial class MenuUI : MonoBehaviour
                 TryExitFromApp();
             });
         }
+
+
     }
 
     public void TryExitFromApp() => ModalViewWindowController.Instance.ShowHorizontalWithLocalize
@@ -74,25 +78,13 @@ public partial class MenuUI : MonoBehaviour
         false, true, () => ModalViewWindowController.Instance.TryCloseModalViewWindow(), Application.Quit
         );
 
-    /*public void OpenBookMenu_SettingsPage()
-    {
-        if (!menuBook.gameObject.activeSelf)
-        {
-            SetActiveMainMenuUI(false);
-            menuBook.gameObject.transform.DOKill();
-            menuBook.gameObject.SetActive(true);
-            menuBook.gameObject.transform.DOMoveX(0.5f, 0.35f);
-            menuBook.OpenPage(4);
-        }
-    }*/
-
     public void SetActiveTabMenu(bool enableTab)
     {
         if (enableTab)
         {
             tabMenu.gameObject.SetActive(enableTab);
         }
-        else if(tabMenu.gameObject.activeSelf)
+        else if (tabMenu.gameObject.activeSelf)
         {
             tabMenu.DisableAllTab();
         }
@@ -102,16 +94,18 @@ public partial class MenuUI : MonoBehaviour
 
     public void SetActiveMainMenuUI(bool b)
     {
-        lobbyListBttn.gameObject.SetActive(b);
-        matchmakingBttn.gameObject.SetActive(b);
-        singleplay.gameObject.SetActive(b);
-        gameTitle.gameObject.SetActive(b);
-        if(leaveBttn != null) leaveBttn.gameObject.SetActive(b);
-        settingsBttn.gameObject.SetActive(b);
-        PlayerField.SetActive(b);
-        MMRView.SetActive(b);
-        myDeckBttn.gameObject.SetActive(b);
-        //menuBook.gameObject.SetActive(false);
+        UpperLeftGroup.SetActive(b);
+        downLeftGroup.SetActive(b);
+        downRightGroup.SetActive(b);
+        upperRightGroup.SetActive(b);
+
+        middleLeftGroup.SetActive(b);
+        if (b) curDeckView.UpdateView();
+    }
+
+    public void SetActiveQuestMenu(bool b)
+    {
+        dailyQuestsWindow.gameObject.SetActive(b);
     }
 }
 
@@ -119,7 +113,8 @@ public partial class MenuUI : MonoBehaviour
 //SetActive 
 public partial class MenuUI
 {
-    [SerializeField] TextMeshProUGUI gameTitle;
-    [SerializeField] Button leaveBttn, settingsBttn;
-    [SerializeField] GameObject PlayerField, MMRView;
+    [SerializeField] Button leaveBttn, settingsBttn, questsBttn;
+    [SerializeField] GameObject UpperLeftGroup, downLeftGroup, downRightGroup, upperRightGroup, middleLeftGroup;
+    [SerializeField] ResourceViewGroup resourceViewGroup;
+    [SerializeField] CurrentSelectedDeckView curDeckView;
 }

@@ -32,7 +32,7 @@ public class EnemyCardHand : HandObject
 
     public void CardUpDownMove(int cardIndex, bool toUp, bool liftSlightly)
     {
-        if (isDealing || cardIndex < 0)
+        if (isDealing || cardIndex < 0 || cardIndex >= CardGameobjectsInHand.Count)
             return;
 
         GameObject card = CardGameobjectsInHand[cardIndex];
@@ -52,11 +52,11 @@ public class EnemyCardHand : HandObject
         CardGameobjectsInHand.Add(obj);
         cardsInHand.Add(obj, logic);
 
-        StartCoroutine(AddObj(obj));
-        obj.AddComponent(typeof(BoxCollider));
-        HoverObject cardInHand = obj.AddComponent<HoverObject>();
+        StartCoroutine(AddObj(obj.gameObject));
+        obj.gameObject.AddComponent(typeof(BoxCollider));
+        HoverObject cardInHand = obj.gameObject.AddComponent<HoverObject>();
         cardInHand.SetSettigns(SetCurrentSelectCard, ResetCurrentSelectCard, needToHighlightOnHover, highlightColor);
-        obj.layer = LayerMask.NameToLayer("EnemyCard");
+        obj.gameObject.layer = LayerMask.NameToLayer("EnemyCard");
     }
 
     public void RemoveCard(GameObject obj)
@@ -65,7 +65,7 @@ public class EnemyCardHand : HandObject
         CardGameobjectsInHand.Remove(obj);
         cardsInHand.Remove(obj);
 
-        StartCoroutine(RemoveObjectInHand(obj));
+        StartCoroutine(RemoveObjectInHand(obj.gameObject));
     }
 
     public void RemoveAllCards()

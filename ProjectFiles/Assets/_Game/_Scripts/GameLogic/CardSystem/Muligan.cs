@@ -44,7 +44,7 @@ public sealed class Muligan
 
         Card[] cards = new Card[PlayerCardHand.Instance.CardsInHand.Count-1];
         for(int i = 0; i < cards.Length; i++)
-            cards[i] = GameController.Instance.globalCards.GlobalCardsDictionary[PlayerCardHand.Instance.CardsInHand[i].GetID()];
+            cards[i] = GameController.Instance.globalCards.GlobalCardsDictionary[PlayerCardHand.Instance.CardsInHand[i].ID];
 
         PlayerDeck.Instance.DestroyAllCardsInHand(false);
         PlayerDeck.Instance.AddCardsToDeck(cards);

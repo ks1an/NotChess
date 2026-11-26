@@ -8,38 +8,43 @@ public sealed class ReturnCard : Card
         base.Init(teamWhoHave);
     }
 
-    protected override void OnCursorDown()
+    public override bool CanBeSelected()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
+        var player = GameController.Instance.player;
 
+        if (player.GetCurrentMana() < ManaCost) return false;
+        if (player.GetCurrentGraveTokens() < GraveTokensCost) return false;
+        if (IsUseOnlyMyTurn && !player.IsMyTurnOrNot()) return false;
+        if (PlayerDeck.Instance.GetGraveyardCardCount() <= 0) return false;
+
+        return true;
     }
 
-    protected override void DoActionOnMouseUp()
+    public override bool CanBeUsed()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0
-            && PlayerDeck.Instance.GetGraveyardCardCount() > 0)
-        {
-            GameController.Instance.player.DeacreaseMana(ManaCost);
-            UseCard(availableMoves);
-        }
+        if (!CanBeSelected()) return false;
+        if (availableMoves.Count < 1) return false;
+        if (EnemyDeck.Instance == null) return false;
+
+        return true;
+    }
+
+    protected override void OnCursorDown()
+    {
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
 
     public override void UseCard(List<Vector2Int> moves, bool isSynced = false)
     {
         if (!cardInited) Debug.LogError("Card NOT inited but used " + originalCardName);
 
+        base.UseCard(moves, isSynced);
         if (!isSynced)
         {
-            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
+            GameController.Instance.states.move.UseCard(ID, moves, teamWhoHave);
 
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
             {
                 PlayerDeck.Instance.DrawLastFromGraveyard();
                 PlayerDeck.Instance.DestroyCardInHand(this);

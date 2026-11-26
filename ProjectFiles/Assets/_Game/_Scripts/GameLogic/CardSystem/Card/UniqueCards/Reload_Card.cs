@@ -13,23 +13,8 @@ public sealed class Reload_Card : Card
     #region OnDrag
     protected override void OnCursorDown()
     {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost)
-        {
-            if (GameController.Instance.player.IsMyTurnOrNot())
-            {
-                Hand.TrySetCurrentSelectCard(this);
-                CardUI.MouseEnterFromCard(gameObject);
-            }
-        }
-    }
-
-    protected override void DoActionOnMouseUp()
-    {
-        if (GameController.Instance.player.GetCurrentMana() >= ManaCost && availableMoves.Count > 0)
-        {
-            GameController.Instance.player.DeacreaseMana(ManaCost);
-            UseCard(availableMoves);
-        }
+        if (Hand.TrySetCurrentSelectCard(this))
+            CardUI.MouseEnterFromCard(gameObject);
     }
     #endregion
 
@@ -44,8 +29,8 @@ public sealed class Reload_Card : Card
 
         if (!isSynced)
         {
-            GameController.Instance.states.move.UseCard(GetID(), moves, teamWhoHave);
-            if (teamWhoHave == GameController.Instance.player.GetLocalPlayerTeam())
+            GameController.Instance.states.move.UseCard(ID, moves, teamWhoHave);
+            if (teamWhoHave == GameController.Instance.player.GetTeam())
                 PlayerDeck.Instance.DestroyCardInHand(this);
             else
             {

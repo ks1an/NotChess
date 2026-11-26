@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Threading;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum Complexity
@@ -11,8 +10,6 @@ public enum Complexity
     hard
 }
 [Serializable]
-[RequireComponent(typeof(HTN_PlanRunner))]
-
 [RequireComponent(typeof(EnemyAIPlanner))]
 public sealed class EnemyAI : MonoBehaviour
 {
@@ -20,47 +17,31 @@ public sealed class EnemyAI : MonoBehaviour
     private Coroutine currentTurnCoroutine;
     private CancellationTokenSource myTurnCts;
     [HideInInspector] public PlayingEntity myEntity;
-    [HideInInspector] public EnemyAI_Sensors sensor;
-
-
-    public EnemyAI_SO dataBase;
+    public CardCollection cardsCollection;
 
     bool isWorking;
-    float DemonstrateChanceOfSkipMove;
-    bool isDemontrate;
     bool isTakingTurn = false;
 
-    HTN_CardPlanner cardAI;
-    TileEstimatorForAI estimator;
     MatchStates states;
 
     EnemyAIPlanner planner;
 
     #region BeforeStartMyTurn
-    public void LoadEnemy(Team botTeam, PlayingEntity playingSideEntity)
+    public void LoadEnemy(Team botTeam, PlayingEntity playingSideEntity, AICharacterProfile profileToAssign = null)
     {
         isTakingTurn = false;
         isWorking = true;
-        DemonstrateChanceOfSkipMove = dataBase.chanceOfSkipTheMostValuableMove * 2;
-        isDemontrate = GameController.Instance.states.isDemonstrationMatchAiVsAi;
         states = GameController.Instance.states;
-
-        sensor = new();
-        sensor.Init(playingSideEntity);
-
-        cardAI = new();
-        HTN_PlanRunner runnerCardPlan = GetComponent<HTN_PlanRunner>();
-        cardAI.Init(runnerCardPlan, this);
-        estimator = gameObject.AddComponent<TileEstimatorForAI>();
-        estimator.Init(this, dataBase);
 
         myEntity = playingSideEntity;
         myEntity.SetTeam(botTeam);
 
         planner = GetComponent<EnemyAIPlanner>();
-        planner.Init(this, sensor);
+        if (planner != null && profileToAssign != null)
+        {
+            planner.ApplyProfile(profileToAssign);
+        }
 
-        
         GameController.Instance.states.OnTurnEnded += DoSomeOnTurnEnded;
         GameController.Instance.states.OnGameStarted += OnGameReset;
     }
@@ -68,8 +49,8 @@ public sealed class EnemyAI : MonoBehaviour
 
     void IsMyTurnOrNot()
     {
-        if ((states.isMoveOfZero && sensor.myTeam == Team.Zero)
-            || (!states.isMoveOfZero && sensor.myTeam == Team.Cross))
+        if ((states.isMoveOfZero && myEntity.GetTeam() == Team.Zero)
+            || (!states.isMoveOfZero && myEntity.GetTeam() == Team.Cross))
         {
             if (isWorking && !isTakingTurn)
             {
@@ -98,8 +79,7 @@ public sealed class EnemyAI : MonoBehaviour
 
         if (token.IsCancellationRequested) yield break;
 
-        // Передаем локальный токен конкретного бота
-        var task = planner.GetBestMoveAsync(sensor.myTeam, token);
+        var task = planner.GetBestMoveAsync(myEntity.GetTeam(), token);
 
         while (!task.IsCompleted)
         {
@@ -115,7 +95,7 @@ public sealed class EnemyAI : MonoBehaviour
 
         if (token.IsCancellationRequested || task.IsCanceled)
         {
-            Debug.Log("Enemy is canceled move. My team: " + myEntity.GetLocalPlayerTeam());
+            Debug.Log("Enemy is canceled move. My team: " + myEntity.GetTeam());
             yield break;
         }
 
@@ -128,7 +108,7 @@ public sealed class EnemyAI : MonoBehaviour
         }
 
         ExecuteMove(bestMove);
-        planner.RecordBoardState(planner.CaptureFastState(myEntity.GetLocalPlayerTeam()));
+        planner.RecordBoardState(planner.CaptureFastState(myEntity.GetTeam()));
     }
 
     private void ExecuteMove(EnemyAIAction bestMove)
@@ -140,11 +120,11 @@ public sealed class EnemyAI : MonoBehaviour
                 EndEnemyTurn(() => { });
                 break;
             case ActionType.PlacePawn:
-                var pawn = myEntity.GetLocalPlayerTeam() == Team.Zero
+                var pawn = myEntity.GetTeam() == Team.Zero
                     ? GameController.Instance.player.zeroPawnPrefab
                     : GameController.Instance.player.crossPawnPrefab;
                 EndEnemyTurn(() => states.move.TryCreateUnitOnBoard(
-                    bestMove.TargetCell.x, bestMove.TargetCell.y, sensor.myTeam, pawn));
+                    bestMove.TargetCell.x, bestMove.TargetCell.y, myEntity.GetTeam(), pawn));
                 break;
 
             case ActionType.AttackPawn:
@@ -166,17 +146,17 @@ public sealed class EnemyAI : MonoBehaviour
     {
         if (cardMove.CardToPlay != null)
         {
-            cardMove.CardToPlay.Init(myEntity.GetLocalPlayerTeam());
+            cardMove.CardToPlay.Init(myEntity.GetTeam());
             cardMove.CardToPlay.UseCard(cardMove.CardTargets, false);
-            if (myEntity.GetLocalPlayerTeam() == GameController.Instance.player.GetLocalPlayerTeam())
+            if (myEntity.GetTeam() == GameController.Instance.player.GetTeam())
             {
-                GameController.Instance.player.DeacreaseMana(cardMove.CardToPlay.ManaCost);
-                GameController.Instance.player.DeacreaseGraveTokens(cardMove.CardToPlay.GraveTokensCost);
+                GameController.Instance.player.DecreaseMana(cardMove.CardToPlay.ManaCost);
+                GameController.Instance.player.DecreaseGraveTokens(cardMove.CardToPlay.GraveTokensCost);
             }
             else
             {
-                GameController.Instance.enemy.DeacreaseMana(cardMove.CardToPlay.ManaCost);
-                GameController.Instance.enemy.DeacreaseGraveTokens(cardMove.CardToPlay.GraveTokensCost);
+                GameController.Instance.enemy.DecreaseMana(cardMove.CardToPlay.ManaCost);
+                GameController.Instance.enemy.DecreaseGraveTokens(cardMove.CardToPlay.GraveTokensCost);
             }
         }
         StartCoroutine(ContinueTurnRoutine());
@@ -186,8 +166,8 @@ public sealed class EnemyAI : MonoBehaviour
     {
         yield return _waitForSeconds;
 
-        if (isWorking && ((states.isMoveOfZero && sensor.myTeam == Team.Zero) ||
-                          (!states.isMoveOfZero && sensor.myTeam == Team.Cross)))
+        if (isWorking && ((states.isMoveOfZero && myEntity.GetTeam() == Team.Zero) ||
+                          (!states.isMoveOfZero && myEntity.GetTeam() == Team.Cross)))
         {
             MakeTurn();
         }
@@ -227,7 +207,6 @@ public sealed class EnemyAI : MonoBehaviour
     public void EndEnemyTurn(Action action)
     {
         isTakingTurn = false;
-        estimator.StopEstimate();
         action.Invoke();
     }
 
@@ -235,9 +214,6 @@ public sealed class EnemyAI : MonoBehaviour
     {
         isTakingTurn = false;
         isWorking = false;
-        estimator.StopEstimate();
-        sensor.Destroy();
-        cardAI.KillPlanner();
         OnGameReset();
     }
 

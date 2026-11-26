@@ -14,13 +14,15 @@ public sealed class ModalInputWindow : MonoBehaviour
     [SerializeField] TextMeshProUGUI placeholderTxt;
     [SerializeField] TMP_InputField inputField;
 
+    Action doItAnyway;
+
     private void Awake()
     {
         Instance = this;
     }
 
     public void Show(string title, string placeholder, Action onCancel, Action<string> onOk,
-        int characterLimit = 20, string validCharacters = "EVERYTHING")
+        int characterLimit = 20, string validCharacters = "EVERYTHING", Action doItAnyway = null)
     {
         Default();
 
@@ -52,10 +54,12 @@ public sealed class ModalInputWindow : MonoBehaviour
             onCancel();
             Hide();
         });
+        this.doItAnyway = doItAnyway;
     }
 
     public void Hide()
     {
+        doItAnyway?.Invoke();
         inputWindow.SetActive(false);
     }
 
@@ -67,6 +71,7 @@ public sealed class ModalInputWindow : MonoBehaviour
 
         cancelBttn.onClick.RemoveAllListeners();
         okBttn.onClick.RemoveAllListeners();
+        doItAnyway = null;
     }
 
     char ValidateChar(string validCharacters, char addedChar)

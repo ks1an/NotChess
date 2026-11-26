@@ -29,7 +29,7 @@ public class PlayerTeamUnitIndicator : MonoBehaviour
     private void SpawnUnitTeamIndicator()
     {
         GameObject prefab = null;
-        if (GameController.Instance.player.GetLocalPlayerTeam() == Team.Zero)
+        if (GameController.Instance.player.GetTeam() == Team.Zero)
         {
             prefab = isPlayerZone ? GameController.Instance.player.zeroPawnPrefab.gameObject : GameController.Instance.player.crossPawnPrefab.gameObject;
         }

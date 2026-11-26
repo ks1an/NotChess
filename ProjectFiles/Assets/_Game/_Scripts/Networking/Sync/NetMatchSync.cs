@@ -69,7 +69,7 @@ public class NetMatchSync : NetworkBehaviour
     }
 
     [Rpc(SendTo.Server)]
-    void GetHostTeamAndSetPlayerTeamRpc() { SetPlayerTeamForClientRpc((int)GameController.Instance.player.GetLocalPlayerTeam()); }
+    void GetHostTeamAndSetPlayerTeamRpc() { SetPlayerTeamForClientRpc((int)GameController.Instance.player.GetTeam()); }
 
     [Rpc(SendTo.NotServer)]
     void SetPlayerTeamForClientRpc(int hostTeam)
@@ -110,7 +110,7 @@ public class NetMatchSync : NetworkBehaviour
         if (mana >= 0)
             GameController.Instance.enemy.IncreaseMana(mana);
         else
-            GameController.Instance.enemy.DeacreaseMana(mana * -1);
+            GameController.Instance.enemy.DecreaseMana(mana * -1);
     }
     [Rpc(SendTo.NotMe)]
     public void OnPlayerGraveCoinChangeRpc(int value, bool needIncrease)
@@ -118,7 +118,7 @@ public class NetMatchSync : NetworkBehaviour
         if (needIncrease)
             GameController.Instance.enemy.IncreaseGraveTokens(value);
         else
-            GameController.Instance.enemy.DeacreaseGraveTokens(value);
+            GameController.Instance.enemy.DecreaseGraveTokens(value);
     }
 
     #region OnLeaved

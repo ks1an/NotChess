@@ -199,10 +199,12 @@ MonoBehaviour:
   <ColorBorder>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
   <IsUseOnlyMyTurn>k__BackingField: 1
   <Orientation>k__BackingField: 0
-  <Category>k__BackingField: 0
+  <TargetCategory>k__BackingField: 0
   <Rarity>k__BackingField: 4
   <AttackClass>k__BackingField: 4
   <BoarderColorOnDrag>k__BackingField: {r: 0, g: 1, b: 1, a: 1}
+  stableGuid: 79e320861f0945d2993fcb4644c7af37
+  stableId: -132337799
   OnUsedVFXs:
   - {fileID: 6077958655747682247, guid: e99f692da7d0e934dbffaafa0d26ff0b, type: 3}
   - {fileID: 6077958655747682247, guid: 57012ce5f0ec8184ab6c6092fa720be0, type: 3}

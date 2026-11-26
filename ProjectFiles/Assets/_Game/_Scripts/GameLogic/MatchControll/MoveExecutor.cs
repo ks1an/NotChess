@@ -36,8 +36,8 @@ public partial class MoveExecutor : MonoBehaviour
 
             net.cardSync.UseCardRpc(cardID, movesX, movesY, (int)teamWhoUsed);
         }
-        if (BoardUI.Singleton != null)
-            BoardUI.Singleton.muligan.OnUsedCard();
+        if (BoardUI.Instance != null)
+            BoardUI.Instance.muligan.OnUsedCard();
     }
 }
 
@@ -47,6 +47,8 @@ public partial class MoveExecutor
     public void TryCreateUnitOnBoard(int x, int y, Team teamWhoMoved, PieceView uniquePrefab, bool needToSkipMove = true)
     {
         if (board.piecesController.pieces[x, y] != null) { Debug.LogError($"Cant place unit on {x},{y} because tile have unit"); return; }
+        if (teamWhoMoved == GameController.Instance.player.GetTeam()) match.stats.puttedUnits++;
+ 
         if (match.isNetMatch)
         {
             net.unitSync.CreateUnitOnBoardRpc(x, y, teamWhoMoved, uniquePrefab.gameObject.name);
@@ -54,7 +56,12 @@ public partial class MoveExecutor
         }
         board.piecesController.pieces[x, y] = board.piecesController.GeneratePiece(teamWhoMoved, uniquePrefab.gameObject.name);
         board.piecesController.SetPositionSinglePiece(x, y, true);
-        if(needToSkipMove)
+        if (!match.isDemonstrationMatchAiVsAi)
+        {
+            board.tilesController.HighlightPut(new Vector2Int(x, y));
+        }
+
+        if (needToSkipMove)
             match.TeamMoved(x, y, teamWhoMoved);
     }
 
@@ -65,33 +72,36 @@ public partial class MoveExecutor
             Debug.LogError("Player with NONE team trying destroy unit");
             return;
         }
+        if (board.piecesController.pieces[x, y] == null) return;
+        if (teamWhoDestroyed == GameController.Instance.player.GetTeam()
+            && board.piecesController.pieces[x, y].team != teamWhoDestroyed) 
+            match.stats.destroyedEnemyUnits++;
 
-        if (board.piecesController.pieces[x, y] != null)
-            if (match.isNetMatch)
+        if (match.isNetMatch)
+        {
+            net.unitSync.DestroyUnitRpc(x, y, destroyedByUnit, (int)teamWhoDestroyed);
+            return;
+        }
+        else
+        {
+            if (destroyedByUnit && !blockGetManaForDestroy)
             {
-                net.unitSync.DestroyUnitRpc(x, y, destroyedByUnit, (int)teamWhoDestroyed);
-                return;
+                if (teamWhoDestroyed == GameController.Instance.player.GetTeam())
+                    GameController.Instance.player.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
+                else
+                    GameController.Instance.enemy.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
             }
-            else
+            if (!blockGetGraveTokens)
             {
-                if (destroyedByUnit && !blockGetManaForDestroy)
-                {
-                    if (teamWhoDestroyed == GameController.Instance.player.GetLocalPlayerTeam())
-                        GameController.Instance.player.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
-                    else
-                        GameController.Instance.enemy.IncreaseMana(GameController.Instance.matchSettings.manaForDestroyEnemy);
-                }
-                if (!blockGetGraveTokens)
-                {
-                    if (teamWhoDestroyed == GameController.Instance.player.GetLocalPlayerTeam())
-                        GameController.Instance.player.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);
-                    else
-                        GameController.Instance.enemy.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);
-                }
+                if (teamWhoDestroyed == GameController.Instance.player.GetTeam())
+                    GameController.Instance.player.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);
+                else
+                    GameController.Instance.enemy.IncreaseGraveTokens(GameController.Instance.matchSettings.graveTokensForDestroyEnemy);
+            }
 
-                Destroy(board.piecesController.pieces[x, y].view.gameObject);
-                board.piecesController.pieces[x, y] = null;
-            }
+            Destroy(board.piecesController.pieces[x, y].view.gameObject);
+            board.piecesController.pieces[x, y] = null;
+        }
     }
 
     public void TryDestroyAndCreateUnit(int x, int y, bool destroyedByUnit, Team teamWhoDestroyed, PieceView uniquePrefab, bool needToSkipMove = true)

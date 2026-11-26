@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f45ff2647695c2f4380e102c1221d54a, type: 3}
   m_Name: TestDeck
   m_EditorClassIdentifier: 
-  <CardsInCollection>k__BackingField:
-  - {fileID: 6225908422702042889, guid: 4d2fccf961dbd764ca171a881b04eda3, type: 3}
+  displayName: newPreset
+  cards:
   - {fileID: 3890863732558626456, guid: 25abea6f8f6479b4e95661f5142ac23a, type: 3}
+  - {fileID: 1892108300101702296, guid: e31598b8f203e6a4ab2715a4c11bac4f, type: 3}
   - {fileID: 510541827946207621, guid: d0593010e7083154ab61f53b41a80116, type: 3}
-  cardBack: {fileID: 1227872481659094142, guid: cf9eac3735dc87a4598b99eaf515a999, type: 3}
+  cardBack: {fileID: 5096381167904551837, guid: cf9eac3735dc87a4598b99eaf515a999, type: 3}

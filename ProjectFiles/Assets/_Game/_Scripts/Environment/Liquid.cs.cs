@@ -9,6 +9,7 @@ public class Liquid : MonoBehaviour
 
     [SerializeField] bool disableWobbleOnMobile = true;
     [SerializeField] bool disableWobbleInMenu = true;
+    [SerializeField] bool disableWoobbleAnything = true;
     [SerializeField] float MaxWobble = 0.03f;
     [SerializeField] float WobbleSpeedMove = 1f;
     [SerializeField][Range(0, 1)] float fillAmount = 0.5f;
@@ -131,7 +132,7 @@ public class Liquid : MonoBehaviour
         float deltaTime = updateMode == UpdateMode.Normal ? Time.deltaTime : Time.unscaledDeltaTime;
         bool isMenu = SceneLoader.Instance != null && SceneLoader.Instance.IsMenuScene();
 
-        if (!(disableWobbleOnMobile && Application.isMobilePlatform)
+        if (!disableWoobbleAnything && !(disableWobbleOnMobile && Application.isMobilePlatform)
     && !(disableWobbleInMenu && isMenu))
         {
             time += deltaTime;

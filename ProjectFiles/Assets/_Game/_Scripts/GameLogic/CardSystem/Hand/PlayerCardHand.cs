@@ -24,15 +24,58 @@ public class PlayerCardHand : HandObject
     }
 
     #region Select/Hover Card
-    public void TrySetCurrentSelectCard(Card card)
+    public bool TrySetCurrentSelectCard(Card card)
     {
-        if (CardsInHand.Contains(card))
-            CurrentSelectCard = card;
+        if (card == null) return false;
+        if (!CardsInHand.Contains(card)) return false;
+
+        // Tutorial
+        if (TutorialController.Instance != null && TutorialController.Instance.IsActive)
+        {
+            if (!TutorialController.Instance.TrySelectCard(card))
+                return false;
+        }
+
+        if (CurrentSelectCard == card)
+        {
+            DoOnMouseUp(card, withoutAction: true);
+            return false;
+        }
+
+        if (!card.CanBeSelected())
+            return false;
+
+        if (CurrentSelectCard != null && CurrentSelectCard != card)
+            CurrentSelectCard.DoOnMouseUp(withoutAction: true);
+
+        if (Board.Instance != null)
+            Board.Instance.ClearPieceSelection();
+
+        CurrentSelectCard = card;
+        return true;
     }
+
+    void DoOnMouseUp(Card card, bool withoutAction)
+    {
+        if (card == null) return;
+
+        if (CurrentSelectCard == card)
+        {
+            CurrentSelectCard = null;
+        }
+
+        card.DoOnMouseUp(withoutAction);
+    }
+
     public void ResetCurrentSelectCard(Card card)
     {
-        if(card == CurrentSelectCard)
+        if (card == CurrentSelectCard)
+        {
             CurrentSelectCard = null;
+
+            if (TutorialController.Instance != null && TutorialController.Instance.IsActive)
+                TutorialController.Instance.ResetCardSelection();
+        }
     }
 
     public void CardUpDownMove(Card card, bool toUp, bool liftSlightly)
@@ -71,8 +114,6 @@ public class PlayerCardHand : HandObject
 
     public void RemoveCard(Card card)
     {
-        if (CurrentSelectCard == card)
-            CurrentSelectCard = null;
         if (CurrentSelectCard == card)
             CurrentSelectCard = null;
 

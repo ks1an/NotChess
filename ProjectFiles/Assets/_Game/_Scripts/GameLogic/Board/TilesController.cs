@@ -4,8 +4,16 @@ using UnityEngine;
 public sealed class TilesController : MonoBehaviour
 {
     [SerializeField] Mesh tileMesh;
-    [SerializeField] Color highlightColor,
-        darkAccentColor, lightAccentColor, hoverColor;
+    [SerializeField] Color highlightColor, darkAccentColor, lightAccentColor, hoverColor;
+
+    [Header("Last Move Highlight Settings")]
+    [SerializeField] private Color putHighlightColor = new Color32(0x85, 0xB0, 0x9A, 0xFF);
+    [SerializeField] private Color attackSourceColor = new Color32(0xD4, 0x83, 0x6A, 0xFF);
+    [SerializeField] private Color attackTargetColor = new Color32(0xC9, 0x4A, 0x4A, 0xFF);
+
+    private Vector2Int lastPutCoord = -Vector2Int.one;
+    private Vector2Int lastMoveSource = -Vector2Int.one;
+    private Vector2Int lastMoveTarget = -Vector2Int.one;
 
     public Tile[,] tiles;
 
@@ -14,17 +22,18 @@ public sealed class TilesController : MonoBehaviour
     int tileCountY;
     float tileSize;
     Transform tileContainer;
-    List<Vector2Int> highlightTiles = new();
-    List<Vector2Int> darkAccentTiles = new();
-    List<Vector2Int> lightAccentTiles = new();
+
+    private readonly HashSet<Vector2Int> highlightTiles = new();
+    private readonly HashSet<Vector2Int> darkAccentTiles = new();
+    private readonly HashSet<Vector2Int> lightAccentTiles = new();
+
     Vector3 offset;
     Vector2Int hoverCoord = -Vector2Int.one;
     bool hoverOverHighlight = false;
 
-    MaterialPropertyBlock highlightBlock;
-    MaterialPropertyBlock darkAccentBlock;
-    MaterialPropertyBlock lightAccentBlock;
-    MaterialPropertyBlock hoverBlock;
+    private static readonly int BaseEmissionId = Shader.PropertyToID("_BaseEmission");
+    private static readonly int UVOffsetSeedId = Shader.PropertyToID("_UVOffsetSeed");
+    private MaterialPropertyBlock sharedPropertyBlock;
 
     public void SetSettings()
     {
@@ -33,46 +42,53 @@ public sealed class TilesController : MonoBehaviour
         tileCountX = match.matchSettings.tileCountX;
         tileCountY = match.matchSettings.tileCountY;
         tileSize = match.matchSettings.tileSize;
-        offset = new();
+        offset = Vector3.zero;
 
-        highlightBlock = new MaterialPropertyBlock();
-        highlightBlock.SetColor("_BaseEmission", highlightColor);
-
-        darkAccentBlock = new MaterialPropertyBlock();
-        darkAccentBlock.SetColor("_BaseEmission", darkAccentColor);
-
-        lightAccentBlock = new MaterialPropertyBlock();
-        lightAccentBlock.SetColor("_BaseEmission", lightAccentColor);
-
-        hoverBlock = new MaterialPropertyBlock();
-        hoverBlock.SetColor("_BaseEmission", hoverColor);
+        sharedPropertyBlock ??= new MaterialPropertyBlock();
     }
 
     #region GenerateAndDestroy
     public void DestroyTiles()
     {
-        for (int x = 0; x < tileCountX; x++)
-            for (int y = 0; y < tileCountY; y++)
-                Destroy(tiles[x, y].gameObject);
-        Destroy(tileContainer.gameObject);
+        if (tiles != null)
+        {
+            for (int x = 0; x < tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < tiles.GetLength(1); y++)
+                {
+                    if (tiles[x, y] != null && tiles[x, y].gameObject != null)
+                        Destroy(tiles[x, y].gameObject);
+                }
+            }
+            tiles = null;
+        }
+
+        highlightTiles.Clear();
+        darkAccentTiles.Clear();
+        lightAccentTiles.Clear();
     }
 
     public void GenerateTiles()
     {
-        tileContainer = new GameObject(string.Format($"Tiles container")).transform;
+        tileContainer = new GameObject("Tiles container").transform;
         tiles = new Tile[tileCountX, tileCountY];
 
         for (int x = 0; x < tileCountX; x++)
+        {
             for (int y = 0; y < tileCountY; y++)
-                if ((x % 2 == 0 && y % 2 == 0) || (x % 2 != 0 && y % 2 != 0))
-                    tiles[x, y] = GenerateTile(tileSize, x, y, match.player.tileFirstMaterial);
-                else
-                    tiles[x, y] = GenerateTile(tileSize, x, y, match.player.tileSecondMaterial);
+            {
+                Material mat = ((x % 2 == 0 && y % 2 == 0) || (x % 2 != 0 && y % 2 != 0))
+                    ? match.player.tileFirstMaterial
+                    : match.player.tileSecondMaterial;
+
+                tiles[x, y] = GenerateTile(tileSize, x, y, mat);
+            }
+        }
     }
 
     Tile GenerateTile(float size, int x, int y, Material material)
     {
-        GameObject tileObject = new(string.Format($"X: {x}, Y: {y}"));
+        GameObject tileObject = new($"X: {x}, Y: {y}");
         tileObject.transform.parent = tileContainer;
         tileObject.layer = LayerMask.NameToLayer("Tile");
         Tile tile = tileObject.AddComponent<Tile>();
@@ -99,7 +115,9 @@ public sealed class TilesController : MonoBehaviour
         tile.tileCenter = tileObject.transform.position +
             new Vector3(-scaledSize.x / 2, scaledSize.y, -scaledSize.z / 2);
         tile.coord = new Vector2Int(x, y);
+        tile.uvOffsetSeed = new Vector2(Random.Range(0f, 100f), Random.Range(0f, 100f));
 
+        ApplyTileVisual(tile);
         return tile;
     }
     #endregion
@@ -108,11 +126,13 @@ public sealed class TilesController : MonoBehaviour
     public Vector2Int GetTileIndex(GameObject hitInfo)
     {
         for (int x = 0; x < tileCountX; x++)
+        {
             for (int y = 0; y < tileCountY; y++)
             {
-                if (tiles[x, y].gameObject == hitInfo)
+                if (tiles[x, y] != null && tiles[x, y].gameObject == hitInfo)
                     return new Vector2Int(x, y);
             }
+        }
 
         return -Vector2Int.one;
     }
@@ -134,19 +154,29 @@ public sealed class TilesController : MonoBehaviour
 
     private void ApplyTileVisual(Tile tile)
     {
-        bool isHighlight = highlightTiles.Contains(tile.coord);
-        bool isHover = hoverCoord == tile.coord;
+        Vector2Int coord = tile.coord;
+        sharedPropertyBlock.Clear();
+        sharedPropertyBlock.SetVector(UVOffsetSeedId, tile.uvOffsetSeed);
+
+        bool isHighlight = highlightTiles.Contains(coord);
+        bool isHover = hoverCoord == coord;
 
         if (isHover && (hoverOverHighlight || !isHighlight))
-            tile.render.SetPropertyBlock(hoverBlock);
+            sharedPropertyBlock.SetColor(BaseEmissionId, hoverColor);
         else if (isHighlight)
-            tile.render.SetPropertyBlock(highlightBlock);
-        else if (darkAccentTiles.Contains(tile.coord))
-            tile.render.SetPropertyBlock(darkAccentBlock);
-        else if (lightAccentTiles.Contains(tile.coord))
-            tile.render.SetPropertyBlock(lightAccentBlock);
-        else
-            tile.render.SetPropertyBlock(null);
+            sharedPropertyBlock.SetColor(BaseEmissionId, highlightColor);
+        else if (coord == lastPutCoord)
+            sharedPropertyBlock.SetColor(BaseEmissionId, putHighlightColor);
+        else if (coord == lastMoveSource)
+            sharedPropertyBlock.SetColor(BaseEmissionId, attackSourceColor);
+        else if (coord == lastMoveTarget)
+            sharedPropertyBlock.SetColor(BaseEmissionId, attackTargetColor);
+        else if (darkAccentTiles.Contains(coord))
+            sharedPropertyBlock.SetColor(BaseEmissionId, darkAccentColor);
+        else if (lightAccentTiles.Contains(coord))
+            sharedPropertyBlock.SetColor(BaseEmissionId, lightAccentColor);
+
+        tile.render.SetPropertyBlock(sharedPropertyBlock);
     }
 
     public void SetHoverTile(Vector2Int coord)
@@ -154,7 +184,7 @@ public sealed class TilesController : MonoBehaviour
         if (hoverCoord == coord) return;
 
         Vector2Int oldHover = hoverCoord;
-        hoverCoord = coord; 
+        hoverCoord = coord;
 
         if (oldHover != -Vector2Int.one)
             ApplyTileVisual(tiles[oldHover.x, oldHover.y]);
@@ -174,11 +204,10 @@ public sealed class TilesController : MonoBehaviour
     {
         for (int i = 0; i < availableMoves.Count; i++)
         {
-            var tile = tiles[availableMoves[i].x, availableMoves[i].y];
-            if (highlightTiles.Contains(tile.coord)) continue;
+            var coord = availableMoves[i];
+            if (!highlightTiles.Add(coord)) continue;
 
-            highlightTiles.Add(tile.coord);
-            ApplyTileVisual(tile);
+            ApplyTileVisual(tiles[coord.x, coord.y]);
         }
     }
 
@@ -186,58 +215,65 @@ public sealed class TilesController : MonoBehaviour
     {
         for (int i = 0; i < needRemoveHighlightTiles.Count; i++)
         {
-            var tile = tiles[needRemoveHighlightTiles[i].x, needRemoveHighlightTiles[i].y];
-            if (!highlightTiles.Contains(tile.coord)) continue;
+            var coord = needRemoveHighlightTiles[i];
+            if (!highlightTiles.Remove(coord)) continue;
 
-            highlightTiles.Remove(tile.coord);
-            ApplyTileVisual(tile);
+            ApplyTileVisual(tiles[coord.x, coord.y]);
         }
     }
 
     public void RemoveAllHighlightExcludeCurrentOnes(List<Vector2Int> currentHighlightTiles)
     {
-        for (int i = highlightTiles.Count - 1; i >= 0; i--)
+        List<Vector2Int> toRemove = null;
+        foreach (var coord in highlightTiles)
         {
-            var coord = highlightTiles[i];
             if (!currentHighlightTiles.Contains(coord))
             {
-                highlightTiles.RemoveAt(i);
-                ApplyTileVisual(tiles[coord.x, coord.y]);
+                toRemove ??= new List<Vector2Int>();
+                toRemove.Add(coord);
+            }
+        }
+
+        if (toRemove != null)
+        {
+            for (int i = 0; i < toRemove.Count; i++)
+            {
+                highlightTiles.Remove(toRemove[i]);
+                ApplyTileVisual(tiles[toRemove[i].x, toRemove[i].y]);
             }
         }
     }
 
     public void RemoveAllHighlight()
     {
-        for (int i = highlightTiles.Count - 1; i >= 0; i--)
+        if (highlightTiles.Count == 0) return;
+
+        var temp = new List<Vector2Int>(highlightTiles);
+        highlightTiles.Clear();
+
+        for (int i = 0; i < temp.Count; i++)
         {
-            var coord = highlightTiles[i];
-            highlightTiles.RemoveAt(i);
-            ApplyTileVisual(tiles[coord.x, coord.y]);
+            ApplyTileVisual(tiles[temp[i].x, temp[i].y]);
         }
     }
     #endregion
 
     #region Accent
-
     public void AccentTiles(List<Vector2Int> availableMoves, bool dark)
     {
         for (int i = 0; i < availableMoves.Count; i++)
         {
-            var tile = tiles[availableMoves[i].x, availableMoves[i].y];
-
+            var coord = availableMoves[i];
             if (dark)
             {
-                if (darkAccentTiles.Contains(tile.coord)) continue;
-                darkAccentTiles.Add(tile.coord);
+                if (!darkAccentTiles.Add(coord)) continue;
             }
             else
             {
-                if (lightAccentTiles.Contains(tile.coord)) continue;
-                lightAccentTiles.Add(tile.coord);
+                if (!lightAccentTiles.Add(coord)) continue;
             }
 
-            ApplyTileVisual(tile);
+            ApplyTileVisual(tiles[coord.x, coord.y]);
         }
     }
 
@@ -245,36 +281,77 @@ public sealed class TilesController : MonoBehaviour
     {
         for (int i = 0; i < needRemoveAccentTiles.Count; i++)
         {
-            var tile = tiles[needRemoveAccentTiles[i].x, needRemoveAccentTiles[i].y];
-
+            var coord = needRemoveAccentTiles[i];
             if (dark)
             {
-                if (!darkAccentTiles.Contains(tile.coord)) continue;
-                darkAccentTiles.Remove(tile.coord);
+                if (!darkAccentTiles.Remove(coord)) continue;
             }
             else
             {
-                if (!lightAccentTiles.Contains(tile.coord)) continue;
-                lightAccentTiles.Remove(tile.coord);
+                if (!lightAccentTiles.Remove(coord)) continue;
             }
 
-            ApplyTileVisual(tile);
+            ApplyTileVisual(tiles[coord.x, coord.y]);
         }
     }
 
     public void RemoveAllAccent()
     {
-        for (int i = darkAccentTiles.Count - 1; i >= 0; i--)
+        bool hasAny = darkAccentTiles.Count > 0 || lightAccentTiles.Count > 0;
+        if (!hasAny) return;
+
+        var darkTemp = new List<Vector2Int>(darkAccentTiles);
+        var lightTemp = new List<Vector2Int>(lightAccentTiles);
+        darkAccentTiles.Clear();
+        lightAccentTiles.Clear();
+
+        for (int i = 0; i < darkTemp.Count; i++)
         {
-            var coord = darkAccentTiles[i];
-            darkAccentTiles.RemoveAt(i);
-            ApplyTileVisual(tiles[coord.x, coord.y]);
+            ApplyTileVisual(tiles[darkTemp[i].x, darkTemp[i].y]);
         }
-        for (int i = lightAccentTiles.Count - 1; i >= 0; i--)
+        for (int i = 0; i < lightTemp.Count; i++)
         {
-            var coord = lightAccentTiles[i];
-            lightAccentTiles.RemoveAt(i);
-            ApplyTileVisual(tiles[coord.x, coord.y]);
+            ApplyTileVisual(tiles[lightTemp[i].x, lightTemp[i].y]);
+        }
+    }
+    #endregion
+
+    #region Last Move Highlight
+    public void HighlightPut(Vector2Int coord)
+    {
+        ClearLastMoveHighlight();
+        lastPutCoord = coord;
+        ApplyTileVisual(tiles[coord.x, coord.y]);
+    }
+
+    public void HighlightMove(Vector2Int from, Vector2Int to, bool isAttack)
+    {
+        ClearLastMoveHighlight();
+        lastMoveSource = from;
+        lastMoveTarget = to;
+        ApplyTileVisual(tiles[from.x, from.y]);
+        ApplyTileVisual(tiles[to.x, to.y]);
+    }
+
+    public void ClearLastMoveHighlight()
+    {
+        if (lastPutCoord != -Vector2Int.one)
+        {
+            var t = tiles[lastPutCoord.x, lastPutCoord.y];
+            lastPutCoord = -Vector2Int.one;
+            ApplyTileVisual(t);
+        }
+        if (lastMoveSource != -Vector2Int.one)
+        {
+            var tFrom = tiles[lastMoveSource.x, lastMoveSource.y];
+            lastMoveSource = -Vector2Int.one;
+            ApplyTileVisual(tFrom);
+        }
+        if (lastMoveTarget != -Vector2Int.one)
+        {
+            var tTarget = tiles[lastMoveTarget.x, lastMoveTarget.y];
+            lastMoveTarget = -Vector2Int.one;
+            ApplyTileVisual(tTarget);
         }
     }
     #endregion

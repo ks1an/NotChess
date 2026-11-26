@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public sealed class BoardUI : MonoBehaviour
 {
     [SerializeField] LocalizedStringTable localTable;
-    public static BoardUI Singleton;
+    public static BoardUI Instance;
 
     public Muligan muligan;
 
@@ -23,8 +23,8 @@ public sealed class BoardUI : MonoBehaviour
 
         muligan = new();
         muliganBttn.onClick.AddListener(muligan.TryDoMuligan);
-        if (Singleton == null)
-            Singleton = this;
+        if (Instance == null)
+            Instance = this;
         else
             Destroy(this);
 
@@ -40,6 +40,12 @@ public sealed class BoardUI : MonoBehaviour
             restartButton.onClick.AddListener(TryRestartGame);
         else
             restartButton.onClick.AddListener(TryToRevange);
+
+        if (TutorialController.Instance != null)
+        {
+            restartButton.gameObject.SetActive(false);
+            muliganBttn.gameObject.SetActive(false);
+        }
     }
 
     void StartSettings()
@@ -85,7 +91,7 @@ public sealed class BoardUI : MonoBehaviour
     void OnTurned(int x, int y, Team teamMoved)
     {
         ChangeTeamMoveIndicator(x, y, teamMoved);
-        if (teamMoved == GameController.Instance.player.GetLocalPlayerTeam())
+        if (teamMoved == GameController.Instance.player.GetTeam())
             muligan.HideMuliganButton();
         else
             muligan.TryShowMuliganButton();
@@ -95,7 +101,7 @@ public sealed class BoardUI : MonoBehaviour
     {
         if (isNetMatch)
         {
-            if (GameController.Instance.player.GetLocalPlayerTeam() == teamMoved)
+            if (GameController.Instance.player.GetTeam() == teamMoved)
             {
                 teamMoveIndicator.text = "Opponent`s turn";
                 teamMoveIndicator.fontStyle = FontStyles.Normal;
